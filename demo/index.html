@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZEUS GUARD — Live Demo (Arbitrum Sepolia)</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0e14; --card: #131826; --card2: #1a2133; --line: #26304a;
+    --text: #e8ecf4; --dim: #8b94a8; --gold: #f7931a; --green: #2ecc71; --red: #e74c3c; --blue: #4a90d9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; min-height: 100vh; padding: 24px; }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; letter-spacing: 2px; }
+  h1 span { color: var(--gold); }
+  .sub { color: var(--dim); font-size: .8rem; margin: 8px 0 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card .label { color: var(--dim); font-size: .65rem; text-transform: uppercase; letter-spacing: 1.5px; }
+  .card .value { font-size: 1.05rem; margin-top: 6px; word-break: break-all; }
+  .mono-sm { font-size: .72rem; color: var(--dim); }
+  a { color: var(--blue); text-decoration: none; }
+  .tx-button { display: block; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; color: var(--text); font-family: inherit; transition: border-color .15s; }
+  .tx-button:hover { border-color: var(--gold); }
+  .tx-button .title { font-size: .95rem; }
+  .tx-button .desc { color: var(--dim); font-size: .72rem; margin-top: 4px; }
+  .verdict { border-radius: 10px; padding: 14px 16px; margin-top: 10px; font-size: .85rem; display: none; border: 1px solid; word-break: break-all; white-space: pre-wrap; }
+  .ok { border-color: var(--green); color: var(--green); background: rgba(46,204,113,.06); }
+  .block { border-color: var(--red); color: var(--red); background: rgba(231,76,60,.06); }
+  .warn { border-color: var(--gold); color: var(--gold); background: rgba(247,147,26,.06); }
+  .footer { color: var(--dim); font-size: .68rem; margin-top: 22px; line-height: 1.6; }
+  .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-right: 6px; }
+  .section-t { color: var(--gold); font-size: .7rem; text-transform: uppercase; letter-spacing: 2px; margin: 22px 0 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚡ ZEUS <span>GUARD</span> — Live Demo</h1>
+  <p class="sub">Every button below queries the REAL deployed Stylus contract on Arbitrum Sepolia via public RPC. No wallet needed — read-only eth_calls, same rules as a live transaction.</p>
+
+  <div class="section-t"><span class="live-dot"></span>Guardian session (read from chain)</div>
+  <div class="grid">
+    <div class="card"><div class="label">Contract (Stylus/Rust)</div><div class="value" id="c-addr">…</div></div>
+    <div class="card"><div class="label">Demo user session</div><div class="value" id="c-session">…</div></div>
+    <div class="card"><div class="label">Guardian agent</div><div class="value" id="c-guardian">…</div></div>
+    <div class="card"><div class="label">Daily cap (24h rolling)</div><div class="value" id="c-cap">…</div></div>
+    <div class="card"><div class="label">Challenge window</div><div class="value" id="c-window">…</div></div>
+    <div class="card"><div class="label">USDG escrow mode</div><div class="value" id="c-usdg">…</div></div>
+  </div>
+
+  <div class="section-t">Firewall — click a transaction, watch the verdict come from the chain</div>
+  <button class="tx-button" onclick="run(150, 50)">
+    <div class="title">✅ Send 50 USDG to a DEX swap</div>
+    <div class="desc">risk_x100 = 150 · within cap · normal swap pattern → expect CLEARED</div>
+  </button>
+  <button class="tx-button" onclick="run(9500, 25)">
+    <div class="title">🚨 Unlimited approval to a fresh EOA (drainer signature)</div>
+    <div class="desc">risk_x100 = 9500 · QCSN drainer archetype → expect BLOCKED (TooRisky)</div>
+  </button>
+  <button class="tx-button" onclick="run(200, 600)">
+    <div class="title">💸 Transfer 600 USDG (cap is 500/day)</div>
+    <div class="desc">risk_x100 = 200 · low risk, but over the on-chain daily cap → expect BLOCKED (AboveDailyCap)</div>
+  </button>
+  <button class="tx-button" onclick="runNoSession()">
+    <div class="title">👤 A wallet with no guardian installed</div>
+    <div class="desc">random user, no session → expect BLOCKED (NoSession)</div>
+  </button>
+  <div id="verdict" class="verdict"></div>
+
+  <div class="footer">
+    ZEUS GUARD · Arbitrum Open House Singapore 2026 · Clebson Campos de Araújo (Clebson Scott)<br>
+    Source: <a href="https://github.com/clebson-scott/zeus-guard" target="_blank">github.com/clebson-scott/zeus-guard</a> ·
+    Math: <a href="https://github.com/clebson-scott/zeus-guard/blob/main/docs/MATH.md" target="_blank">docs/MATH.md</a> ·
+    Architecture: <a href="https://github.com/clebson-scott/zeus-guard/blob/main/docs/ARCHITECTURE.md" target="_blank">docs/ARCHITECTURE.md</a><br>
+    The engine that produced risk_x100 here is simulated for the demo buttons; the CONTRACT verdicts are real, on-chain, live.
+  </div>
+</div>
+
+<script>
+const CONTRACT = "0x038409e301e32467b226d10c728a0c6fbe28ea4a";
+const DEMO_USER = "0xf92721394140c43C72FbfF2f0ebf90327fD2bF9D";
+const RPCS = ["https://sepolia-rollup.arbitrum.io/rpc", "https://arbitrum-sepolia-rpc.publicnode.com"];
+
+const ABI = [
+  "function sessionExists(address) view returns (bool)",
+  "function sessionGuardianPub(address) view returns (address)",
+  "function sessionWindowPub(address) view returns (uint64)",
+  "function sessionCapPub(address) view returns (uint256)",
+  "function sessionFrozenPub(address) view returns (bool)",
+  "function usdgTokenPub(address) view returns (address)",
+  "function checkTx(address user, uint256 amount, uint256 risk_x100) view"
+];
+const ERRORS = [
+  "error NoSession()", "error TooRisky(uint64 risk_x100, uint64 threshold)",
+  "error AboveDailyCap(uint256 requested, uint256 remaining)", "error SessionFrozen()",
+  "error TokenTransferFailed(bool returned)", "error NotDisputed()", "error AlreadyRefunded()"
+];
+const IFACE = new ethers.Interface(ERRORS);
+const fmtAddr = a => a.slice(0, 6) + "…" + a.slice(-4);
+const fmtUSDG = v => (Number(ethers.formatEther(v))).toLocaleString("en-US", {maximumFractionDigits: 0}) + " USDG";
+
+async function getProvider() {
+  for (const url of RPCS) {
+    try { const p = new ethers.JsonRpcProvider(url); await p.getBlockNumber(); return p; } catch (e) {}
+  }
+  throw new Error("no RPC reachable");
+}
+
+function show(id, html) { document.getElementById(id).textContent = html; }
+
+async function loadSession() {
+  try {
+    const p = await getProvider();
+    const c = new ethers.Contract(CONTRACT, ABI, p);
+    document.getElementById("c-addr").textContent = fmtAddr(CONTRACT);
+    const exists = await c.sessionExists(DEMO_USER);
+    document.getElementById("c-session").textContent = exists ? "ACTIVE ✓" : "none";
+    if (!exists) return;
+    document.getElementById("c-guardian").textContent = fmtAddr(await c.sessionGuardianPub(DEMO_USER));
+    document.getElementById("c-window").textContent = Number(await c.sessionWindowPub(DEMO_USER)) + " s minimum";
+    document.getElementById("c-cap").textContent = fmtUSDG(await c.sessionCapPub(DEMO_USER));
+    const usdg = await c.usdgTokenPub(DEMO_USER);
+    document.getElementById("c-usdg").textContent = usdg === "0x0000000000000000000000000000000000000000" ? "ledger mode (no token set)" : fmtAddr(usdg);
+  } catch (e) { show("c-addr", "RPC error: " + e.message.slice(0, 60)); }
+}
+
+function verdict(cls, text) {
+  const v = document.getElementById("verdict");
+  v.style.display = "block";
+  v.className = "verdict " + cls;
+  v.textContent = text;
+}
+
+async function checkTx(user, amount, risk) {
+  const p = await getProvider();
+  const c = new ethers.Contract(CONTRACT, ABI, p);
+  return c.checkTx.staticCall
+    ? c.checkTx.staticCall(user, amount, risk)
+    : c.checkTx(user, amount, risk);
+}
+
+async function run(risk, amount) {
+  const v = document.getElementById("verdict");
+  v.style.display = "block"; v.className = "verdict warn";
+  v.textContent = "querying the chain…";
+  try {
+    await checkTx(DEMO_USER, ethers.parseEther(String(amount)), risk);
+    verdict("ok", "✅ CLEARED — the guardian lets this transaction pass.\nuser " + fmtAddr(DEMO_USER) + " · amount " + amount + " USDG · risk_x100 " + risk + " (below the 6000 drainer threshold, within daily cap)");
+  } catch (revertData) {
+    const data = revertData && (revertData.data ?? revertData.info?.error?.data ?? revertData);
+    const hex = data && typeof data.data === "string" ? data.data : String(data);
+    try {
+      const parsed = IFACE.parseError(hex);
+      if (parsed.name === "TooRisky") verdict("block", "⛔ BLOCKED — TooRisky\nrisk_x100 " + parsed.args.risk_x100 + " ≥ threshold " + parsed.args.threshold + " → drainer signature detected. The user never signs. Guardian auto-revokes.");
+      else if (parsed.name === "AboveDailyCap") verdict("block", "⛔ BLOCKED — AboveDailyCap\nrequested " + ethers.formatEther(parsed.args.requested) + " USDG · remaining today " + ethers.formatEther(parsed.args.remaining) + " USDG. On-chain cap cannot be bypassed, even by a compromised agent.");
+      else if (parsed.name === "SessionFrozen") verdict("block", "⛔ BLOCKED — SessionFrozen\nEmergency circuit-breaker is engaged.");
+      else verdict("block", "⛔ BLOCKED — " + parsed.name);
+    } catch (e) {
+      verdict("block", "⛔ REVERTED (raw): " + hex.slice(0, 138));
+    }
+  }
+}
+
+async function runNoSession() {
+  const orphan = "0x00000000000000000000000000000000000dEaD0";
+  await run(100, 10);
+  // the run above used DEMO_USER; redo with orphan to show NoSession
+  const v = document.getElementById("verdict");
+  try {
+    await checkTx(orphan, 0, 100);
+    verdict("warn", "unexpected");
+  } catch (revertData) {
+    const data = revertData && (revertData.data ?? revertData.info?.error?.data ?? revertData);
+    const hex = data && typeof data.data === "string" ? data.data : String(data);
+    try {
+      const parsed = IFACE.parseError(hex);
+      verdict("block", parsed.name === "NoSession"
+        ? "⛔ BLOCKED — NoSession\nwallet " + fmtAddr(orphan) + " has no guardian installed. The contract refuses to score transactions for unregistered users — sessions bind owner and guardian."
+        : "⛔ BLOCKED — " + parsed.name);
+    } catch (e) { verdict("block", "⛔ REVERTED (raw): " + hex.slice(0, 138)); }
+  }
+}
+
+loadSession();
+</script>
+</body>
+</html>

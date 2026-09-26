@@ -23,13 +23,18 @@ fidelity 0.997) is documented in the README.
 
 ## 2. Verify the live contract (2 min, no wallet)
 
-Open the explorer:
-https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5
+**v2 (current, real USDG escrow) — open the explorer:**
+https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a
 
-- **Contract tab**: Rust/Stylus contract, 19.2 KB, activated 23/09/2026.
-- **ArbOS cache bid**: [0xe51c05312b723a818aa3d3c08009f0e8210be856a66510820ae8bf459dbdace6](https://sepolia.arbiscan.io/tx/0xe51c05312b723a818aa3d3c08009f0e8210be856a66510820ae8bf459dbdace6)
-- **Activation tx**: [0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59](https://sepolia.arbiscan.io/tx/0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59)
-- **Deploy tx (initcode)**: [0xc893dbc4c59a1fd11abf054f1c4c81a6054b4da187df700a3f41e6a41c1fcfcb](https://sepolia.arbiscan.io/tx/0xc893dbc4c59a1fd11abf054f1c4c81a6054b4da187df700a3f41e6a41c1fcfcb)
+- **v2 contract**: Rust/Stylus, 21.9 KB, activated 26/09/2026 (stylus-sdk 0.10.9, Rust 1.98.1).
+- **v2 deploy tx (initcode)**: [0x0227ef40a5b9d199e3eff80c9630879fdf90b2798beb32665fa3338b4d06e672](https://sepolia.arbiscan.io/tx/0x0227ef40a5b9d199e3eff80c9630879fdf90b2798beb32665fa3338b4d06e672)
+- **v2 activation tx**: [0x2e658e8abb37549d42671da8970bc3b06f053c2c83bc2d03ed72c00033f51978](https://sepolia.arbiscan.io/tx/0x2e658e8abb37549d42671da8970bc3b06f053c2c83bc2d03ed72c00033f51978)
+- **v2 ArbOS cache bid**: [0xa6f19477c67b6209b167c183a21bd9e141dd47023d4acccb2e6b01e76f5797e2](https://sepolia.arbiscan.io/tx/0xa6f19477c67b6209b167c183a21bd9e141dd47023d4acccb2e6b01e76f5797e2)
+- **v2 demo session init**: [0x8cc71c04e82ca8d0247a541d6669b2a3c44be8377b64ec01229293301c854ead](https://sepolia.arbiscan.io/tx/0x8cc71c04e82ca8d0247a541d6669b2a3c44be8377b64ec01229293301c854ead)
+- **Live web demo**: open [`demo/index.html`](../demo/index.html) in a browser — every button queries this contract, no wallet.
+
+v1 (original, historical receipts): [0x313e9994f1e77f579e797c19e29250a9a782e3a5](https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5)
+- v1 activation: [0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59](https://sepolia.arbiscan.io/tx/0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59) · deploy: [0xc893dbc4c59a1fd11abf054f1c4c81a6054b4da187df700a3f41e6a41c1fcfcb](https://sepolia.arbiscan.io/tx/0xc893dbc4c59a1fd11abf054f1c4c81a6054b4da187df700a3f41e6a41c1fcfcb) · cache bid: [0xe51c05312b723a818aa3d3c08009f0e8210be856a66510820ae8bf459dbdace6](https://sepolia.arbiscan.io/tx/0xe51c05312b723a818aa3d3c08009f0e8210be856a66510820ae8bf459dbdace6)
 
 ## 3. Replay the smoke tests (2 min, needs `cast` or any ABI-capable tool)
 
@@ -37,13 +42,18 @@ The contract's public interface (from `zeus-guard-contract/src/lib.rs`):
 
 | Function | Signature | Role |
 |---|---|---|
-| `init_session` | `(guardian: address, challenge_window: u256, daily_cap: u256)` | starts a guardian session |
-| `check_tx` | `(user: address, amount: u256, risk_x100: u256)` | the firewall verdict |
-| `log_approval` | `(user, spender, amount, risk_x100)` | approval registry |
-| `guardian_revoke` | `(user, spender)` | auto-revocation |
-| `escrow_payment` | `(payment_id: bytes32, payee, amount, risk_x100)` | USDG vault entry |
-| `dispute_payment` / `release_payment` | `(payment_id)` | challenge window |
-| `emergency_freeze` / `unfreeze` | `(user)` / `()` | circuit-breaker |
+| `initSession` | `(guardian: address, challenge_window: u256, daily_cap: u256)` | starts a guardian session |
+| `checkTx` | `(user: address, amount: u256, risk_x100: u256)` | the firewall verdict |
+| `logApproval` | `(user, spender, amount, risk_x100)` | approval registry |
+| `guardianRevoke` | `(user, spender)` | auto-revocation |
+| `escrowPayment` | `(payment_id: bytes32, payee, amount, risk_x100)` | USDG vault entry |
+| `disputePayment` / `releasePayment` | `(payment_id)` | challenge window |
+| `emergencyFreeze` / `unfreeze` | `(user)` / `()` | circuit-breaker |
+
+> **ABI note (honest gotcha, costs 10 minutes if you miss it):** the Stylus SDK exports
+> Rust function names in **camelCase** — `sessionExists(address)`, not `session_exists`.
+> Calling a snake_case selector reverts with empty data ("unknown method"). All names in
+> this guide are the real, exported ones.
 
 Smoke tests already executed on-chain (receipts in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](../deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md)):
 
@@ -52,19 +62,20 @@ Smoke tests already executed on-chain (receipts in [`deploy/DEPLOYADO_ARBITRUM_S
 | Normal tx clears | risk 250 | ✅ allowed |
 | Drainer blocked | risk 6000 ≥ RISK_BLOCK_X100 (6000) | ⛔ `TooRisky` (selector `0xcc65e730`) |
 | Daily cap enforced | 0.6 ETH vs 0.5 cap | ⛔ `AboveDailyCap` (selector `0x73fede4c`) |
-| Session required | no prior `init_session` | ⛔ `NoSession` (selector `0xaabbee68`) |
+| Session required | no prior `initSession` | ⛔ `NoSession` (selector `0xaabbee68`) |
+| Challenge window enforced | `releasePayment` right after `escrowPayment` | ⛔ `ChallengeWindowOpen` — re-run on v2, 26/09 |
 
 To replay with `cast` (any funded Arbitrum Sepolia key, e.g. from the public PoW faucet):
 
 ```bash
 cast send 0x313e9994f1e77f579e797c19e29250a9a782e3a5 \
-  "init_session(address,uint256,uint256)" \
+  "initSession(address,uint256,uint256)" \
   <GUARDIAN_ADDR> 3600 500000000000000000 \
   --rpc-url https://sepolia-rollup.arbitrum.io/rpc --private-key <KEY>
 
 # expect revert TooRisky:
 cast call 0x313e9994f1e77f579e797c19e29250a9a782e3a5 \
-  "check_tx(address,uint256,uint256)" <USER_ADDR> 0 6000 \
+  "checkTx(address,uint256,uint256)" <USER_ADDR> 0 6000 \
   --rpc-url https://sepolia-rollup.arbitrum.io/rpc
 ```
 

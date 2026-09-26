@@ -41,3 +41,7 @@
 - [x] `cargo stylus cache bid` executado em 26/09/2026 (TX `0xe51c...ace6`)
 - [ ] Vídeo demo (voz clonada Clebson) apontando pro endereço acima
 - [ ] README com link do explorer + submissão até 04/10 15h59 UTC
+
+> **Sucessor:** a v2 (cofre USDG real + reembolso) está em
+> [`DEPLOYADO_V2_ARBITRUM_SEPOLIA.md`](DEPLOYADO_V2_ARBITRUM_SEPOLIA.md) —
+> contrato `0x038409e301e32467b226d10c728a0c6fbe28ea4a`. Este documento registra a v1 original.

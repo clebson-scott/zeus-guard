@@ -1,0 +1,3 @@
+zeus-guard-contract/target/
+*.so
+*.wasm.tmp

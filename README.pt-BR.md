@@ -23,7 +23,7 @@ poisoning, e liquidações evitáveis. Nenhuma carteira do ecossistema tem um gu
 | **Auto-revogação** | Approvals com risco alto são revogados pelo guardião sem ação do usuário |
 | **Cofre USDG** (bônus Paxos!) | Pagamentos ficam retidos numa janela de desafio — drainer não move valor no mesmo bloco |
 | **Disjuntor de emergência** | Ataque em andamento congela a sessão inteira |
-| **Dashboard Dune** | Telemetria pública de ameaças bloqueadas |
+| **Telemetria pública** | Cada veredito emite eventos auditáveis on-chain — dashboard Dune no roadmap |
 
 ## ⚛️ O diferencial técnico: motor QCSN de risco
 

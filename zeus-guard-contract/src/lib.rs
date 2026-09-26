@@ -8,12 +8,19 @@
 //!
 //! Autor: Clebson Campos de Araujo - Arbitrum Open House Singapore 2026
 //! Nota: codigo de hackathon, nao auditado.
+//!
+//! v2 (26/09/2026): cofre USDG nativo (IERC20.transferFrom real), reembolso de
+//! pagamento contestado, testes nativos de unidade e helper puro de janela/teto.
+//! Politica ERC-20 por sessao: set_usdg_token(token) ativa modo real;
+//! address(0) mantem o modo ledger (compativel com os receipts v1).
 
 // Allow `cargo stylus export-abi` to generate a main function.
 #![cfg_attr(not(any(test, feature = "export-abi")), no_main)]
 extern crate alloc;
 
 use stylus_sdk::prelude::*;
+use stylus_sdk::call::RawCall;
+use stylus_sdk::alloy_sol_types::SolCall;
 use stylus_sdk::alloy_sol_types::sol;
 use stylus_sdk::alloy_primitives::{Address, B256, U64, U128, U256};
 
@@ -30,6 +37,8 @@ sol! {
     event PaymentReleased(bytes32 indexed payment_id, address indexed payee, uint256 amount);
     event SessionFrozen(address indexed user, address indexed by);
     event SessionUnfrozen(address indexed user, address indexed by);
+    event UsdgTokenSet(address indexed user, address usdg);
+    event PaymentRefunded(bytes32 indexed payment_id, address indexed payer, uint256 amount);
 
     error NoSession();
     error NotSessionOwner();
@@ -42,6 +51,9 @@ sol! {
     error AboveDailyCap(uint256 requested, uint256 remaining);
     error UnknownPayment();
     error PaymentIdInUse();
+    error TokenTransferFailed(bool returned);
+    error NotDisputed();
+    error AlreadyRefunded();
 
 }
 
@@ -59,6 +71,17 @@ pub enum ZeusError {
     AboveDailyCap(AboveDailyCap),
     UnknownPayment(UnknownPayment),
     PaymentIdInUse(PaymentIdInUse),
+    TokenTransferFailed(TokenTransferFailed),
+    NotDisputed(NotDisputed),
+    AlreadyRefunded(AlreadyRefunded),
+}
+
+/// IERC20 minimo para o cofre USDG nativo (Paxos Global Dollar).
+sol! {
+    interface IERC20 {
+        function transferFrom(address from, address to, uint256 amount) external returns (bool);
+        function transfer(address to, uint256 amount) external returns (bool);
+    }
 }
 
 sol_storage! {
@@ -71,6 +94,7 @@ sol_storage! {
         mapping(address => bool) session_frozen;
         mapping(address => uint64) session_window;
         mapping(address => uint128) session_cap;
+        mapping(address => address) session_usdg; // address(0) = modo ledger
         // ---- approvals analisados pelo motor QCSN ----
         mapping(address => mapping(address => uint256)) approval_amount;
         mapping(address => mapping(address => uint64)) approval_risk;
@@ -83,10 +107,21 @@ sol_storage! {
         mapping(bytes32 => uint64) payment_release_at;
         mapping(bytes32 => bool) payment_released;
         mapping(bytes32 => bool) payment_disputed;
+        mapping(bytes32 => bool) payment_refunded;
         // ---- teto diario (janela rolante de 24h) ----
         mapping(address => uint128) daily_spent;
         mapping(address => uint64) daily_window_start;
     }
+}
+
+/// Janela de 24h ainda valida? (puro, testavel nativamente)
+fn spent_in_window(ws: u64, now: u64, spent: U128) -> U128 {
+    if ws > 0 && now.saturating_sub(ws) < 86400 { spent } else { U128::ZERO }
+}
+
+/// Janela de desafio efetiva: o minimo de protecao sempre se aplica.
+fn effective_window(w: u64) -> u64 {
+    if w < MIN_CHALLENGE_WINDOW { MIN_CHALLENGE_WINDOW } else { w }
 }
 
 impl ZeusGuard {
@@ -99,12 +134,11 @@ impl ZeusGuard {
 
     fn current_daily_spent(&self, user: Address) -> U128 {
         let now = self.vm().block_timestamp();
-        let ws = self.daily_window_start.getter(user).get().to::<u64>();
-        if ws > 0 && now.saturating_sub(ws) < 86400 {
-            self.daily_spent.getter(user).get()
-        } else {
-            U128::ZERO
-        }
+        spent_in_window(
+            self.daily_window_start.getter(user).get().to::<u64>(),
+            now,
+            self.daily_spent.getter(user).get(),
+        )
     }
 }
 
@@ -117,7 +151,7 @@ impl ZeusGuard {
         self.session_owner.setter(user).set(user);
         self.session_guardian.setter(user).set(guardian);
         self.session_frozen.setter(user).set(false);
-        let cw = challenge_window.to::<u64>().max(MIN_CHALLENGE_WINDOW);
+        let cw = effective_window(challenge_window.to::<u64>());
         self.session_window.setter(user).set(U64::from(cw));
         let cap = if daily_cap.is_zero() { DAILY_CAP_DEFAULT } else { daily_cap.to::<u128>() };
         self.session_cap.setter(user).set(U128::from(cap));
@@ -133,7 +167,7 @@ impl ZeusGuard {
             return Err(ZeusError::NotSessionOwner(NotSessionOwner {}));
         }
         if !challenge_window.is_zero() {
-            self.session_window.setter(user).set(U64::from(challenge_window.to::<u64>().max(MIN_CHALLENGE_WINDOW)));
+            self.session_window.setter(user).set(U64::from(effective_window(challenge_window.to::<u64>())));
         }
         if !daily_cap.is_zero() {
             self.session_cap.setter(user).set(U128::from(daily_cap.to::<u128>()));
@@ -206,6 +240,21 @@ impl ZeusGuard {
         self.payment_released.setter(payment_id).set(false);
         self.payment_disputed.setter(payment_id).set(false);
         self.vm().log(PaymentEscrowed { payment_id, payer: user, payee, amount, release_at });
+        // Cofre USDG nativo: se a sessao tem token configurado, o valor e retenido DE VERDADE.
+        let usdg = self.session_usdg.getter(user).get();
+        if usdg != Address::ZERO {
+            let here = self.vm().contract_address();
+            let data = IERC20::transferFromCall { from: user, to: here, amount }.abi_encode();
+            let result = unsafe {
+                RawCall::new(self.vm()).gas(u64::MAX).flush_storage_cache().call(usdg, &data)
+            };
+            let out = result.map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            let ok: bool = IERC20::transferFromCall::abi_decode_returns(&out)
+                .map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            if !ok {
+                return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+            }
+        }
         Ok(())
     }
 
@@ -241,6 +290,21 @@ impl ZeusGuard {
             return Err(ZeusError::ChallengeWindowOpen(ChallengeWindowOpen {}));
         }
         self.payment_released.setter(payment_id).set(true);
+        let usdg = self.session_usdg.getter(payer).get();
+        if usdg != Address::ZERO {
+            let payee = self.payment_payee.getter(payment_id).get();
+            let amount = self.payment_amount.getter(payment_id).get();
+            let data = IERC20::transferCall { to: payee, amount }.abi_encode();
+            let result = unsafe {
+                RawCall::new(self.vm()).gas(u64::MAX).flush_storage_cache().call(usdg, &data)
+            };
+            let out = result.map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            let ok: bool = IERC20::transferCall::abi_decode_returns(&out)
+                .map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            if !ok {
+                return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+            }
+        }
         self.vm().log(PaymentReleased {
             payment_id,
             payee: self.payment_payee.getter(payment_id).get(),
@@ -302,6 +366,61 @@ impl ZeusGuard {
         self.require_session(user)?;
         Ok(U256::from(self.session_cap.getter(user).get().to::<u128>()))
     }
+
+    /// Configura o token USDG da sessao (dono apenas). address(0) = modo ledger.
+    pub fn set_usdg_token(&mut self, usdg: Address) -> Result<(), ZeusError> {
+        let user = self.vm().msg_sender();
+        self.require_session(user)?;
+        if self.session_owner.getter(user).get() != user {
+            return Err(ZeusError::NotSessionOwner(NotSessionOwner {}));
+        }
+        self.session_usdg.setter(user).set(usdg);
+        self.vm().log(UsdgTokenSet { user, usdg });
+        Ok(())
+    }
+
+    /// Token USDG configurado na sessao (address(0) = modo ledger puro).
+    pub fn usdg_token_pub(&self, user: Address) -> Result<Address, ZeusError> {
+        self.require_session(user)?;
+        Ok(self.session_usdg.getter(user).get())
+    }
+
+    /// Guardiao devolve ao dono o valor de um pagamento contestado (cofre real).
+    pub fn refund_disputed(&mut self, payment_id: B256) -> Result<(), ZeusError> {
+        if !self.payment_exists.getter(payment_id).get() {
+            return Err(ZeusError::UnknownPayment(UnknownPayment {}));
+        }
+        if self.payment_released.getter(payment_id).get() {
+            return Err(ZeusError::AlreadyReleased(AlreadyReleased {}));
+        }
+        if self.payment_refunded.getter(payment_id).get() {
+            return Err(ZeusError::AlreadyRefunded(AlreadyRefunded {}));
+        }
+        if !self.payment_disputed.getter(payment_id).get() {
+            return Err(ZeusError::NotDisputed(NotDisputed {}));
+        }
+        let payer = self.payment_from.getter(payment_id).get();
+        if self.vm().msg_sender() != self.session_guardian.getter(payer).get() {
+            return Err(ZeusError::NotGuardian(NotGuardian {}));
+        }
+        let amount = self.payment_amount.getter(payment_id).get();
+        self.payment_refunded.setter(payment_id).set(true);
+        let usdg = self.session_usdg.getter(payer).get();
+        if usdg != Address::ZERO {
+            let data = IERC20::transferCall { to: payer, amount }.abi_encode();
+            let result = unsafe {
+                RawCall::new(self.vm()).gas(u64::MAX).flush_storage_cache().call(usdg, &data)
+            };
+            let out = result.map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            let ok: bool = IERC20::transferCall::abi_decode_returns(&out)
+                .map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            if !ok {
+                return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+            }
+        }
+        self.vm().log(PaymentRefunded { payment_id, payer, amount });
+        Ok(())
+    }
 }
 
 impl ZeusGuard {
@@ -321,5 +440,31 @@ impl ZeusGuard {
         let new_spent = self.daily_spent.getter(user).get() + U128::from(amount.to::<u128>());
         self.daily_spent.setter(user).set(new_spent);
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn janela_minima_de_desafio_sempre_aplicada() {
+        assert_eq!(effective_window(0), 120);
+        assert_eq!(effective_window(60), 120);
+        assert_eq!(effective_window(500), 500);
+    }
+
+    #[test]
+    fn gasto_diario_expira_em_24h() {
+        let spent = U128::from(100u64);
+        assert_eq!(spent_in_window(0, 5000, spent), U128::ZERO);            // janela nunca iniciada
+        assert_eq!(spent_in_window(1000, 1000 + 86399, spent), spent);      // dentro da janela
+        assert_eq!(spent_in_window(1000, 1000 + 86400, spent), U128::ZERO); // expirou (saturating)
+    }
+
+    #[test]
+    fn constantes_de_politica_estaveis() {
+        assert_eq!(MIN_CHALLENGE_WINDOW, 120); // segundos
+        assert_eq!(RISK_BLOCK_X100, 6000);      // score >= 60% = drainer
     }
 }

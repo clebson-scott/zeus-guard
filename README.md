@@ -16,10 +16,15 @@
 |---|---|
 | **Deployed Stylus contract** (Rust→WASM) | [`0x313e9994f1e77f579e797c19e29250a9a782e3a5`](https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5) on Arbitrum Sepolia (chainId 421614) |
 | Stylus activation tx | [`0x1e35…3fe59`](https://sepolia.arbiscan.io/tx/0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59) |
-| On-chain smoke tests | Blocks drainer (`TooRisky`), blocks above daily cap (`AboveDailyCap`), enforces session (`NoSession`), clears normal tx — receipts in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md) |
+| On-chain smoke tests | Blocks drainer (`TooRisky`), blocks above daily cap (`AboveDailyCap`), enforces session (`NoSession`), clears normal tx — v2 receipts in [`deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md) · v1 receipts in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md) |
 | Risk-engine benchmark | **40/40 = 100% accuracy, 0.9 ms/tx** — run it yourself: `python3 engine/demo.py` |
 | Demo video (3:05) | [`docs/ZEUS_GUARD_explainer.mp4`](docs/ZEUS_GUARD_explainer.mp4) |
+| **v2 contract (real USDG escrow)** | [`0x038409e301e32467b226d10c728a0c6fbe28ea4a`](https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a) — `IERC20.transferFrom` real, dispute refund, 3/3 native unit tests |
+| **Live web demo** | open [`demo/index.html`](demo/index.html) in a browser — every button queries the real contract, no wallet needed |
+| Native Rust unit tests | `cd zeus-guard-contract && cargo test` — policy math tested natively, 3/3 |
 | Judge verification guide | [`docs/JUDGE_VERIFICATION.md`](docs/JUDGE_VERIFICATION.md) — verify every claim in ~5 minutes |
+| Architecture & trust model | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — who runs what, why the guardian cannot be bypassed |
+| Engine math | [`docs/MATH.md`](docs/MATH.md) — the dissipative quench, from equations to measured numbers |
 
 ## 🎯 The problem
 
@@ -34,9 +39,9 @@ that stands **between the user and the transaction**.
 |---|---|
 | **Pre-transaction firewall** | Every tx goes through the guardian agent; simulation + calldata analysis blocks the scam *before* the user signs |
 | **Auto-revocation** | High-risk approvals are revoked by the guardian without user action |
-| **USDG escrow vault** (Paxos bonus) | Payments held through a challenge window — a drainer cannot move value in the same block |
+| **USDG escrow vault** (Paxos bonus) | Payments pulled via real `IERC20.transferFrom` and held through a challenge window — a drainer cannot move value in the same block; the guardian can dispute and refund |
 | **Emergency circuit-breaker** | Attack in progress freezes the whole session |
-| **Public telemetry** | Dashboard of blocked threats (Dune) |
+| **Public telemetry** | Every verdict emits auditable on-chain events — a Dune dashboard rendering them is on the roadmap (events shipped today, dashboard next) |
 
 ## ⚛️ The technical differentiator: the QCSN dissipative risk engine
 
@@ -70,11 +75,15 @@ open quantum-system dynamics, not a black-box model.
 
 ## 🦀 The contract (Stylus / Rust)
 
-`contracts/zeus_guard.rs` — guardian sessions, approval registry with risk score,
-revocation, USDG escrow with challenge window, emergency breaker. Typed errors
-(`TooRisky`, `AboveDailyCap`, `NoSession`) and auditable events throughout.
+**v2, deployed live:** guardian sessions, approval registry with risk score, revocation,
+USDG escrow with challenge window (**real `IERC20.transferFrom` when a session token is
+set**), dispute + guardian refund, emergency breaker. Typed errors (`TooRisky`,
+`AboveDailyCap`, `NoSession`, `TokenTransferFailed`) and auditable events throughout.
+Policy math is factored into pure functions covered by native unit tests (`cargo test`, 3/3).
 
-Full cargo project: `zeus-guard-contract/` (stylus-sdk 0.10.9, Rust 1.98.1, deployed size 19.2 KB).
+Full cargo project: `zeus-guard-contract/` (stylus-sdk 0.10.9, Rust 1.98.1, v2 deployed size 21.9 KB).
+The trust model — the engine is the advisor, the contract is the law — is in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ```bash
 # build & verify
@@ -88,7 +97,12 @@ cargo stylus deploy --endpoint https://sepolia-rollup.arbitrum.io/rpc --private-
 ```bash
 git clone https://github.com/clebson-scott/zeus-guard && cd zeus-guard
 python3 engine/demo.py          # expect: 40/40, ~0.9 ms/tx
+cd zeus-guard-contract && cargo test   # expect: 3/3 native Rust policy tests
 ```
+
+Open [`demo/index.html`](demo/index.html) in any browser and click the four transaction
+buttons — the verdicts (CLEARED / `TooRisky` / `AboveDailyCap` / `NoSession`) come live
+from the deployed contract on Arbitrum Sepolia. No wallet, no setup.
 
 Then follow [`docs/JUDGE_VERIFICATION.md`](docs/JUDGE_VERIFICATION.md) to replay the
 on-chain smoke tests against the live contract.
@@ -109,13 +123,17 @@ on-chain smoke tests against the live contract.
 zeus-guard/
 ├── README.md                    # you are here
 ├── README.pt-BR.md              # Portuguese version
-├── contracts/zeus_guard.rs     # reference Stylus contract (Rust)
-├── zeus-guard-contract/         # full cargo project (deployed as-is)
+├── zeus-guard-contract/         # THE contract — full cargo project (deployed as-is, cargo test)
+├── demo/index.html              # live web demo: click a tx, verdict comes from the chain
 ├── engine/qcsn_risk_engine.py   # dissipative risk engine
 ├── engine/demo.py               # benchmark: 40/40, 0.9 ms/tx
-├── deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md  # receipts: hashes, gas, pipeline
+├── deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md      # v2 receipts: hashes, gas, smoke
+├── deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md  # v1 receipts: hashes, gas, pipeline
 ├── docs/JUDGE_VERIFICATION.md   # 5-minute verification guide
-└── docs/ZEUS_GUARD_explainer.mp4        # 3:05 demo video
+├── docs/ARCHITECTURE.md         # trust model: who runs what, threat table
+├── docs/MATH.md                 # the dissipative quench, formally
+├── docs/ZEUS_GUARD_explainer.mp4        # 3:05 demo video
+└── LICENSE                      # MIT
 ```
 
 ## ⚖️ Honest limitations
