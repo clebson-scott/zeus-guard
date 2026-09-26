@@ -13,8 +13,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install engine deps
+        run: pip install -q numpy scipy pycryptodome
       - name: Run QCSN benchmark (expect 40/40)
         run: python3 engine/demo.py
+      - name: Honesty experiment (quench vs argmin, expect 0 divergences)
+        run: python3 engine/honesty_experiment.py
 
   stylus-contract-tests:
     runs-on: ubuntu-latest
@@ -24,8 +28,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: zeus-guard-contract
-      - name: Native unit tests
+      - name: Native unit tests (expect 11/11)
         run: cargo test --quiet
+      - name: WASM target builds (Stylus artifact)
+        run: cargo build --target wasm32-unknown-unknown --release --quiet

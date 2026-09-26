@@ -95,7 +95,30 @@ Declared honestly: the deployed contract is **classical** — a deterministic di
 computation *inspired by* open quantum-system dynamics, integrated via exact matrix
 exponentiation. No QPU is called at transaction time.
 
-## 7. Contract-side policy constants
+## 7. The honesty experiment: quench vs argmin, published
+
+We tested our own differentiator (`engine/honesty_experiment.py`):
+
+| Set | Cases | Quench ≠ argmin |
+|---|---|---|
+| Official benchmark | 40 | 0 |
+| Stress σ=0.05 / 0.15 / 0.30 | 1,800 | 0 |
+| Exact archetype midpoints | 10 | 0 |
+| **Total** | **1,850** | **0** |
+
+Latency: quench ≈ 1.7 ms/tx vs argmin ≈ 0.007 ms/tx (**~250x slower**). At exact
+midpoints p* degenerates to 0.5 — the boundary is a tie-break by ordering, not a
+confident decision.
+
+**What this means, plainly:** the final state at β=40 *is* the Gibbs distribution,
+which concentrates on the minimum — the verdict equals argmin. The quench is not a
+better classifier than a 3-line nearest-centroid; it is the *same* classifier that
+additionally yields a continuous, well-conditioned confidence p* on the path, and a
+reading grounded in the open-system physics we measured on `ibm_fez`. We ship the
+experiment in the repo so any judge can verify this in one command, and we say it here
+so nobody else has to discover it.
+
+## 8. Contract-side policy constants
 
 | Constant | Value | Meaning |
 |---|---|---|
