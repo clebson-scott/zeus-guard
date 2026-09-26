@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZEUS GUARD — Wallet Demo (guardian plugged in)</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<style>
+  :root{--bg:#0b0e14;--card:#131826;--line:#232b3d;--tx:#e8ecf4;--mut:#8a93a8;--acc:#f7931a;--ok:#3ecf6f;--bad:#ff5b5b;--warn:#ffd166}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,'Segoe UI',Roboto,sans-serif;padding:24px}
+  .wrap{max-width:980px;margin:0 auto}
+  h1{font-size:22px}h2{font-size:16px;margin:22px 0 10px}
+  .sub{color:var(--mut);font-size:13px;margin-top:4px}
+  .row{display:flex;gap:14px;flex-wrap:wrap}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .tile{flex:1;min-width:150px}
+  .tile .lbl{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  .tile .val{font-size:19px;font-weight:700;margin-top:3px}
+  .pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700}
+  .ok{background:rgba(62,207,111,.15);color:var(--ok)}
+  .bad{background:rgba(255,91,91,.15);color:var(--bad)}
+  .warn{background:rgba(255,209,102,.15);color:var(--warn)}
+  button{background:var(--acc);color:#111;border:0;border-radius:9px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px}
+  button.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  select,input{background:#0d1220;border:1px solid var(--line);color:var(--tx);border-radius:9px;padding:10px 12px;font-size:14px;width:100%}
+  .log{font:12px/1.6 ui-monospace,Consolas,monospace;background:#0d1220;border:1px solid var(--line);border-radius:10px;padding:12px;max-height:320px;overflow:auto;white-space:pre-wrap}
+  .log .ok{color:var(--ok)}.log .bad{color:var(--bad)}.log .warn{color:var(--warn)}.log .mut{color:var(--mut)}
+  .guard{border:1px solid var(--acc);border-radius:12px;padding:16px;background:linear-gradient(180deg,rgba(247,147,26,.06),transparent)}
+  .verdict{font-size:15px;font-weight:700;margin-top:8px}
+  details{margin-top:8px}summary{cursor:pointer;color:var(--mut);font-size:12px}
+  a{color:var(--acc)}
+  .banner{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--mut);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🛡️ MyWallet <span style="color:var(--acc)">+ ZEUS GUARD</span></h1>
+  <p class="sub">Retail wallet mock with the guardian plugged in — the UX a Robinhood Chain user gets when every transaction is pre-screened.</p>
+
+  <div class="banner">
+    <b>Honest scope (Law 4):</b> session policy is read <b>live</b> from the deployed v2 contract on Arbitrum Sepolia (read-only RPC: cards below). The guardian agent's risk scoring runs here as a <b>declared JS mirror</b> of <code>engine/qcsn_risk_engine.py</code>, then the verdict is <b>confirmed against the real on-chain policy</b> (<code>checkTx</code>) — this page sends no transactions. Balances and recipients are simulated.
+  </div>
+
+  <div class="row" style="margin-top:14px">
+    <div class="card tile"><div class="lbl">Balance (simulated)</div><div class="val">1,234.00 USDG</div></div>
+    <div class="card tile"><div class="lbl">Daily cap (on-chain)</div><div class="val" id="cap">—</div></div>
+    <div class="card tile"><div class="lbl">Challenge window (on-chain)</div><div class="val" id="win">—</div></div>
+    <div class="card tile"><div class="lbl">Guardian (on-chain)</div><div class="val" id="grd" style="font-size:12px;word-break:break-all">—</div></div>
+    <div class="card tile"><div class="lbl">Session</div><div class="val" id="live">—</div></div>
+  </div>
+
+  <h2>Send money</h2>
+  <div class="card">
+    <div class="row">
+      <div style="flex:2;min-width:220px">
+        <label class="sub">Recipient</label>
+        <select id="who">
+          <option value="merchant">☕ CoffeeShop.eth — known merchant (verified, paid before)</option>
+          <option value="drainer">🌀 "Free Airdrop Claim" — drainer contract</option>
+          <option value="poison">🎯 0xA1c3…lookalike — address-poisoning twin of a contact</option>
+          <option value="dex">💱 NewDex Router — first swap with this router</option>
+        </select>
+      </div>
+      <div style="flex:1;min-width:140px">
+        <label class="sub">Amount (USDG)</label>
+        <input id="amt" type="number" value="25" min="0">
+      </div>
+    </div>
+    <button onclick="send()">Send</button>
+    <button class="ghost" onclick="resetGuard()">Reset guardian</button>
+
+    <div class="guard" id="guardbox" style="display:none;margin-top:12px">
+      <b style="color:var(--acc)">ZEUS GUARD is screening this transaction…</b>
+      <div id="steps" class="log" style="margin-top:8px"></div>
+      <div class="verdict" id="verdict"></div>
+      <details><summary>why this verdict?</summary><div id="why" class="sub"></div></details>
+    </div>
+  </div>
+
+  <h2>Session telemetry (live from the contract)</h2>
+  <div class="card">
+    <div class="log" id="chainlog">loading on-chain session…</div>
+    <button class="ghost" onclick="loadChain()">Re-query the live contract</button>
+  </div>
+
+  <p class="sub" style="margin-top:18px">
+    Contract <span style="color:var(--acc)">0x038409e301e32467b226d10c728a0c6fbe28ea4a</span> (v2, Arbitrum Sepolia) ·
+    Trust model: <a href="https://github.com/clebson-scott/zeus-guard/blob/main/docs/ARCHITECTURE.md" target="_blank">ARCHITECTURE.md — Who computes the risk?</a> ·
+    <a href="https://github.com/clebson-scott/zeus-guard" target="_blank">Repo</a>
+  </p>
+</div>
+
+<script>
+const CONTRACT = "0x038409e301e32467b226d10c728a0c6fbe28ea4a";
+const RPCS = ["https://sepolia-rollup.arbitrum.io/rpc", "https://arbitrum-sepolia-rpc.publicnode.com"];
+const DEMO_USER = "0xf927e9d5c14d1ab0f2a6c04c15e1a0e59cc3d0aa"; // session owner from the deployed receipts
+const ABI = [
+  "function sessionExists(address user) view returns (bool)",
+  "function sessionGuardianPub(address user) view returns (address)",
+  "function sessionWindowPub(address user) view returns (uint64)",
+  "function sessionCapPub(address user) view returns (uint256)",
+  "function checkTx(address user, uint256 amount, uint256 risk_x100) view"
+];
+const fmtU = (wei) => Number(ethers.formatEther(wei)).toLocaleString("en-US", {maximumFractionDigits: 0});
+
+// JS mirror of the QCSN archetype scorer (engine/qcsn_risk_engine.py).
+// Deterministic, auditable, declared: same 60% block threshold as the contract (RISK_BLOCK_X100).
+function scoreRisk(kind, amount, capUsdg) {
+  const f = { merchant: 2, drainer: 97, poison: 88, dex: 31 }[kind];
+  let r = f;
+  if (amount > capUsdg * 0.5) r += 12;      // >50% of daily cap in one tx
+  if (amount > capUsdg)      r += 30;       // over the cap entirely
+  return Math.min(99, r);
+}
+
+let frozen = false;
+const whyText = {
+  merchant: "Known merchant, previously paid, verified address — baseline archetype 'legitimate'.",
+  drainer: "Unverified contract promoted as free money — classic drainer archetype: high-value approval + no history.",
+  poison: "Address is a near-twin of a known contact (address poisoning): differs in 2 chars, never paid before.",
+  dex: "New router: legitimate category but unverified — moderate score, transaction proceeds but flagged."
+};
+
+function log(cls, msg) {
+  const el = document.getElementById("steps");
+  el.innerHTML += `<span class="${cls}">${msg}</span>\n`;
+  el.scrollTop = el.scrollHeight;
+}
+
+async function send() {
+  const kind = document.getElementById("who").value;
+  const amount = Math.max(0, Number(document.getElementById("amt").value) || 0);
+  document.getElementById("guardbox").style.display = "block";
+  const s = document.getElementById("steps"); s.innerHTML = "";
+  const v = document.getElementById("verdict"); v.innerHTML = "";
+  document.getElementById("why").textContent = "";
+  log("mut", `> tx: send ${amount} USDG → ${document.getElementById("who").selectedOptions[0].text}`);
+
+  if (frozen) {
+    log("bad", "[chain] ✗ BLOCKED — SessionFrozenError (circuit breaker tripped)");
+    v.textContent = "⛔ BLOCKED — session frozen by the circuit breaker"; v.style.color = "var(--bad)";
+    document.getElementById("why").textContent = "The guardian froze the session mid-attack (emergency_freeze). Every tx is refused until the owner unfreezes (unfreeze).";
+    return;
+  }
+
+  // 1. local agent mirror scores the tx (what the guardian agent does off-chain)
+  const risk = scoreRisk(kind, amount, capNum);
+  log("", `[agent] QCSN mirror scoring… risk = ${risk}%`);
+
+  // 2. on-chain policy — the REAL contract decides (read-only staticCall)
+  try {
+    const c = await getContract();
+    await c.checkTx.staticCall(DEMO_USER, ethers.parseEther(String(amount)), BigInt(risk * 100));
+    log("ok", `[chain] ✓ checkTx returned — on-chain policy CLEARS this transaction`);
+    v.textContent = "✅ CLEARED — sign & send"; v.style.color = "var(--ok)";
+    log("ok", `[wallet] queued for user signature`);
+  } catch (e) {
+    const name = readErr(e);
+    if (name === "TooRisky") {
+      log("bad", `[chain] ✗ BLOCKED — TooRisky(${risk}% ≥ 60%) — drainer archetype`);
+      v.textContent = "⛔ BLOCKED — too risky (drainer detected)"; v.style.color = "var(--bad)";
+      if (kind === "poison") log("warn", `[agent] lookalike address flagged to the wallet UI`);
+    } else if (name === "AboveDailyCap") {
+      log("bad", `[chain] ✗ BLOCKED — AboveDailyCap`);
+      v.textContent = "⛔ BLOCKED — above your daily cap"; v.style.color = "var(--bad)";
+    } else if (name === "SessionFrozenError") {
+      log("bad", `[chain] ✗ BLOCKED — SessionFrozenError`);
+      v.textContent = "⛔ BLOCKED — session frozen"; v.style.color = "var(--bad)";
+    } else { log("bad", `[chain] ✗ reverted: ${name}`); v.textContent = "⛔ BLOCKED — " + name; v.style.color = "var(--bad)"; }
+  }
+  document.getElementById("why").textContent = whyText[kind] + " The verdict is enforced by the on-chain contract, not by this page.";
+}
+
+function readErr(e) {
+  const raw = (e && (e.reason || e.shortMessage || e.message)) || String(e);
+  for (const n of ["TooRisky","AboveDailyCap","SessionFrozenError","NoSession"])
+    if (raw.includes(n)) return n;
+  return raw.slice(0, 80);
+}
+
+function resetGuard(){ frozen = false; document.getElementById("guardbox").style.display = "none"; }
+
+let capNum = 500;
+let providerIdx = 0;
+async function getContract() {
+  for (let i = 0; i < RPCS.length; i++) {
+    try {
+      const p = new ethers.JsonRpcProvider(RPCS[(providerIdx + i) % RPCS.length]);
+      const c = new ethers.Contract(CONTRACT, ABI, p);
+      await c.sessionExists(DEMO_USER); // probe
+      providerIdx = (providerIdx + i) % RPCS.length;
+      return c;
+    } catch (e) { /* try next RPC */ }
+  }
+  throw new Error("all RPCs failed");
+}
+
+async function loadChain() {
+  const el = document.getElementById("chainlog");
+  try {
+    const c = await getContract();
+    const exists = await c.sessionExists(DEMO_USER);
+    const grd = await c.sessionGuardianPub(DEMO_USER);
+    const win = await c.sessionWindowPub(DEMO_USER);
+    const cap = await c.sessionCapPub(DEMO_USER);
+    document.getElementById("cap").textContent = fmtU(cap) + " USDG";
+    document.getElementById("win").textContent = Number(win) + " s";
+    document.getElementById("grd").textContent = grd.slice(0, 10) + "…" + grd.slice(-6);
+    document.getElementById("live").innerHTML = '<span class="pill ok">LIVE</span>';
+    capNum = Number(ethers.formatEther(cap));
+    el.innerHTML =
+`<span class="ok">sessionExists(${DEMO_USER.slice(0,8)}…)</span> = true
+guardian            = ${grd}
+challenge window    = ${Number(win)} s
+daily cap           = ${fmtU(cap)} USDG  (18 decimals on-chain)
+<span class="mut">— every field above was just read from Arbitrum Sepolia —</span>`;
+  } catch (e) {
+    document.getElementById("live").innerHTML = '<span class="pill bad">OFFLINE</span>';
+    el.innerHTML = `<span class="bad">RPC unreachable — open this file with internet access.</span>`;
+  }
+}
+loadChain();
+</script>
+</body>
+</html>

@@ -467,4 +467,36 @@ mod tests {
         assert_eq!(MIN_CHALLENGE_WINDOW, 120); // segundos
         assert_eq!(RISK_BLOCK_X100, 6000);      // score >= 60% = drainer
     }
+    #[test]
+    fn janela_efetiva_e_monotona() {
+        // nunca abaixo do minimo, nunca reduz uma janela maior
+        assert!(effective_window(u64::MAX - 1) >= MIN_CHALLENGE_WINDOW);
+        assert_eq!(effective_window(MIN_CHALLENGE_WINDOW), MIN_CHALLENGE_WINDOW);
+        assert_eq!(effective_window(MIN_CHALLENGE_WINDOW + 1), MIN_CHALLENGE_WINDOW + 1);
+    }
+
+    #[test]
+    fn gasto_diario_borda_de_janela() {
+        let spent = U128::from(1000u64);
+        // exatamente o limite 86399s: ainda dentro
+        assert_eq!(spent_in_window(100, 100 + 86399, spent), spent);
+        // janela nunca iniciada (ws=0) nunca conta gasto antigo
+        assert_eq!(spent_in_window(0, u64::MAX, spent), U128::ZERO);
+        // agora ANTERIOR ao inicio (saturating): trata como dentro? nao - 0-100 saturates to 0 < 86400 => conta
+        assert_eq!(spent_in_window(500, 100, spent), spent);
+    }
+
+    #[test]
+    fn teto_padrao_e_um_mil_usdg() {
+        // DAILY_CAP_DEFAULT = 1000 USDG em 18 decimais
+        assert_eq!(DAILY_CAP_DEFAULT, 1000 * 10_u128.pow(18));
+    }
+
+    #[test]
+    fn limiar_de_bloqueio_e_sesenta_porcento() {
+        // o contrato bloqueia em >= 6000 (x100). Espelha o mirror JS da demo.
+        assert!(RISK_BLOCK_X100 >= 6000);
+        assert_eq!(RISK_BLOCK_X100 % 100, 0);
+    }
+
 }

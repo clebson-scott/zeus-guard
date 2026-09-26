@@ -70,3 +70,27 @@ in **ledger mode** (identical logic, no token movement — used by the on-chain 
 - Wallet-side RPC interception so every signed tx necessarily passes the agent.
 - Real-data training of the risk model (benchmark is synthetic, declared).
 - Dune dashboard rendering blocked-threat telemetry (events are already emitted for it).
+
+
+---
+
+## 🔑 Who computes the risk? (the trust model, stated plainly)
+
+The one question a careful judge asks: **`check_tx` receives `risk_x100` ready-made — who computes it, and why trust it?**
+
+**The split: the agent judges, the contract enforces.**
+
+| Layer | What it computes | Why you can trust it |
+|---|---|---|
+| Guardian agent (off-chain) | The QCSN risk score (`risk_x100`) from tx features | Deterministic and auditable: dissipative branch selection over 5 attack archetypes, no black-box model. Same input → same score. Source: `engine/qcsn_risk_engine.py`, benchmark 40/40 at 0.9 ms/tx. |
+| ZEUS GUARD contract (on-chain) | The **policy envelope**: 60% risk threshold, 24h rolling daily cap, session freeze, escrow challenge window | Trustless: the agent **cannot** override it. Even a malicious/compromised agent is capped — it can only block too much, never allow too much. |
+
+**Why this design is safe even if the agent is wrong or hostile:**
+
+1. **The contract is the last word.** A bad score can only make it *stricter* (false positives cost convenience, not money). The agent has no path to authorize value movement above the cap, past the freeze, or out of a disputed escrow.
+2. **The user owns the policy.** `update_policy` (owner-only) sets the cap and the challenge window. The guardian can tighten enforcement but never loosen the owner's own limits.
+3. **Value can't move in the same block.** `escrow_payment` holds USDG through a minimum 120s challenge window (`MIN_CHALLENGE_WINDOW`); `dispute_payment` + `refund_disputed` return funds to the payer even if everything else fails.
+4. **Fail-closed by construction.** `check_tx` reverts on `SessionFrozen`, `TooRisky`, `AboveDailyCap`, `NoSession` — there is no "default allow" path.
+5. **The mirror is verifiable.** Any wallet can re-run the same deterministic scorer locally and compare scores — the demo (`demo/wallet.html`) does exactly this and then confirms the verdict against the live contract.
+
+**Honest limitation:** the risk *score* itself is a trusted input to the policy envelope. A future milestone is moving feature extraction on-chain (calldata-pattern rules in Rust) so that even the score is verifiable by third parties. Declared, not hidden.

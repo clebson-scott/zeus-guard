@@ -21,6 +21,7 @@
 | Demo video (3:05) | [`docs/ZEUS_GUARD_explainer.mp4`](docs/ZEUS_GUARD_explainer.mp4) |
 | **v1 contract (historical)** | [`0x313e9994f1e77f579e797c19e29250a9a782e3a5`](https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5) — first deployment, receipts kept in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md) |
 | **Live web demo** | open [`demo/index.html`](demo/index.html) in a browser — every button queries the real contract, no wallet needed |
+| **Retail wallet mock** | open [`demo/wallet.html`](demo/wallet.html) — the consumer UX with the guardian plugged in: send flow, drainer / address-poisoning / over-cap attempts blocked live by the on-chain policy |
 | Native Rust unit tests | `cd zeus-guard-contract && cargo test` — policy math tested natively, 3/3 |
 | Judge verification guide | [`docs/JUDGE_VERIFICATION.md`](docs/JUDGE_VERIFICATION.md) — verify every claim in ~5 minutes |
 | Architecture & trust model | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — who runs what, why the guardian cannot be bypassed |
@@ -68,7 +69,9 @@ integrated via exact matrix exponentiation.
 - Fixed-threshold baseline: 95%
 - The full 60-step quench fits inside transaction latency with room to spare
 
-*Honest note: synthetic dataset with separable archetypes; real-world data will be noisier.
+**Who computes the risk?** The agent judges, the contract enforces — full trust model in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#who-computes-the-risk-the-trust-model-stated-plainly).
+
+Honest note: synthetic dataset with separable archetypes; real-world data will be noisier.
 What the validation shows is that the mechanism runs at transaction speed.* The AI component
 is declared, deterministic and auditable — a classical dissipative computation inspired by
 open quantum-system dynamics, not a black-box model.
@@ -125,6 +128,8 @@ zeus-guard/
 ├── README.pt-BR.md              # Portuguese version
 ├── zeus-guard-contract/         # THE contract — full cargo project (deployed as-is, cargo test)
 ├── demo/index.html              # live web demo: click a tx, verdict comes from the chain
+├── demo/wallet.html              # retail wallet mock (guardian plugged in)
+├── demo/index.html               # live contract playground
 ├── engine/qcsn_risk_engine.py   # dissipative risk engine
 ├── engine/demo.py               # benchmark: 40/40, 0.9 ms/tx
 ├── deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md      # v2 receipts: hashes, gas, smoke
