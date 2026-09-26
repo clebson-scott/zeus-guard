@@ -14,12 +14,12 @@
 
 | Proof | Where |
 |---|---|
-| **Deployed Stylus contract** (Rust→WASM) | [`0x313e9994f1e77f579e797c19e29250a9a782e3a5`](https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5) on Arbitrum Sepolia (chainId 421614) |
-| Stylus activation tx | [`0x1e35…3fe59`](https://sepolia.arbiscan.io/tx/0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59) |
+| **Deployed Stylus contract v2** (Rust→WASM) | [`0x038409e301e32467b226d10c728a0c6fbe28ea4a`](https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a) on Arbitrum Sepolia (chainId 421614) |
+| Stylus activation tx | [`0x2e65…1978`](https://sepolia.arbiscan.io/tx/0x2e658e8abb37549d42671da8970bc3b06f053c2c83bc2d03ed72c00033f51978) |
 | On-chain smoke tests | Blocks drainer (`TooRisky`), blocks above daily cap (`AboveDailyCap`), enforces session (`NoSession`), clears normal tx — v2 receipts in [`deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md) · v1 receipts in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md) |
 | Risk-engine benchmark | **40/40 = 100% accuracy, 0.9 ms/tx** — run it yourself: `python3 engine/demo.py` |
 | Demo video (3:05) | [`docs/ZEUS_GUARD_explainer.mp4`](docs/ZEUS_GUARD_explainer.mp4) |
-| **v2 contract (real USDG escrow)** | [`0x038409e301e32467b226d10c728a0c6fbe28ea4a`](https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a) — `IERC20.transferFrom` real, dispute refund, 3/3 native unit tests |
+| **v1 contract (historical)** | [`0x313e9994f1e77f579e797c19e29250a9a782e3a5`](https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5) — first deployment, receipts kept in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md) |
 | **Live web demo** | open [`demo/index.html`](demo/index.html) in a browser — every button queries the real contract, no wallet needed |
 | Native Rust unit tests | `cd zeus-guard-contract && cargo test` — policy math tested natively, 3/3 |
 | Judge verification guide | [`docs/JUDGE_VERIFICATION.md`](docs/JUDGE_VERIFICATION.md) — verify every claim in ~5 minutes |
@@ -133,6 +133,9 @@ zeus-guard/
 ├── docs/ARCHITECTURE.md         # trust model: who runs what, threat table
 ├── docs/MATH.md                 # the dissipative quench, formally
 ├── docs/ZEUS_GUARD_explainer.mp4        # 3:05 demo video
+├── docs/VIDEO_ROTEIRO.md                # video script (Animalex style)
+├── docs/zgv_render.py                   # programmatic video renderer
+├── engine/DEMO_GUARDA.py                # interactive CLI demo of the engine
 └── LICENSE                      # MIT
 ```
 
@@ -145,7 +148,8 @@ zeus-guard/
 ## 🔗 Links
 
 - Landing page: https://telegra.ph/ZEUS-GUARD--Pre-Transaction-Firewall-for-Everyday-Traders-09-26
-- Explorer: https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5
+- Explorer (v2): https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a
+- Explorer (v1, histórico): https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5
 - Demo video: `docs/ZEUS_GUARD_explainer.mp4`
 
 > *"Most people look at a profession and see a ceiling. I look at all of them at once

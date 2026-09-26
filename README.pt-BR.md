@@ -33,7 +33,7 @@ processador quântico real da IBM (job `daorvfg2fm4c73f5tlog`, backend `ibm_fez`
 fidelidade de seleção 0,997) e integramos por exponencial de matriz exata.
 
 **Benchmark (dataset sintético de 40 txs, 5 arquétipos):**
-- Motor QCSN: **100% de acurácia**, confiança média p* ≈ 0,99, **1,1 ms/tx**
+- Motor QCSN: **100% de acurácia**, confiança média p* ≈ 0,99, **0,9 ms/tx**
 - Limiar fixo (baseline): 95%
 - Latência de transação real: o quench completo de 60 passos cabe no bloqueio
 
@@ -79,7 +79,7 @@ zeus_guard/
 > ao mesmo tempo e vejo uma ponte." — e esta ponte guarda teu dinheiro.
 
 ## 🚀 DEPLOY OFICIAL (Arbitrum Sepolia)
-- Contrato: `0x313e9994f1e77f579e797c19e29250a9a782e3a5`
-- Explorer: https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5
-- Ativação Stylus: tx `0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59`
-- Smoke tests on-chain: bloqueia drainer (TooRisky), bloqueia acima do teto (AboveDailyCap), libera tx normal, exige sessão (NoSession)
+- **Contrato v2 (atual):** `0x038409e301e32467b226d10c728a0c6fbe28ea4a` — Explorer: https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a
+- Ativação Stylus v2: tx `0x2e658e8abb37549d42671da8970bc3b06f053c2c83bc2d03ed72c00033f51978`
+- Smoke tests v2 (26/09/2026): bloqueia drainer (TooRisky), bloqueia acima do teto (AboveDailyCap), libera tx normal, exige sessão (NoSession), blinda janela de desafio (ChallengeWindowOpen)
+- v1 (histórico): `0x313e9994f1e77f579e797c19e29250a9a782e3a5` — receipts em `deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`

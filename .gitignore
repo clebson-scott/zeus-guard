@@ -1,3 +1,5 @@
 zeus-guard-contract/target/
 *.so
 *.wasm.tmp
+__pycache__/
+*.pyc

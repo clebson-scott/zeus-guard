@@ -55,7 +55,7 @@ The contract's public interface (from `zeus-guard-contract/src/lib.rs`):
 > Calling a snake_case selector reverts with empty data ("unknown method"). All names in
 > this guide are the real, exported ones.
 
-Smoke tests already executed on-chain (receipts in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](../deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md)):
+Smoke tests already executed on-chain (receipts: [`deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md`](../deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md) · [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](../deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md)):
 
 | Test | Input | Result |
 |---|---|---|
@@ -68,13 +68,13 @@ Smoke tests already executed on-chain (receipts in [`deploy/DEPLOYADO_ARBITRUM_S
 To replay with `cast` (any funded Arbitrum Sepolia key, e.g. from the public PoW faucet):
 
 ```bash
-cast send 0x313e9994f1e77f579e797c19e29250a9a782e3a5 \
+cast send 0x038409e301e32467b226d10c728a0c6fbe28ea4a \
   "initSession(address,uint256,uint256)" \
-  <GUARDIAN_ADDR> 3600 500000000000000000 \
+  <GUARDIAN_ADDR> 3600 500000000000000000000 \
   --rpc-url https://sepolia-rollup.arbitrum.io/rpc --private-key <KEY>
 
 # expect revert TooRisky:
-cast call 0x313e9994f1e77f579e797c19e29250a9a782e3a5 \
+cast call 0x038409e301e32467b226d10c728a0c6fbe28ea4a \
   "checkTx(address,uint256,uint256)" <USER_ADDR> 0 6000 \
   --rpc-url https://sepolia-rollup.arbitrum.io/rpc
 ```
