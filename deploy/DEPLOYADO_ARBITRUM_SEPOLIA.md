@@ -32,7 +32,12 @@
 - L1 Sepolia: ~0,004 SepETH
 - L2 Arbitrum Sepolia: ~0,0597 ETH (sobra p/ demos e cache bid)
 
+## Cache ArbOS (26/09/2026, nota 10)
+- `cargo stylus cache bid 0x313e9994f1e77f579e797c19e29250a9a782e3a5 0`
+- TX: `0xe51c05312b723a818aa3d3c08009f0e8210be856a66510820ae8bf459dbdace6`
+- Contrato agora fica em cache nativo do ArbOS: ativação garantida e barata para qualquer usuário.
+
 ## Próximos passos p/ submissão HackQuest
-- [ ] `cargo stylus cache bid 313e9994f1e77f579e797c19e29250a9a782e3a5 0` (cache ArbOS)
+- [x] `cargo stylus cache bid` executado em 26/09/2026 (TX `0xe51c...ace6`)
 - [ ] Vídeo demo (voz clonada Clebson) apontando pro endereço acima
 - [ ] README com link do explorer + submissão até 04/10 15h59 UTC

@@ -27,6 +27,7 @@ Open the explorer:
 https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5
 
 - **Contract tab**: Rust/Stylus contract, 19.2 KB, activated 23/09/2026.
+- **ArbOS cache bid**: [0xe51c05312b723a818aa3d3c08009f0e8210be856a66510820ae8bf459dbdace6](https://sepolia.arbiscan.io/tx/0xe51c05312b723a818aa3d3c08009f0e8210be856a66510820ae8bf459dbdace6)
 - **Activation tx**: [0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59](https://sepolia.arbiscan.io/tx/0x1e3515c1d6d9565fc12e0f4c2ae311ee77868131b23666a06de7d9f01773fe59)
 - **Deploy tx (initcode)**: [0xc893dbc4c59a1fd11abf054f1c4c81a6054b4da187df700a3f41e6a41c1fcfcb](https://sepolia.arbiscan.io/tx/0xc893dbc4c59a1fd11abf054f1c4c81a6054b4da187df700a3f41e6a41c1fcfcb)
 
