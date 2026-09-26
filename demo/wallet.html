@@ -43,6 +43,20 @@
     <b>Honest scope (Law 4):</b> session policy is read <b>live</b> from the deployed v2 contract on Arbitrum Sepolia (read-only RPC: cards below). The guardian agent's risk scoring runs here as a <b>declared JS mirror</b> of <code>engine/qcsn_risk_engine.py</code>, then the verdict is <b>confirmed against the real on-chain policy</b> (<code>checkTx</code>) — this page sends no transactions. Balances and recipients are simulated.
   </div>
 
+
+  <h2>Real wallet integration (EIP-1193)</h2>
+  <div class="card">
+    <p class="sub">Connect a real wallet (MetaMask or any EIP-1193 wallet — the Robinhood Chain wallet profile included) and the guardian screens <b>your own address</b> against the live on-chain policy. Read-only: this page never asks for a signature and cannot move funds.</p>
+    <div class="row">
+      <div class="tile"><div class="lbl">Connected wallet</div><div class="val" id="rw_addr" style="font-size:13px;word-break:break-all">not connected</div></div>
+      <div class="tile"><div class="lbl">Chain</div><div class="val" id="rw_chain">—</div></div>
+      <div class="tile"><div class="lbl">Real balance</div><div class="val" id="rw_bal">—</div></div>
+    </div>
+    <button onclick="connectWallet()">&#128268; Connect real wallet</button>
+    <button class="ghost" onclick="screenReal()">&#128737;&#65039; Screen my address (read-only)</button>
+    <div class="log" id="rw_log" style="margin-top:10px">Guardian ready.</div>
+  </div>
+
   <div class="row" style="margin-top:14px">
     <div class="card tile"><div class="lbl">Balance (simulated)</div><div class="val">1,234.00 USDG</div></div>
     <div class="card tile"><div class="lbl">Daily cap (on-chain)</div><div class="val" id="cap">—</div></div>
@@ -222,6 +236,54 @@ daily cap           = ${fmtU(cap)} USDG  (18 decimals on-chain)
   }
 }
 loadChain();
+
+// ===== Real wallet integration (EIP-1193, read-only) =====
+const ARB_SEPOLIA_ID = "0x66eeb"; // 421614
+let realAddr = null;
+function rwLog(cls, msg){ const el=document.getElementById("rw_log"); el.innerHTML += `<span class="${cls}">${msg}</span>\n`; el.scrollTop=el.scrollHeight; }
+async function connectWallet(){
+  document.getElementById("rw_log").innerHTML="";
+  if(!window.ethereum){ rwLog("bad","[wallet] ✗ no EIP-1193 wallet found — open this page in a browser with MetaMask (or the Robinhood wallet) installed"); return; }
+  try{
+    rwLog("mut","[wallet] requesting accounts…");
+    const accs = await window.ethereum.request({method:"eth_requestAccounts"});
+    realAddr = ethers.getAddress(accs[0]);
+    document.getElementById("rw_addr").textContent = realAddr;
+    let cid = await window.ethereum.request({method:"eth_chainId"});
+    if(cid !== ARB_SEPOLIA_ID){
+      rwLog("warn",`[wallet] wrong network (chainId ${cid}) — asking wallet to switch to Arbitrum Sepolia…`);
+      try{ await window.ethereum.request({method:"wallet_switchEthereumChain", params:[{chainId: ARB_SEPOLIA_ID}]}); }
+      catch(e){
+        if(e && (e.code === 4902 || /Unrecognized chain/i.test(String(e.message || "")))){
+          await window.ethereum.request({method:"wallet_addEthereumChain", params:[{chainId: ARB_SEPOLIA_ID, chainName:"Arbitrum Sepolia", nativeCurrency:{name:"Ether", symbol:"ETH", decimals:18}, rpcUrls:["https://sepolia-rollup.arbitrum.io/rpc"], blockExplorerUrls:["https://sepolia.arbiscan.io"]}]});
+        } else { throw e; }
+      }
+      cid = await window.ethereum.request({method:"eth_chainId"});
+    }
+    document.getElementById("rw_chain").textContent = cid === ARB_SEPOLIA_ID ? "Arbitrum Sepolia (421614) ✓" : `chainId ${cid}`;
+    const prov = new ethers.BrowserProvider(window.ethereum);
+    const bal = await prov.getBalance(realAddr);
+    document.getElementById("rw_bal").textContent = `${Number(ethers.formatEther(bal)).toFixed(4)} ETH`;
+    rwLog("ok",`[wallet] ✓ connected ${realAddr}`);
+    if(cid !== ARB_SEPOLIA_ID) rwLog("warn","[wallet] not on Arbitrum Sepolia — switch networks to screen against the live policy");
+  }catch(e){ rwLog("bad",`[wallet] ✗ ${e && e.message ? e.message : e}`); }
+}
+async function screenReal(){
+  document.getElementById("rw_log").innerHTML="";
+  if(!realAddr){ rwLog("warn","[wallet] connect a wallet first"); return; }
+  rwLog("mut",`[agent] screening a 1 USDG transfer from your own address (read-only staticCall)…`);
+  try{
+    const c = await getContract();
+    await c.checkTx.staticCall(realAddr, ethers.parseEther("1"), 0n);
+    rwLog("ok","[chain] ✓ CLEARED — your address has an active guardian session");
+  }catch(e){
+    const name = readErr(e);
+    if(name === "NoSession"){
+      rwLog("bad","[chain] ✗ NoSession — exactly right: your real wallet has no guardian session yet. Open one (initSession) and every tx you sign starts being pre-screened by the on-chain policy.");
+    } else { rwLog("bad",`[chain] ✗ ${name}`); }
+  }
+  rwLog("mut","[law] this page never requests signatures — the firewall reads policy, the wallet keeps the keys");
+}
 </script>
 </body>
 </html>

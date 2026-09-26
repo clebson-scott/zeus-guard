@@ -22,6 +22,7 @@
 | **v1 contract (historical)** | [`0x313e9994f1e77f579e797c19e29250a9a782e3a5`](https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5) — first deployment, receipts kept in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md) |
 | **Live web demo** | open [`demo/index.html`](demo/index.html) in a browser — every button queries the real contract, no wallet needed |
 | **Retail wallet mock** | open [`demo/wallet.html`](demo/wallet.html) — the consumer UX with the guardian plugged in: send flow, drainer / address-poisoning / over-cap attempts blocked live by the on-chain policy |
+| **Real wallet integration (EIP-1193)** | same page: connect MetaMask or any EIP-1193 wallet (Robinhood Chain profile included) and the on-chain policy screens **your own address** — read-only, no signatures ever requested |
 | Native Rust unit tests | `cd zeus-guard-contract && cargo test` — policy math tested natively, 3/3 |
 | Judge verification guide | [`docs/JUDGE_VERIFICATION.md`](docs/JUDGE_VERIFICATION.md) — verify every claim in ~5 minutes |
 | Architecture & trust model | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — who runs what, why the guardian cannot be bypassed |
@@ -129,7 +130,6 @@ zeus-guard/
 ├── zeus-guard-contract/         # THE contract — full cargo project (deployed as-is, cargo test)
 ├── demo/index.html              # live web demo: click a tx, verdict comes from the chain
 ├── demo/wallet.html              # retail wallet mock (guardian plugged in)
-├── demo/index.html               # live contract playground
 ├── engine/qcsn_risk_engine.py   # dissipative risk engine
 ├── engine/demo.py               # benchmark: 40/40, 0.9 ms/tx
 ├── deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md      # v2 receipts: hashes, gas, smoke
@@ -147,7 +147,7 @@ zeus-guard/
 ## ⚖️ Honest limitations
 
 - Synthetic benchmark dataset (declared above) — real-data training is post-hackathon work.
-- The deployed contract is the reference policy engine; wallet-side agent integration is the next milestone.
+- The deployed contract is the reference policy engine; signature-level wallet integration (guardian inside the wallet's confirm screen) is the next milestone — read-only EIP-1193 screening is live in [`demo/wallet.html`](demo/wallet.html).
 - Testnet-only today; no mainnet deployment until audits.
 
 ## 🔗 Links
