@@ -54,3 +54,16 @@ Fixes da auditoria verificados AO VIVO com transações reais:
 ## Testes nativos
 `cargo test` — **11/11 passando** (v3 adicionou testes dos fixes da auditoria).
 `cargo stylus check` — wasm aprovado, sem violações.
+
+## Cofre real com ERC-20 (26/09, ~01h30 UTC)
+Ciclo completo com token real on-chain — MockUSDG `0x96Fa5CeA89e749e30686084A1bE522EC7d12Dab9` (deploy tx `0x3044762b46ac14cd4efbf1c1049b2f95cf67b9400bcfdc8a21199fe41192831d`):
+
+| Etapa | Resultado |
+|---|---|
+| `setUsdgToken(mUSDG)` + `approve` | ✅ tx `0x794b54df…` / `0x879b509f…` |
+| `escrowPayment` (transferFrom real) | ✅ tx `0xf36509652b305e…` — 500 mUSDG retidos no contrato |
+| `disputePayment` + `refundDisputed` | ✅ tx `0x2350ecb1…` / `0x01ad634a…` — 500 mUSDG devolvidos ao dono |
+| `escrowPayment` B + `releasePayment` | ✅ tx `0xb1ad5fae…` / `0xd58b5151…` — payee recebeu 500 mUSDG |
+| `setUsdgToken(0)` (volta ao modo ledger) | ✅ tx `0x64c43124…` |
+
+**Saldo testemunhado:** cofre 0 → 500 mUSDG durante a janela de desafio; devolvido íntegro no reembolso. A retenção de valor é real, não declarativa.
