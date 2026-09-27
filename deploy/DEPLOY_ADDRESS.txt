@@ -1,4 +1,1 @@
-# ZEUS GUARD — Arbitrum Sepolia (chainId 421614)
-# v2 (atual, cofre USDG real): 0x038409e301e32467b226d10c728a0c6fbe28ea4a
-# v1 (histórico):               0x313e9994f1e77f579e797c19e29250a9a782e3a5
-# Carteira de deploy (testnet-only): 0xf92721394140c43C72FbfF2f0ebf90327fD2bF9D
+0xe22d42fce3651e4a0ddb279f83dc84d120cfa35f
