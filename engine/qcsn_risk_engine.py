@@ -23,11 +23,18 @@ ARCHETYPES = {
     "DRAINER_APPROVAL": np.array([1.0, 0.9, 0.8, 0.9, 0.9, 0.4, 0.2, 0.0]),
     "ADDRESS_POISONING": np.array([0.0, 0.8, 0.7, 0.6, 0.1, 0.95, 0.3, 0.0]),
     "RISKY_BUT_LEGIT":  np.array([0.7, 0.3, 0.4, 0.5, 0.0, 0.0, 0.6, 0.5]),
+    "LEGIT_APPROVE":    np.array([1.0, 0.0, 0.1, 0.3, 0.0, 0.0, 0.8, 0.9]),
     "LEGIT_SW":          np.array([0.2, 0.0, 0.1, 0.3, 0.0, 0.0, 0.8, 0.9]),
     "LEGIT_PAYMENT":     np.array([0.0, 0.5, 0.2, 0.4, 0.0, 0.0, 0.95, 0.8]),
 }
-RISK_OF = {"DRAINER_APPROVAL": "BLOQUEAR", "ADDRESS_POISONING": "BLOQUEAR",
-           "RISKY_BUT_LEGIT": "ALERTAR", "LEGIT_SW": "LIBERAR", "LEGIT_PAYMENT": "LIBERAR"}
+RISK_OF = {
+    "DRAINER_APPROVAL": "BLOQUEAR",
+    "ADDRESS_POISONING": "BLOQUEAR",
+    "RISKY_BUT_LEGIT": "ALERTAR",
+    "LEGIT_APPROVE": "LIBERAR",
+    "LEGIT_SW": "LIBERAR",
+    "LEGIT_PAYMENT": "LIBERAR"
+}
 
 
 class QCSNRiskEngine:

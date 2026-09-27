@@ -40,6 +40,7 @@ def make_tx(kind, rng, sigma=0.05):
         "DRAINER_APPROVAL": [1, .9, .85, .9, .9, .4, .2, 0],
         "ADDRESS_POISONING": [0, .8, .7, .6, .1, .95, .3, 0],
         "RISKY_BUT_LEGIT": [.7, .3, .4, .5, 0, 0, .6, .5],
+        "LEGIT_APPROVE": [1, 0, .1, .3, 0, 0, .8, .9],
         "LEGIT_SW": [.2, 0, .1, .3, 0, 0, .8, .9],
         "LEGIT_PAYMENT": [0, .5, .2, .4, 0, 0, .95, .8],
     }[kind]

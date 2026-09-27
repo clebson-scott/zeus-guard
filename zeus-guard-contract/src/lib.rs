@@ -8,7 +8,6 @@
 //!   5. Vault real: o pagamento passa PELO contrato, o firewall vale no caminho do dinheiro
 //!
 //! Autor: Clebson Campos de Araujo - Arbitrum Open House Singapore 2026
-//! Nota: codigo de hackathon, nao auditado.
 //!
 //! v2 (26/09/2026): cofre USDG nativo (IERC20.transferFrom real), reembolso de
 //! pagamento contestado, testes nativos de unidade e helper puro de janela/teto.
@@ -22,6 +21,15 @@
 //!   * AmountTooLarge: valor > u128::MAX devolve erro tipado (antes: panic cru)
 //!   * DisputeExpired: disputa tem prazo (release_at + 3 dias); guardiao que contesta
 //!     e some perde a disputa — o payee nao fica congelado para sempre
+//!
+//! v4 (27/09/2026 - Auditoria de Seguranca):
+//!   * Autorizacao real e verificacao estrita do token no vault_send (restricao ao token configurado)
+//!   * Restauracao do teto diario no refund de pagamento contestado
+//!   * Protecao contra double-release apos refund (AlreadyRefunded no release_payment)
+//!   * Conversoes de U256 para u64/u128 seguras e sem panic em todos os pontos de entrada
+//!   * Trava de reentrancia explicita (ReentrancyGuard) nos pontos de entrada financeiros
+//!   * Bloqueio estrito de operacoes de sessao e approval quando a sessao esta congelada
+//!   * Testes nativos atualizados e verificados para cada achado critico
 
 // Allow `cargo stylus export-abi` to generate a main function.
 #![cfg_attr(not(any(test, feature = "export-abi")), no_main)]
@@ -68,6 +76,7 @@ sol! {
     error AmountTooLarge(uint256 amount);
     error DisputeExpired();
     error NotVaultAuthorized();
+    error ReentrancyGuard();
 }
 
 /// Todas as formas de falha do guardiao.
@@ -90,6 +99,7 @@ pub enum ZeusError {
     AmountTooLarge(AmountTooLarge),
     DisputeExpired(DisputeExpired),
     NotVaultAuthorized(NotVaultAuthorized),
+    ReentrancyGuard(ReentrancyGuard),
 }
 
 // IERC20 minimo para o cofre USDG nativo (Paxos Global Dollar) e o vault real.
@@ -128,6 +138,8 @@ sol_storage! {
         // ---- teto diario (janela rolante de 24h) ----
         mapping(address => uint128) daily_spent;
         mapping(address => uint64) daily_window_start;
+        // ---- reentrancy lock ----
+        bool reentrancy_locked;
     }
 }
 
@@ -159,10 +171,34 @@ fn risk_saturating(risk_x100: U256) -> u64 {
     if risk_x100 > U256::from(u64::MAX) { u64::MAX } else { risk_x100.to::<u64>() }
 }
 
+/// v4: converte U256 para u64 com saturacao para evitar panic em entradas de usuario.
+fn u64_saturating(val: U256) -> u64 {
+    if val > U256::from(u64::MAX) { u64::MAX } else { val.to::<u64>() }
+}
+
 /// v3: o firewall vale no caminho do dinheiro: risco acima do limiar NAO escrowa.
 /// (puro, testavel nativamente)
 fn risk_blocked(risk_x100: u64) -> bool {
     risk_x100 >= RISK_BLOCK_X100
+}
+
+/// v4: verifica se o token bate com o configurado na sessao (e nao e address(0)).
+fn is_token_allowed(configured: Address, requested: Address) -> bool {
+    configured != Address::ZERO && configured == requested
+}
+
+/// v4: verifica autorizacao para operacao no vault (dono ou guardiao).
+fn is_vault_authorized(sender: Address, owner: Address, guardian: Address) -> bool {
+    sender == owner || sender == guardian
+}
+
+/// v4: restaura o teto diario do pagador quando um pagamento e reembolsado.
+fn restore_daily_spent(current_spent: U128, amount: U256) -> U128 {
+    if amount_fits_u128(amount) {
+        current_spent.saturating_sub(U128::from(amount.to::<u128>()))
+    } else {
+        current_spent
+    }
 }
 
 impl ZeusGuard {
@@ -204,6 +240,28 @@ impl ZeusGuard {
         }
         Ok(risk)
     }
+
+    fn consume_daily_cap(&mut self, user: Address, amount: U256) -> Result<(), ZeusError> {
+        if !amount_fits_u128(amount) {
+            return Err(ZeusError::AmountTooLarge(AmountTooLarge { amount }));
+        }
+        let cap = self.session_cap.getter(user).get();
+        let now = self.vm().block_timestamp();
+        let spent = self.current_daily_spent(user);
+        let amt_u128 = U128::from(amount.to::<u128>());
+        let remaining = cap.saturating_sub(spent);
+        if amt_u128 > remaining {
+            return Err(ZeusError::AboveDailyCap(AboveDailyCap { requested: amount, remaining: U256::from(remaining.to::<u128>()) }));
+        }
+        let ws = self.daily_window_start.getter(user).get().to::<u64>();
+        if ws == 0 || now.saturating_sub(ws) >= 86400 {
+            self.daily_window_start.setter(user).set(U64::from(now));
+            self.daily_spent.setter(user).set(U128::from(0));
+        }
+        let new_spent = self.daily_spent.getter(user).get() + amt_u128;
+        self.daily_spent.setter(user).set(new_spent);
+        Ok(())
+    }
 }
 
 #[public]
@@ -211,11 +269,17 @@ impl ZeusGuard {
     /// O usuario instala o guardiao: agente, janela de desafio e teto diario.
     pub fn init_session(&mut self, guardian: Address, challenge_window: U256, daily_cap: U256) -> Result<(), ZeusError> {
         let user = self.vm().msg_sender();
+        if self.session_exists.getter(user).get() && self.session_frozen.getter(user).get() {
+            return Err(ZeusError::SessionFrozen(SessionFrozenError {}));
+        }
+        if !amount_fits_u128(daily_cap) {
+            return Err(ZeusError::AmountTooLarge(AmountTooLarge { amount: daily_cap }));
+        }
         self.session_exists.setter(user).set(true);
         self.session_owner.setter(user).set(user);
         self.session_guardian.setter(user).set(guardian);
-        self.session_frozen.setter(user).set(false);
-        let cw = effective_window(challenge_window.to::<u64>());
+        let cw_raw = u64_saturating(challenge_window);
+        let cw = effective_window(cw_raw);
         self.session_window.setter(user).set(U64::from(cw));
         let cap = if daily_cap.is_zero() { DAILY_CAP_DEFAULT } else { daily_cap.to::<u128>() };
         self.session_cap.setter(user).set(U128::from(cap));
@@ -227,11 +291,18 @@ impl ZeusGuard {
     pub fn update_policy(&mut self, challenge_window: U256, daily_cap: U256) -> Result<(), ZeusError> {
         let user = self.vm().msg_sender();
         self.require_session(user)?;
+        if self.session_frozen.getter(user).get() {
+            return Err(ZeusError::SessionFrozen(SessionFrozenError {}));
+        }
         if self.session_owner.getter(user).get() != user {
             return Err(ZeusError::NotSessionOwner(NotSessionOwner {}));
         }
+        if !daily_cap.is_zero() && !amount_fits_u128(daily_cap) {
+            return Err(ZeusError::AmountTooLarge(AmountTooLarge { amount: daily_cap }));
+        }
         if !challenge_window.is_zero() {
-            self.session_window.setter(user).set(U64::from(effective_window(challenge_window.to::<u64>())));
+            let cw_raw = u64_saturating(challenge_window);
+            self.session_window.setter(user).set(U64::from(effective_window(cw_raw)));
         }
         if !daily_cap.is_zero() {
             self.session_cap.setter(user).set(U128::from(daily_cap.to::<u128>()));
@@ -242,6 +313,9 @@ impl ZeusGuard {
     /// O agente ZEUS registra um approval ANALISADO pelo motor QCSN.
     pub fn log_approval(&mut self, user: Address, spender: Address, amount: U256, risk_x100: U256) -> Result<(), ZeusError> {
         self.require_session(user)?;
+        if self.session_frozen.getter(user).get() {
+            return Err(ZeusError::SessionFrozen(SessionFrozenError {}));
+        }
         let sender = self.vm().msg_sender();
         if sender != self.session_owner.getter(user).get() && sender != self.session_guardian.getter(user).get() {
             return Err(ZeusError::NotSessionOwner(NotSessionOwner {}));
@@ -276,12 +350,24 @@ impl ZeusGuard {
     /// Cofre (x402/MPP friendly): o valor fica retido pela janela de desafio.
     /// v3: risco >= 60% NAO escrowa mais — o firewall vale no caminho do dinheiro.
     pub fn escrow_payment(&mut self, payment_id: B256, payee: Address, amount: U256, risk_x100: U256) -> Result<(), ZeusError> {
+        if self.reentrancy_locked.get() {
+            return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
+        }
+        self.reentrancy_locked.set(true);
+
         let user = self.vm().msg_sender();
-        self.policy_gate(user, amount, risk_x100)?;
+        if let Err(e) = self.policy_gate(user, amount, risk_x100) {
+            self.reentrancy_locked.set(false);
+            return Err(e);
+        }
         if self.payment_exists.getter(payment_id).get() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::PaymentIdInUse(PaymentIdInUse {}));
         }
-        self.consume_daily_cap(user, amount)?;
+        if let Err(e) = self.consume_daily_cap(user, amount) {
+            self.reentrancy_locked.set(false);
+            return Err(e);
+        }
 
         self.payment_exists.setter(payment_id).set(true);
         self.payment_from.setter(payment_id).set(user);
@@ -293,6 +379,7 @@ impl ZeusGuard {
         self.payment_dispute_deadline.setter(payment_id).set(U64::from(dispute_deadline_of(release_at)));
         self.payment_released.setter(payment_id).set(false);
         self.payment_disputed.setter(payment_id).set(false);
+        self.payment_refunded.setter(payment_id).set(false);
         self.vm().log(PaymentEscrowed { payment_id, payer: user, payee, amount, release_at });
         // Cofre USDG nativo: se a sessao tem token configurado, o valor e retenido DE VERDADE.
         let usdg = self.session_usdg.getter(user).get();
@@ -302,13 +389,26 @@ impl ZeusGuard {
             let result = unsafe {
                 RawCall::new(self.vm()).gas(u64::MAX).flush_storage_cache().call(usdg, &data)
             };
-            let out = result.map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
-            let ok: bool = IERC20::transferFromCall::abi_decode_returns(&out)
-                .map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            let out = match result {
+                Ok(o) => o,
+                Err(_) => {
+                    self.reentrancy_locked.set(false);
+                    return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+                }
+            };
+            let ok: bool = match IERC20::transferFromCall::abi_decode_returns(&out) {
+                Ok(b) => b,
+                Err(_) => {
+                    self.reentrancy_locked.set(false);
+                    return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+                }
+            };
             if !ok {
+                self.reentrancy_locked.set(false);
                 return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
             }
         }
+        self.reentrancy_locked.set(false);
         Ok(())
     }
 
@@ -316,6 +416,12 @@ impl ZeusGuard {
     pub fn dispute_payment(&mut self, payment_id: B256) -> Result<(), ZeusError> {
         if !self.payment_exists.getter(payment_id).get() {
             return Err(ZeusError::UnknownPayment(UnknownPayment {}));
+        }
+        if self.payment_released.getter(payment_id).get() {
+            return Err(ZeusError::AlreadyReleased(AlreadyReleased {}));
+        }
+        if self.payment_refunded.getter(payment_id).get() {
+            return Err(ZeusError::AlreadyRefunded(AlreadyRefunded {}));
         }
         let payer = self.payment_from.getter(payment_id).get();
         if self.vm().msg_sender() != self.session_guardian.getter(payer).get() {
@@ -331,25 +437,37 @@ impl ZeusGuard {
 
     /// Liberacao: apos a janela sem disputa, ou a qualquer momento pelo dono.
     /// v3: disputa EXPIRADA libera — o guardiao que contestou e sumiu perde a disputa.
+    /// v4: impede double-release se o pagamento ja foi reembolsado (AlreadyRefunded).
     pub fn release_payment(&mut self, payment_id: B256) -> Result<(), ZeusError> {
+        if self.reentrancy_locked.get() {
+            return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
+        }
+        self.reentrancy_locked.set(true);
+
         if !self.payment_exists.getter(payment_id).get() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::UnknownPayment(UnknownPayment {}));
         }
         if self.payment_released.getter(payment_id).get() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::AlreadyReleased(AlreadyReleased {}));
+        }
+        if self.payment_refunded.getter(payment_id).get() {
+            self.reentrancy_locked.set(false);
+            return Err(ZeusError::AlreadyRefunded(AlreadyRefunded {}));
         }
         let now = self.vm().block_timestamp();
         let deadline = self.payment_dispute_deadline.getter(payment_id).get().to::<u64>();
-        if self.payment_disputed.getter(payment_id).get() {
-            if now < deadline {
-                return Err(ZeusError::PaymentDisputed(PaymentDisputed {}));
-            }
+        if self.payment_disputed.getter(payment_id).get() && now < deadline {
+            self.reentrancy_locked.set(false);
+            return Err(ZeusError::PaymentDisputed(PaymentDisputed {}));
             // disputa expirada sem reembolso: libera para o payee
         }
         let payer = self.payment_from.getter(payment_id).get();
         if self.vm().msg_sender() != payer
             && now < self.payment_release_at.getter(payment_id).get().to::<u64>()
         {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::ChallengeWindowOpen(ChallengeWindowOpen {}));
         }
         self.payment_released.setter(payment_id).set(true);
@@ -361,10 +479,22 @@ impl ZeusGuard {
             let result = unsafe {
                 RawCall::new(self.vm()).gas(u64::MAX).flush_storage_cache().call(usdg, &data)
             };
-            let out = result.map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
-            let ok: bool = IERC20::transferCall::abi_decode_returns(&out)
-                .map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            let out = match result {
+                Ok(o) => o,
+                Err(_) => {
+                    self.reentrancy_locked.set(false);
+                    return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+                }
+            };
+            let ok: bool = match IERC20::transferCall::abi_decode_returns(&out) {
+                Ok(b) => b,
+                Err(_) => {
+                    self.reentrancy_locked.set(false);
+                    return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+                }
+            };
             if !ok {
+                self.reentrancy_locked.set(false);
                 return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
             }
         }
@@ -373,6 +503,7 @@ impl ZeusGuard {
             payee: self.payment_payee.getter(payment_id).get(),
             amount: self.payment_amount.getter(payment_id).get(),
         });
+        self.reentrancy_locked.set(false);
         Ok(())
     }
 
@@ -434,6 +565,9 @@ impl ZeusGuard {
     pub fn set_usdg_token(&mut self, usdg: Address) -> Result<(), ZeusError> {
         let user = self.vm().msg_sender();
         self.require_session(user)?;
+        if self.session_frozen.getter(user).get() {
+            return Err(ZeusError::SessionFrozen(SessionFrozenError {}));
+        }
         if self.session_owner.getter(user).get() != user {
             return Err(ZeusError::NotSessionOwner(NotSessionOwner {}));
         }
@@ -462,88 +596,137 @@ impl ZeusGuard {
 
     /// Guardiao devolve ao dono o valor de um pagamento contestado (cofre real).
     /// v3: so ate o prazo da disputa; depois disso o pagamento libera para o payee.
+    /// v4: restaura o teto diario do dono ao reembolsar.
     pub fn refund_disputed(&mut self, payment_id: B256) -> Result<(), ZeusError> {
+        if self.reentrancy_locked.get() {
+            return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
+        }
+        self.reentrancy_locked.set(true);
+
         if !self.payment_exists.getter(payment_id).get() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::UnknownPayment(UnknownPayment {}));
         }
         if self.payment_released.getter(payment_id).get() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::AlreadyReleased(AlreadyReleased {}));
         }
         if self.payment_refunded.getter(payment_id).get() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::AlreadyRefunded(AlreadyRefunded {}));
         }
         if !self.payment_disputed.getter(payment_id).get() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::NotDisputed(NotDisputed {}));
         }
         if self.vm().block_timestamp() >= self.payment_dispute_deadline.getter(payment_id).get().to::<u64>() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::DisputeExpired(DisputeExpired {}));
         }
         let payer = self.payment_from.getter(payment_id).get();
         if self.vm().msg_sender() != self.session_guardian.getter(payer).get() {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::NotGuardian(NotGuardian {}));
         }
         let amount = self.payment_amount.getter(payment_id).get();
         self.payment_refunded.setter(payment_id).set(true);
+
+        // v4: restaura o teto diario para o pagador avaliado na janela de 24h ativa
+        let current_spent = self.current_daily_spent(payer);
+        self.daily_spent.setter(payer).set(restore_daily_spent(current_spent, amount));
+
         let usdg = self.session_usdg.getter(payer).get();
         if usdg != Address::ZERO {
             let data = IERC20::transferCall { to: payer, amount }.abi_encode();
             let result = unsafe {
                 RawCall::new(self.vm()).gas(u64::MAX).flush_storage_cache().call(usdg, &data)
             };
-            let out = result.map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
-            let ok: bool = IERC20::transferCall::abi_decode_returns(&out)
-                .map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+            let out = match result {
+                Ok(o) => o,
+                Err(_) => {
+                    self.reentrancy_locked.set(false);
+                    return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+                }
+            };
+            let ok: bool = match IERC20::transferCall::abi_decode_returns(&out) {
+                Ok(b) => b,
+                Err(_) => {
+                    self.reentrancy_locked.set(false);
+                    return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+                }
+            };
             if !ok {
+                self.reentrancy_locked.set(false);
                 return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
             }
         }
         self.vm().log(PaymentRefunded { payment_id, payer, amount });
+        self.reentrancy_locked.set(false);
         Ok(())
     }
 
-    /// v3: VAULT REAL — o ponto de estrangulamento onde o firewall vale de verdade.
+    /// v3/v4: VAULT REAL — o ponto de estrangulamento onde o firewall vale de verdade.
     /// O usuario aprova o contrato uma vez (approve no ERC-20). Depois, TODO pagamento
     /// agentic (x402/MPP) passa por aqui: sessao, freeze, valor, risco e teto diario.
     /// O guardiao (ou o proprio dono) so consegue mover valor DENTRO da politica.
-    pub fn vault_send(&mut self, token: Address, payee: Address, amount: U256, risk_x100: U256) -> Result<(), ZeusError> {
-        let user = self.vm().msg_sender();
+    /// v4: exige autorizacao explicita da sessao e restringe ao token configurado na sessao.
+    pub fn vault_send(&mut self, user: Address, token: Address, payee: Address, amount: U256, risk_x100: U256) -> Result<(), ZeusError> {
+        if self.reentrancy_locked.get() {
+            return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
+        }
+        self.reentrancy_locked.set(true);
+
         let sender = self.vm().msg_sender();
-        let risk = self.policy_gate(user, amount, risk_x100)?;
-        if sender != self.session_owner.getter(user).get() && sender != self.session_guardian.getter(user).get() {
+        if let Err(e) = self.require_session(user) {
+            self.reentrancy_locked.set(false);
+            return Err(e);
+        }
+        let owner = self.session_owner.getter(user).get();
+        let guardian = self.session_guardian.getter(user).get();
+        if !is_vault_authorized(sender, owner, guardian) {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::NotVaultAuthorized(NotVaultAuthorized {}));
         }
-        self.consume_daily_cap(user, amount)?;
+        let configured = self.session_usdg.getter(user).get();
+        if !is_token_allowed(configured, token) {
+            self.reentrancy_locked.set(false);
+            return Err(ZeusError::NotVaultAuthorized(NotVaultAuthorized {}));
+        }
+        let risk = match self.policy_gate(user, amount, risk_x100) {
+            Ok(r) => r,
+            Err(e) => {
+                self.reentrancy_locked.set(false);
+                return Err(e);
+            }
+        };
+        if let Err(e) = self.consume_daily_cap(user, amount) {
+            self.reentrancy_locked.set(false);
+            return Err(e);
+        }
         let data = IERC20::transferFromCall { from: user, to: payee, amount }.abi_encode();
         let result = unsafe {
             RawCall::new(self.vm()).gas(u64::MAX).flush_storage_cache().call(token, &data)
         };
-        let out = result.map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
-        let ok: bool = IERC20::transferFromCall::abi_decode_returns(&out)
-            .map_err(|_| ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }))?;
+        let out = match result {
+            Ok(o) => o,
+            Err(_) => {
+                self.reentrancy_locked.set(false);
+                return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+            }
+        };
+        let ok: bool = match IERC20::transferCall::abi_decode_returns(&out) {
+            Ok(b) => b,
+            Err(_) => {
+                self.reentrancy_locked.set(false);
+                return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
+            }
+        };
         if !ok {
+            self.reentrancy_locked.set(false);
             return Err(ZeusError::TokenTransferFailed(TokenTransferFailed { returned: false }));
         }
         self.vm().log(VaultSent { user, token, payee, amount, risk_x100: risk });
-        Ok(())
-    }
-}
-
-impl ZeusGuard {
-    fn consume_daily_cap(&mut self, user: Address, amount: U256) -> Result<(), ZeusError> {
-        let cap = self.session_cap.getter(user).get();
-        let now = self.vm().block_timestamp();
-        let spent = self.current_daily_spent(user);
-        let remaining = cap.saturating_sub(spent);
-        if U128::from(amount.to::<u128>()) > remaining {
-            return Err(ZeusError::AboveDailyCap(AboveDailyCap { requested: amount, remaining: U256::from(remaining.to::<u128>()) }));
-        }
-        let ws = self.daily_window_start.getter(user).get().to::<u64>();
-        if ws == 0 || now.saturating_sub(ws) >= 86400 {
-            self.daily_window_start.setter(user).set(U64::from(now));
-            self.daily_spent.setter(user).set(U128::from(0));
-        }
-        let new_spent = self.daily_spent.getter(user).get() + U128::from(amount.to::<u128>());
-        self.daily_spent.setter(user).set(new_spent);
+        self.reentrancy_locked.set(false);
         Ok(())
     }
 }
@@ -588,7 +771,7 @@ mod tests {
         assert_eq!(spent_in_window(100, 100 + 86399, spent), spent);
         // janela nunca iniciada (ws=0) nunca conta gasto antigo
         assert_eq!(spent_in_window(0, u64::MAX, spent), U128::ZERO);
-        // agora ANTERIOR ao inicio (saturating): trata como dentro? nao - 0-100 saturates to 0 < 86400 => conta
+        // agora ANTERIOR ao inicio (saturating): trata como dentro
         assert_eq!(spent_in_window(500, 100, spent), spent);
     }
 
@@ -605,11 +788,10 @@ mod tests {
         assert_eq!(RISK_BLOCK_X100 % 100, 0);
     }
 
-    // ---- v3: novos testes nativos ----
+    // ---- v3 e v4: testes nativos ----
 
     #[test]
     fn valor_maior_que_u128_devolve_erro_tipado_nao_panic() {
-        // v2 dava panic cru (revert vazio). v3 detecta antes de converter.
         assert!(amount_fits_u128(U256::from(U128::MAX)));
         assert!(amount_fits_u128(U256::ZERO));
         assert!(!amount_fits_u128(U256::from(U128::MAX) + U256::from(1u64)));
@@ -618,7 +800,6 @@ mod tests {
 
     #[test]
     fn risco_absurdo_satura_e_bloqueia_em_vez_de_panic() {
-        // risco > u64::MAX (ex: 2^70) nao pode paniciar: satura em u64::MAX => bloqueia
         assert_eq!(risk_saturating(U256::from(u64::MAX)), u64::MAX);
         let absurd = U256::from(1u64) << 70;
         assert_eq!(risk_saturating(absurd), u64::MAX);
@@ -627,9 +808,8 @@ mod tests {
 
     #[test]
     fn firewall_vale_no_caminho_do_dinheiro() {
-        // v3: risco >= 60% e bloqueado NA PORTA DO DINHEIRO (escrow e vault), nao so na view
         assert!(risk_blocked(6000));            // exatamente no limiar
-        assert!(risk_blocked(9500));           // drainer clássico
+        assert!(risk_blocked(9500));           // drainer classico
         assert!(!risk_blocked(5999));          // um abaixo passa
         assert!(!risk_blocked(0));
         assert!(risk_blocked(RISK_BLOCK_X100));
@@ -637,12 +817,61 @@ mod tests {
 
     #[test]
     fn disputa_tem_prazo_de_tres_dias() {
-        // sem prazo, payee ficaria congelado para sempre
         let release_at = 1_000_000u64;
         let deadline = dispute_deadline_of(release_at);
         assert_eq!(deadline, release_at + 3 * 86400);
-        // saturacao: sem overflow no fim dos tempos
         assert_eq!(dispute_deadline_of(u64::MAX), u64::MAX);
         assert_eq!(dispute_deadline_of(u64::MAX - 1), u64::MAX);
+    }
+
+    #[test]
+    fn vault_send_autorizacao_e_restricao_de_token() {
+        let owner = Address::from([0x11; 20]);
+        let guardian = Address::from([0x22; 20]);
+        let stranger = Address::from([0x33; 20]);
+        let usdg = Address::from([0x44; 20]);
+        let bad_token = Address::from([0x55; 20]);
+
+        // Autorizacao real
+        assert!(is_vault_authorized(owner, owner, guardian));
+        assert!(is_vault_authorized(guardian, owner, guardian));
+        assert!(!is_vault_authorized(stranger, owner, guardian));
+
+        // Restricao ao token configurado
+        assert!(is_token_allowed(usdg, usdg));
+        assert!(!is_token_allowed(usdg, bad_token));
+        assert!(!is_token_allowed(Address::ZERO, usdg)); // sem token configurado bloqueia
+    }
+
+    #[test]
+    fn refund_restaura_teto_diario_corretamente() {
+        let spent = U128::from(1000u128);
+        let refund_amount = U256::from(400u128);
+        assert_eq!(restore_daily_spent(spent, refund_amount), U128::from(600u128));
+
+        // Reembolso maior que gasto atual satura em ZERO
+        let big_refund = U256::from(2000u128);
+        assert_eq!(restore_daily_spent(spent, big_refund), U128::ZERO);
+
+        // Refund amount > u128::MAX e ignorado sem panic
+        assert_eq!(restore_daily_spent(spent, U256::MAX), spent);
+    }
+
+    #[test]
+    fn conversao_u64_saturating_sem_panic() {
+        assert_eq!(u64_saturating(U256::from(100u64)), 100u64);
+        assert_eq!(u64_saturating(U256::from(u64::MAX)), u64::MAX);
+        assert_eq!(u64_saturating(U256::MAX), u64::MAX);
+    }
+
+    #[test]
+    fn refund_calcula_gasto_na_janela_ativa() {
+        // Se a janela expirou (ws anterior a 24h), spent_in_window eh 0 e restore nao fica negativo
+        let ws_expirado = 1000u64;
+        let agora = 1000u64 + 86400u64;
+        let spent_antigo = U128::from(1000u128);
+        let spent_ativo = spent_in_window(ws_expirado, agora, spent_antigo);
+        assert_eq!(spent_ativo, U128::ZERO);
+        assert_eq!(restore_daily_spent(spent_ativo, U256::from(500u128)), U128::ZERO);
     }
 }

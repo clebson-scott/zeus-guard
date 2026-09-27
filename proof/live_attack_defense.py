@@ -143,7 +143,7 @@ def main():
         if not os.environ.get("ZEUS_PRIVATE_KEY"):
             sys.exit("ERRO: modo --execute exige ZEUS_PRIVATE_KEY no ambiente (segredo, nunca texto puro).")
         from eth_account import Account
-        from eth_utils import decode_hex
+        from eth_utils import decode_hex, to_checksum_address
         acct = Account.from_key(os.environ["ZEUS_PRIVATE_KEY"])
         victim = acct.address
         print(f"Modo EXECUTE: transacoes reais assinadas por {victim}")
@@ -207,10 +207,9 @@ def main():
             nonce = int(rpc_call(args.rpc, "eth_getTransactionCount", [victim, "latest"])["result"], 16)
             gas_price = int(rpc_call(args.rpc, "eth_gasPrice", [])["result"], 16)
             tx = {
-                "to": args.contract, "data": data_hex, "value": value,
+                "to": to_checksum_address(args.contract), "data": data_hex, "value": value,
                 "nonce": nonce, "gas": 3_000_000, "gasPrice": gas_price + 10**8,
                 "chainId": int(rpc_call(args.rpc, "eth_chainId", [])["result"], 16),
-                "type": 0,
             }
             signed = Account.sign_transaction(tx, os.environ["ZEUS_PRIVATE_KEY"])
             raw = "0x" + signed.raw_transaction.hex()

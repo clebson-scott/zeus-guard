@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "ZEUS GUARD — Pre-Transaction Firewall",
+  "version": "4.0.0",
+  "description": "Intercepta cada transacao e assinatura de permit antes da carteira assinar: motor de risco QCSN + registro on-chain de revogacao (zeus-guard v4, Arbitrum Sepolia).",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    { "resources": ["zeus_hook.js"], "matches": ["<all_urls>"] }
+  ]
+}

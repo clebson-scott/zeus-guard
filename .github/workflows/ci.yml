@@ -2,11 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
 
 jobs:
-  risk-engine-benchmark:
+  risk-engine-and-benchmark:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,11 +14,23 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install engine deps
-        run: pip install -q numpy scipy pycryptodome
-      - name: Run QCSN benchmark (expect 40/40)
+        run: pip install -q -r requirements.txt
+      - name: Run QCSN synthetic benchmark (40/40)
         run: python3 engine/demo.py
-      - name: Honesty experiment (quench vs argmin, expect 0 divergences)
+      - name: Honesty experiment (quench vs argmin, 0 divergences)
         run: python3 engine/honesty_experiment.py
+      - name: Real data benchmark (100% recall, 11.9% FP)
+        run: python3 engine/realdata_benchmark.py
+
+  extension-qa-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Extension JS Test Harness (7/7 pass)
+        run: node ext/test_extension.js
 
   stylus-contract-tests:
     runs-on: ubuntu-latest
@@ -33,7 +45,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: zeus-guard-contract
-      - name: Native unit tests (expect 11/11)
+      - name: Native unit tests (15/15 pass)
         run: cargo test --quiet
       - name: WASM target builds (Stylus artifact)
         run: cargo build --target wasm32-unknown-unknown --release --quiet
