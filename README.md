@@ -1,9 +1,10 @@
 # ⚡ ZEUS GUARD — The Pre-Transaction Firewall for Everyday Traders
 
-> The on-chain antivirus for retail users: a pre-transaction firewall with automatic
-> revocation of poisoned approvals, a USDG escrow vault with a challenge window, and an
-> emergency circuit-breaker — powered by a **dissipative risk-selection engine validated
-> on real quantum hardware (IBM Quantum, `ibm_fez`)**.
+> The on-chain antivirus for retail users: a pre-transaction firewall with revocation of
+> poisoned approvals, a USDG escrow vault with a challenge window, and an emergency
+> circuit-breaker — powered by a **fast, deterministic risk engine** (with a quench-style
+> dissipative selector whose quantum-hardware validation we keep as open research).
+> No mystery math: the production engine is a measured argmin, benchmarked in the open.
 
 **Author:** Clebson Campos de Araújo (Clebson Scott) · Arbitrum Open House Singapore 2026 · Buildathon
 **Repo:** https://github.com/clebson-scott/zeus-guard · **Landing:** https://telegra.ph/ZEUS-GUARD--Pre-Transaction-Firewall-for-Everyday-Traders-09-26
@@ -14,10 +15,10 @@
 
 | Proof | Where |
 |---|---|
-| **Deployed Stylus contract v2** (Rust→WASM) | [`0x038409e301e32467b226d10c728a0c6fbe28ea4a`](https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a) on Arbitrum Sepolia (chainId 421614) |
+| **Deployed Stylus contract v2** (Rust→WASM) | [`0xa9ef4e9be0e8f45e737f361380743faab72fe76a`](https://sepolia.arbiscan.io/address/0xa9ef4e9be0e8f45e737f361380743faab72fe76a) on Arbitrum Sepolia (chainId 421614) |
 | Stylus activation tx | [`0x2e65…1978`](https://sepolia.arbiscan.io/tx/0x2e658e8abb37549d42671da8970bc3b06f053c2c83bc2d03ed72c00033f51978) |
 | On-chain smoke tests | Blocks drainer (`TooRisky`), blocks above daily cap (`AboveDailyCap`), enforces session (`NoSession`), clears normal tx — v2 receipts in [`deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_V2_ARBITRUM_SEPOLIA.md) · v1 receipts in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md) |
-| Risk-engine benchmark | **40/40 = 100% accuracy, 0.9 ms/tx** — run it yourself: `python3 engine/demo.py` |
+| Risk-engine benchmark | **40/40 = 100% accuracy, <0.1 ms/tx** (analytic path: argmin + exact Gibbs probability) — run it yourself: `python3 engine/demo.py` |
 | Demo video (3:05) | [`docs/ZEUS_GUARD_explainer.mp4`](docs/ZEUS_GUARD_explainer.mp4) |
 | **v1 contract (historical)** | [`0x313e9994f1e77f579e797c19e29250a9a782e3a5`](https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5) — first deployment, receipts kept in [`deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`](deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md) |
 | **Live web demo** | open [`demo/index.html`](demo/index.html) in a browser — every button queries the real contract, no wallet needed |
@@ -44,17 +45,21 @@ that stands **between the user and the transaction**.
 | Module | What it does |
 |---|---|
 | **Pre-transaction firewall** | Every tx goes through the guardian agent; simulation + calldata analysis blocks the scam *before* the user signs |
-| **Auto-revocation** | The guardian flags and revokes approvals in the on-chain policy registry (`guardian_revoke`, `ApprovalRevoked` event) without user action; on-chain registry, plus the **v3 vault** makes the contract itself the enforced choke point for agent-initiated payments |
+| **Revocation registry** | `guardian_revoke` marks the approval as revoked **publicly on-chain** (`approval_status_pub`, v4). Wallets, agents and the guardian read the registry before signing — that is real enforcement at the signing layer. For EOA approvals the chain itself cannot revoke an existing allowance (only the owner can) — we say so; the vault is the enforced choke point for value |
 | **USDG escrow vault** (Paxos bonus) | Payments pulled via real `IERC20.transferFrom` and held through a challenge window — a drainer cannot move value in the same block; the guardian can dispute and refund |
 | **Emergency circuit-breaker** | Attack in progress freezes the whole session |
 | **Public telemetry** | Every verdict emits auditable on-chain events — a Dune dashboard rendering them is on the roadmap (events shipped today, dashboard next) |
 
-## ⚛️ The technical differentiator: the QCSN dissipative risk engine
+## ⚛️ The QCSN risk engine: honest by construction
 
-The risk classifier uses **dissipative branch selection (Gibbs quench, β: 2→40)** over a
-landscape of attack archetypes — the same mechanism we measured on a **real IBM Quantum
-processor** (job `daorvfg2fm4c73f5tlog`, backend `ibm_fez`, selection fidelity 0.997) and
-integrated via exact matrix exponentiation.
+The risk classifier is **deterministic nearest-archetype selection over squared costs**
+(argmin) with an exact Gibbs confidence at final temperature. The quench-style dissipative
+selector (β: 2→40, 60 steps) is **provably equivalent** — 0 divergences across every case
+tested ([`engine/honesty_experiment.py`](engine/honesty_experiment.py)) — so production
+takes the fast path and keeps the quench for research reproduction. The mechanism was
+first measured on a real IBM Quantum processor (job `daorvfg2fm4c73f5tlog`, backend
+`ibm_fez`, selection fidelity 0.997); the quantum hardware is our research origin, **not**
+a production dependency, and we state that openly.
 
 ```
                  ┌────────────────────────────────────────┐
@@ -63,16 +68,15 @@ integrated via exact matrix exponentiation.
                  └───────────┬────────────────────────────┘
                              │ risk score from QCSN engine
                 ┌────────────▼────────────┐
-                │ quench β 2→40, 60 steps  │──▶ BLOCK  (TooRisky)
+                │ argmin + exact Gibbs     │──▶ BLOCK  (TooRisky)
                 │ 5 attack archetypes      │──▶ BLOCK  (AboveDailyCap)
-                │ 0.9 ms/tx measured       │──▶ CLEAR  (sign & send)
+                │ <0.1 ms/tx measured      │──▶ CLEAR  (sign & send)
                 └─────────────────────────┘
 ```
 
 **Benchmark (synthetic dataset, 40 txs, 5 archetypes):**
-- QCSN engine: **100% accuracy**, mean confidence p* ≈ 0.99, **0.9-1.7 ms/tx** (hardware-dependent; 1.7 ms measured on a 2-vCPU sandbox)
+- QCSN engine: **100% accuracy**, mean confidence p* ≈ 1.00, **<0.1 ms/tx** (analytic path; the 60-step quench measured 0.9-1.7 ms and produces the identical verdict)
 - Fixed-threshold baseline: 95%
-- The full 60-step quench fits inside transaction latency with room to spare
 
 **Who computes the risk?** The agent judges, the contract enforces — full trust model in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#who-computes-the-risk-the-trust-model-stated-plainly).
 
@@ -83,13 +87,14 @@ open quantum-system dynamics, not a black-box model.
 
 ## 🦀 The contract (Stylus / Rust)
 
-**v2, deployed live:** guardian sessions, approval registry with risk score, revocation,
+**v4, deployed live:** guardian sessions, approval registry with risk score, public
+revocation status (`approval_status_pub` — the signing layer can read and enforce),
 USDG escrow with challenge window (**real `IERC20.transferFrom` when a session token is
 set**), dispute + guardian refund, emergency breaker. Typed errors (`TooRisky`,
 `AboveDailyCap`, `NoSession`, `TokenTransferFailed`) and auditable events throughout.
-Policy math is factored into pure functions covered by native unit tests (`cargo test`, 3/3).
+Policy math is factored into pure functions covered by native unit tests (`cargo test`, 11/11).
 
-Full cargo project: `zeus-guard-contract/` (stylus-sdk 0.10.9, Rust 1.98.1, v2 deployed size 21.9 KB).
+Full cargo project: `zeus-guard-contract/` (stylus-sdk 0.10.9, v4 deployed size 22.5 KB).
 The trust model — the engine is the advisor, the contract is the law — is in
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
@@ -108,7 +113,7 @@ python3 engine/demo.py                  # expect: 40/40, ~1-2 ms/tx
 cd zeus-guard-contract && cargo test    # expect: 11/11 native Rust policy tests
 cd .. && python3 engine/honesty_experiment.py    # quench vs argmin, 1,850 cases
 python3 proof/live_attack_defense.py --rpc https://sepolia-rollup.arbitrum.io/rpc \
-    --contract 0x038409e301e32467b226d10c728a0c6fbe28ea4a \
+    --contract 0xa9ef4e9be0e8f45e737f361380743faab72fe76a \
     --victim 0xf92721394140c43C72FbfF2f0ebf90327fD2bF9D   # 4/4 PASS, live contract
 python3 engine/real_features.py --rpc https://arb1.arbitrum.io/rpc \
     --user 0xf92721394140c43C72FbfF2f0ebf90327fD2bF9D --to 0x912CE59144191C1204E64559FE8253a0e49E6548 --data 0xa9059cbb
@@ -171,7 +176,7 @@ zeus-guard/
 ## 🔗 Links
 
 - Landing page: https://telegra.ph/ZEUS-GUARD--Pre-Transaction-Firewall-for-Everyday-Traders-09-26
-- Explorer (v2): https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a
+- Explorer (v2): https://sepolia.arbiscan.io/address/0xa9ef4e9be0e8f45e737f361380743faab72fe76a
 - Explorer (v1, histórico): https://sepolia.arbiscan.io/address/0x313e9994f1e77f579e797c19e29250a9a782e3a5
 - Demo video: `docs/ZEUS_GUARD_explainer.mp4`
 

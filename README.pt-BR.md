@@ -3,7 +3,9 @@
 > O antivírus on-chain do trader pessoa-física: firewall pré-transação, revogação
 > automática de approvals perigosos, cofre USDG com janela de desafio e escudo de
 > liquidação — movido por um motor de seleção dissipativa de risco validado em
-> hardware quântico real (IBM Quantum, `ibm_fez`).
+> motor de risco rápido e determinístico (com a validação em hardware quântico mantida
+> como pesquisa aberta). Sem matemática misteriosa: o motor de produção é um argmin medido,
+> com benchmark declarado.
 
 **Autor:** Clebson Campos de Araujo · Arbitrum Open House Singapore 2026 · Buildathon
 
@@ -35,7 +37,7 @@ fidelidade de seleção 0,997) e integramos por exponencial de matriz exata.
 **Benchmark (dataset sintético de 40 txs, 5 arquétipos):**
 - Motor QCSN: **100% de acurácia**, confiança média p* ≈ 0,99, **0,9 ms/tx**
 - Limiar fixo (baseline): 95%
-- Latência de transação real: o quench completo de 60 passos cabe no bloqueio
+- Latência: <0,1 ms/tx no caminho analítico de produção (o quench de 60 passos mede 0,9-1,7 ms e produz o mesmo veredito)
 
 *Nota honesta: dataset sintético com arquétipos separáveis; dados reais serão
 mais ruidosos. A validação mostra que o mecanismo roda em velocidade de tx.*
@@ -79,7 +81,7 @@ zeus_guard/
 > ao mesmo tempo e vejo uma ponte." — e esta ponte guarda teu dinheiro.
 
 ## 🚀 DEPLOY OFICIAL (Arbitrum Sepolia)
-- **Contrato v2 (atual):** `0x038409e301e32467b226d10c728a0c6fbe28ea4a` — Explorer: https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a
+- **Contrato v2 (atual):** `0xa9ef4e9be0e8f45e737f361380743faab72fe76a` — Explorer: https://sepolia.arbiscan.io/address/0xa9ef4e9be0e8f45e737f361380743faab72fe76a
 - Ativação Stylus v2: tx `0x2e658e8abb37549d42671da8970bc3b06f053c2c83bc2d03ed72c00033f51978`
 - Smoke tests v2 (26/09/2026): bloqueia drainer (TooRisky), bloqueia acima do teto (AboveDailyCap), libera tx normal, exige sessão (NoSession), blinda janela de desafio (ChallengeWindowOpen)
 - v1 (histórico): `0x313e9994f1e77f579e797c19e29250a9a782e3a5` — receipts em `deploy/DEPLOYADO_ARBITRUM_SEPOLIA.md`

@@ -448,6 +448,18 @@ impl ZeusGuard {
         Ok(self.session_usdg.getter(user).get())
     }
 
+    /// v4: estado do approval no registro publico — quem assina (guardiao, wallet,
+    /// roteiro do agente) consulta ANTES de assinar. Fechando o loop de enforcement:
+    /// a revogacao deixa de ser declarativa quando a camada de assinatura obedece.
+    pub fn approval_status_pub(&self, user: Address, spender: Address) -> Result<(U256, U64, bool), ZeusError> {
+        self.require_session(user)?;
+        Ok((
+            U256::from(self.approval_amount.getter(user).getter(spender).get()),
+            U64::from(self.approval_risk.getter(user).getter(spender).get()),
+            self.approval_revoked.getter(user).getter(spender).get(),
+        ))
+    }
+
     /// Guardiao devolve ao dono o valor de um pagamento contestado (cofre real).
     /// v3: so ate o prazo da disputa; depois disso o pagamento libera para o payee.
     pub fn refund_disputed(&mut self, payment_id: B256) -> Result<(), ZeusError> {

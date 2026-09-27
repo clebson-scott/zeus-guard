@@ -43,4 +43,4 @@ for i, (kind, tx) in enumerate(dataset):
 
 print(f"\nACURACIA QCSN:   {hits_q}/{len(dataset)} = {100*hits_q/len(dataset):.1f}%")
 print(f"ACURACIA LIMIAR: {hits_n}/{len(dataset)} = {100*hits_n/len(dataset):.1f}%")
-print(f"LATENCIA MEDIA:  {np.mean(t_list):.1f} ms/tx (quench completo de 60 passos)")
+print(f"LATENCIA MEDIA:  {np.mean(t_list):.1f} ms/tx (caminho analitico: argmin + Gibbs exata)")

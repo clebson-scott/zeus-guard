@@ -21,7 +21,7 @@ Cenario (o mesmo que um drainer real executaria):
 
 Uso (sem chave, execucao real de leitura contra o contrato deployado):
   python3 proof/live_attack_defense.py --rpc https://sepolia-rollup.arbitrum.io/rpc \
-      --contract 0x038409e301e32467b226d10c728a0c6fbe28ea4a
+      --contract 0xa9ef4e9be0e8f45e737f361380743faab72fe76a
 
 Uso (com chave, transacoes REAIS na chain):
   export ZEUS_PRIVATE_KEY=...   # segredo cadastrado no ambiente, nunca em texto puro

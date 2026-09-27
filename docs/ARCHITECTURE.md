@@ -23,6 +23,7 @@ persuade a user off-chain.
 │  • session policy: guardian address, challenge window, cap    │
 │  • hard limits: RISK_BLOCK (≥6000), daily cap 24h rolling     │
 │  • escrow: payments held through challenge window            │
+│  • approval registry readable on-chain (approval_status_pub)  │
 │  • emergency freeze; guardian revoke; dispute; refund         │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -33,9 +34,11 @@ persuade a user off-chain.
    window, the freeze, and the escrow are enforced by the contract. Even a compromised
    agent cannot move escrowed value during the window, exceed the cap, or unfreeze a
    session. The agent can only *tighten* (flag risk), never *loosen* what's on-chain.
-2. **The engine is deterministic and auditable.** No black-box model: the quench is a
-   fixed 60-step dissipative computation over 5 attack archetypes (see `MATH.md`). Same
-   input, same verdict, every time.
+2. **The engine is deterministic and auditable.** No black-box model: production uses
+   the analytic path (argmin + exact Gibbs confidence over 5 attack archetypes, see
+   `MATH.md`); the quench-style dissipative integration is provably equivalent and kept
+   for research reproduction (`engine/honesty_experiment.py`). Same input, same verdict,
+   every time.
 3. **The engine is untrusted from the contract's perspective.** `check_tx` treats
    `risk_x100` as advisory input from *the user's own session* (owner or guardian
    address). A third party cannot score transactions for someone else's session; the
@@ -45,10 +48,10 @@ persuade a user off-chain.
 
 | Threat | Mitigated by | Residual |
 |---|---|---|
-| Drainer approval (unlimited allowance) | engine → `TooRisky` + `guardian_revoke` | engine must see the tx first (agent integration) |
+| Drainer approval (unlimited allowance) | engine → `TooRisky` + `guardian_revoke`; v4: any wallet/agent reads `approval_status_pub` **before signing** — revoked spenders are blocked at the signing layer | engine must see the tx first (agent integration) |
 | Address poisoning | archetype in engine | same as above |
 | Agent compromised | daily cap on-chain, challenge window, freeze, dispute/refund | cap funds at risk until freeze |
-| User signs elsewhere (bypasses agent) | none today — honest gap | roadmap: wallet-level RPC interception |
+| User signs elsewhere (bypasses agent) | on-chain policy still binds everything routed through ZEUS (escrow, cap, freeze); v4 registry lets compliant wallets refuse revoked spenders | honest gap for non-ZEUS paths — roadmap: wallet-level RPC interception |
 | Contract bug | testnet-only, unaudited, typed errors, MIT | audit before mainnet |
 
 ## Agentic payments (x402 / MPP)
@@ -82,7 +85,7 @@ The one question a careful judge asks: **`check_tx` receives `risk_x100` ready-m
 
 | Layer | What it computes | Why you can trust it |
 |---|---|---|
-| Guardian agent (off-chain) | The QCSN risk score (`risk_x100`) from tx features | Deterministic and auditable: dissipative branch selection over 5 attack archetypes, no black-box model. Same input → same score. Source: `engine/qcsn_risk_engine.py`, benchmark 40/40 at 0.9 ms/tx. |
+| Guardian agent (off-chain) | The QCSN risk score (`risk_x100`) from tx features | Deterministic and auditable: nearest-archetype selection over squared costs with exact Gibbs confidence, no black-box model. Same input → same score. Source: `engine/qcsn_risk_engine.py`, benchmark 40/40 at <0.1 ms/tx (quench-equivalent, see `engine/honesty_experiment.py`). |
 | ZEUS GUARD contract (on-chain) | The **policy envelope**: 60% risk threshold, 24h rolling daily cap, session freeze, escrow challenge window | Trustless: the agent **cannot** override it. Even a malicious/compromised agent is capped — it can only block too much, never allow too much. |
 
 **Why this design is safe even if the agent is wrong or hostile:**

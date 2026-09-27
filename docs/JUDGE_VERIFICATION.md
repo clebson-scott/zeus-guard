@@ -24,7 +24,7 @@ fidelity 0.997) is documented in the README.
 ## 2. Verify the live contract (2 min, no wallet)
 
 **v2 (current, real USDG escrow) — open the explorer:**
-https://sepolia.arbiscan.io/address/0x038409e301e32467b226d10c728a0c6fbe28ea4a
+https://sepolia.arbiscan.io/address/0xa9ef4e9be0e8f45e737f361380743faab72fe76a
 
 - **v2 contract**: Rust/Stylus, 21.9 KB, activated 26/09/2026 (stylus-sdk 0.10.9, Rust 1.98.1).
 - **v2 deploy tx (initcode)**: [0x0227ef40a5b9d199e3eff80c9630879fdf90b2798beb32665fa3338b4d06e672](https://sepolia.arbiscan.io/tx/0x0227ef40a5b9d199e3eff80c9630879fdf90b2798beb32665fa3338b4d06e672)
@@ -68,13 +68,13 @@ Smoke tests already executed on-chain (receipts: [`deploy/DEPLOYADO_V2_ARBITRUM_
 To replay with `cast` (any funded Arbitrum Sepolia key, e.g. from the public PoW faucet):
 
 ```bash
-cast send 0x038409e301e32467b226d10c728a0c6fbe28ea4a \
+cast send 0xa9ef4e9be0e8f45e737f361380743faab72fe76a \
   "initSession(address,uint256,uint256)" \
   <GUARDIAN_ADDR> 3600 500000000000000000000 \
   --rpc-url https://sepolia-rollup.arbitrum.io/rpc --private-key <KEY>
 
 # expect revert TooRisky:
-cast call 0x038409e301e32467b226d10c728a0c6fbe28ea4a \
+cast call 0xa9ef4e9be0e8f45e737f361380743faab72fe76a \
   "checkTx(address,uint256,uint256)" <USER_ADDR> 0 6000 \
   --rpc-url https://sepolia-rollup.arbitrum.io/rpc
 ```

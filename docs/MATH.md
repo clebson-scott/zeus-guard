@@ -33,10 +33,15 @@ E_i(x) = ‖p_i − x‖²
 
 Low energy = the transaction "looks like" that archetype.
 
-## 3. Dissipative selection (Gibbs quench)
+## 3. Dissipative selection (Gibbs quench) — research path
 
-Instead of a hard argmin (which is brittle near decision boundaries), the engine runs a
-**quench**: a thermal-bath transition matrix whose temperature drops over 60 steps,
+**v4 honesty note:** the quench's argmax is provably the argmin in every case tested
+(0 divergences, `engine/honesty_experiment.py`). Production therefore takes the
+**analytic path** (argmin + exact Gibbs confidence at β = 40): identical verdict,
+~1000x faster. The quench below is the research/reproduction path — historically the
+mechanism first measured on quantum hardware.
+
+The original mechanism: a thermal-bath transition matrix whose temperature drops over 60 steps,
 β: 2 → 40 (linear).
 
 The bath couples every ordered pair of branches:
@@ -61,13 +66,16 @@ P ← e^{Q(β_s)·dt} · P,    dt = 400 µs,    s = 1…60
 
 Decision: `i* = argmax P`, verdict = the archetype's verdict, confidence = `P_{i*}`.
 
-## 4. Why a quench and not argmin
+## 4. Production: the analytic path (v4)
 
-The quench is a **continuous annealed confidence**: when `x` sits between two
-archetypes, the population mixes and lands on the dominant basin with measurable
-confidence `p*` (mean 0.99 on the benchmark) instead of an unstable all-or-nothing
-minimum. The β-schedule makes the final state effectively the Gibbs distribution
-`e^{−βE}/Z` at β = 40 — the argmin, but reached through a well-conditioned path.
+Production computes the decision directly: `i* = argmin E`, and the confidence is the
+**exact Gibbs distribution at β = 40**, `p* = e^{−β_f E_{i*}} / Σ_j e^{−β_f E_j}`.
+Why this is honest: the quench's final state *is* this distribution (its β-schedule
+anneals to the same limit, and `engine/honesty_experiment.py` measured **0 verdict
+divergences** against argmin in every case). When `x` sits between two archetypes the
+Gibbs confidence is measurably lower — the engine reports real uncertainty instead of
+an unstable all-or-nothing minimum — at ~1000x less compute than the numerical
+integration.
 
 ## 5. Measured results (reproducible)
 
@@ -75,12 +83,12 @@ minimum. The β-schedule makes the final state effectively the Gibbs distributio
 |---|---|---|
 | Accuracy, 40-tx benchmark | **40/40 = 100%** | `python3 engine/demo.py` |
 | Fixed-threshold baseline | 38/40 = 95% | same run, printed |
-| Latency | **0.9 ms/tx** (full 60-step quench) | same run, printed |
+| Latency | **<0.1 ms/tx** (analytic path; full 60-step quench measured 0.9-1.7 ms, identical verdict) | same run, printed |
 | Mean confidence p* | ≈ 0.99 | same run |
 
-Complexity per transaction: 60 iterations × (5×5 exponential + matvec). The 5×5
-`expm` dominates; measured wall time is sub-millisecond on commodity hardware, and
-the quench fits inside a block-time budget with orders of magnitude to spare.
+Production complexity per transaction: one 5×5 cost matrix + softmax — microseconds.
+The quench path (60 iterations × 5×5 `expm`, available as `classify_quench` for
+research reproduction) still fits inside a block-time budget with room to spare.
 
 ## 6. Quantum-hardware validation of the mechanism
 
