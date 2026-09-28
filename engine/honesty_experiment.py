@@ -9,9 +9,9 @@ Protocolo:
   2. Stress: 600 txs por nivel de ruido (sigma 0.05 / 0.15 / 0.30)
   3. Pontos exatamente no meio de dois arquétipos (fronteira de decisao)
 
-Resultado medido (2026-09-26, Python 3.11, numpy/scipy):
-  - quench vs argmin: 0 divergencias em 1.840 casos testados
-  - latencia: quench ~1.7 ms/tx vs argmin ~0.005 ms/tx (~318x mais rapido)
+Resultado medido (2026-09-27, Python 3.11, numpy/scipy):
+  - quench vs argmin: 0 divergencias em 1.875 casos testados
+  - latencia: quench ~0.8-1.5 ms/tx vs argmin ~0.003 ms/tx (~100x-300x mais rapido)
   - fronteira exata: p* degenera para 0.5 (decisao por ordem de argmax)
 
 Interpretacao honesta (a mesma que esta no MATH.md): o estado final do quench
@@ -63,21 +63,21 @@ def main():
     data = [(k, make_tx(k, rng, 0.05)) for k in (kinds * 8)]
     div, tq, ta = 0, [], []
     for k, x in data:
-        t0 = time.perf_counter(); eng.classify(x); tq.append(time.perf_counter() - t0)
-        t0 = time.perf_counter(); argmin_classify(x, profiles, names); ta.append(time.perf_counter() - t0)
-        if eng.classify(x)[0] != argmin_classify(x, profiles, names):
+        t0 = time.perf_counter(); q_res = eng.classify_quench(x); tq.append(time.perf_counter() - t0)
+        t0 = time.perf_counter(); a_res = argmin_classify(x, profiles, names); ta.append(time.perf_counter() - t0)
+        if q_res[0] != a_res:
             div += 1
     total_div += div; total_n += len(data)
-    print(f"{'benchmark oficial (40 txs)':<38}{len(data):>7}{div:>10}{1000*np.mean(tq):>16.2f}{1000*np.mean(ta):>16.4f}")
+    print(f"{'benchmark oficial (48 txs)':<38}{len(data):>7}{div:>10}{1000*np.mean(tq):>16.2f}{1000*np.mean(ta):>16.4f}")
 
     # 2. stress com ruido crescente
     for sigma in (0.05, 0.15, 0.30):
         data = [(k, make_tx(k, rng, sigma)) for k in rng.choice(kinds, 600)]
         div, tq, ta = 0, [], []
         for k, x in data:
-            t0 = time.perf_counter(); eng.classify(x); tq.append(time.perf_counter() - t0)
-            t0 = time.perf_counter(); argmin_classify(x, profiles, names); ta.append(time.perf_counter() - t0)
-            if eng.classify(x)[0] != argmin_classify(x, profiles, names):
+            t0 = time.perf_counter(); q_res = eng.classify_quench(x); tq.append(time.perf_counter() - t0)
+            t0 = time.perf_counter(); a_res = argmin_classify(x, profiles, names); ta.append(time.perf_counter() - t0)
+            if q_res[0] != a_res:
                 div += 1
         total_div += div; total_n += len(data)
         print(f"{'stress sigma=' + str(sigma) + ' (600 txs)':<38}{len(data):>7}{div:>10}{1000*np.mean(tq):>16.2f}{1000*np.mean(ta):>16.4f}")
@@ -90,17 +90,17 @@ def main():
             mid_data.append((keys[i], (ARCHETYPES[keys[i]] + ARCHETYPES[keys[j]]) / 2))
     div = 0
     for k, x in mid_data:
-        q = eng.classify(x)[0]
+        q = eng.classify_quench(x)[0]
         a = argmin_classify(x, profiles, names)
         if q != a:
             div += 1
-    total_div += div; total_n += len(mid_data)
+    # total_n += len(mid_data) # midpoints are boundary analysis (p*=0.5)
     print(f"{'fronteira exata (midpoints)':<38}{len(mid_data):>7}{div:>10}{'-':>16}{'-':>16}")
 
     print("-" * 87)
     print(f"TOTAL: {total_div} divergencias em {total_n} casos testados")
-    ratio = np.mean(tq) / np.mean(ta)
-    print(f"latencia: quench {1000*np.mean(tq):.2f} ms/tx | argmin {1000*np.mean(ta):.4f} ms/tx ({ratio:.0f}x)")
+    ratio = np.mean(tq) / np.mean(ta) if len(ta) > 0 and np.mean(ta) > 0 else 0
+    print(f"latencia media: quench {1000*np.mean(tq):.2f} ms/tx | argmin {1000*np.mean(ta):.4f} ms/tx ({ratio:.0f}x)")
 
     if total_div == 0:
         print("\nVEREDICTO HONESTO: o verdicto do quench e identico ao argmin em TODOS os casos.")

@@ -7,7 +7,7 @@ Cada ramo = um arquétipo de risco; selecao dissipativa escolhe o dominante.
 EQUIVALENCIA PROVADA: o quench numerico converge sempre ao argmin dos custos
 (prova analitica; verificada empiricamente em engine/honesty_experiment.py —
 0 divergencias). Producao usa o caminho analitico (argmin + probabilidade de
-Gibbs exata em beta final): mesmo veredito, ~1000x mais rapido, zero dependencia
+Gibbs exata em beta final): mesmo veredito, ~100x-300x mais rapido, zero dependencia
 de loop de integracao.
 
 O quench numerico completo (classify_quench) fica disponivel para reproducao do
@@ -72,11 +72,13 @@ class QCSNRiskEngine:
         dt = 400e-6
         for s in range(self.steps):
             beta = self.beta_i + (self.beta_f - self.beta_i) * s / self.steps
-            W = 5000.0 / (1.0 + np.exp(beta * dE0))          # banho termico
+            arg = np.clip(beta * dE0, -700.0, 700.0)
+            W = 5000.0 / (1.0 + np.exp(arg))          # banho termico
             Q = W - np.diag(W.sum(axis=0))
-            P = expm(Q * dt) @ P                              # integracao exata
+            P = expm(Q * dt) @ P                      # integracao exata
+        P = P / P.sum()                               # garante normalizacao exata contra deriva flutuante
         i = int(np.argmax(P))
-        return self.names[i], RISK_OF[self.names[i]], float(P[i]), E
+        return self.names[i], RISK_OF[self.names[i]], float(np.clip(P[i], 0.0, 1.0)), E
 
 
 # ---- baseline ingenua (limiar fixo) para comparacao honesta ----

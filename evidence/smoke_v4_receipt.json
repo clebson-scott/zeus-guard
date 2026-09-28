@@ -1,0 +1,7 @@
+{
+  "timestamp": 1790542226.7478335,
+  "contract": "0xa9ef4e9be0e8f45e737f361380743faab72fe76a",
+  "passed": 13,
+  "failed": 0,
+  "raw_stdout": "Executing Smoke Tests against v4 contract 0xA9ef4e9be0E8F45E737F361380743Faab72fE76a\nuser: 0x1718bd9000B81bD5996DeE981eb76232bc2438B3\n\nPASS  initSession v4 (cap=1e24)  tx=0x5f9b9a41167bce\u2026\nPASS  logApproval(user, spender, 1e18, risk=10)  tx=0x3a76d588f7b17f\u2026\nPASS  approvalStatusPub == (1e18, 10, False)  got [1000000000000000000, 10, False]\nPASS  guardianRevoke(ME, SPENDER)  tx=0x984dafb9e919f7\u2026\nPASS  approvalStatusPub == (1e18, 10, True)  got [1000000000000000000, 10, True]\nPASS  checkTx risk=90% BLOCKED  reason=TooRisky\nPASS  checkTx risk=59.99% passes  tx=0xfc62e30b621f9a\u2026\nPASS  escrow risk=90% BLOCKED  reason=TooRisky\nPASS  escrow risk=1% passes  tx=0x411de5456cff73\u2026\nPASS  disputePayment on-chain  tx=0x6030ec21101494\u2026\nPASS  release blocked while disputed  reason=PaymentDisputed\nPASS  refundDisputed on-chain  tx=0x0a722ea3af1294\u2026\nPASS  escrow > u128 typed error  reason=AmountTooLarge\n\n==================================================\nSMOKE V4 RESULT: 13/13 passed\n==================================================\n"
+}

@@ -19,10 +19,10 @@ revogar um allowance por terceiros — o modelo de confiança honesto está no
 | Ativação Stylus (instância #1) | `0x878bf81b6100851f5789603b7ca795fae1a58d42542d79bdaf824d472c15a4d0` |
 | Ativação Stylus (instância canônica deste registro) | segunda execução do mesmo initcode; endereço acima |
 
-**Metadados:** wasm 22,5 KiB (23.031 bytes), data fee 0,000143 ETH,
+**Metadados:** wasm 23,4 KiB (23.939 bytes), data fee 0,000143 ETH,
 toolchain stylus 0.6.3, stylus-sdk 0.10.9, `cargo stylus deploy --no-verify`.
 
-## Smoke v4 on-chain: 21/21 passou
+## Smoke v4 on-chain: 13/13 suíte automatizada (21 verificações no deploy)
 Política: initSession ✅ · risk 90% ⛔ TooRisky · risk 59,99% ✅ passa ·
 escrow em risco ⛔ TooRisky · 2^130 wei ⛔ AmountTooLarge (tipado).
 
@@ -49,5 +49,6 @@ README, MATH.md e ARCHITECTURE.md: quântico é origem da pesquisa, não depend�
 de produção.
 
 ## Testes
-`cargo test` — **11/11** · `cargo stylus check` — aprovado (22,5 KiB) ·
-`engine/demo.py` — **40/40, <0,1 ms/tx** · `engine/honesty_experiment.py` — **0 divergências**.
+`cargo test` — **15/15** · `cargo stylus check` — aprovado (23,4 KiB) ·
+`engine/demo.py` — **40/40, <0,1 ms/tx** · `engine/honesty_experiment.py` — **0 divergências** ·
+`proof/smoke_v4.py` — **13/13** · `proof/live_attack_defense.py` — **4/4**.

@@ -1,0 +1,88 @@
+{
+  "project": "ZEUS GUARD v4",
+  "audit_timestamp": "2026-09-27T20:51:00Z",
+  "environment": {
+    "python": "3.11+",
+    "rust": "1.98.1",
+    "wasm_target": "wasm32-unknown-unknown",
+    "stylus_sdk": "0.10.9",
+    "network": "Arbitrum Sepolia (chainId 421614)",
+    "rpc_url": "https://sepolia-rollup.arbitrum.io/rpc"
+  },
+  "contract": {
+    "address": "0xa9ef4e9be0e8f45e737f361380743faab72fe76a",
+    "explorer_url": "https://sepolia.arbiscan.io/address/0xa9ef4e9be0e8f45e737f361380743faab72fe76a",
+    "wasm_size_bytes": 23939,
+    "wasm_size_kib": 23.4,
+    "deploy_wallet": "0x1718bd9000B81bD5996DeE981eb76232bc2438B3",
+    "mock_usdg_address": "0x96Fa5CeA89e749e30686084A1bE522EC7d12Dab9",
+    "deploy_tx_hash": "0xe87a27c6da339fa0258f3c8e0213fa71c97146cff18ee9a0e420a1fc467516a3",
+    "deploy_tx_url": "https://sepolia.arbiscan.io/tx/0xe87a27c6da339fa0258f3c8e0213fa71c97146cff18ee9a0e420a1fc467516a3",
+    "activation_tx_hash": "0x878bf81b6100851f5789603b7ca795fae1a58d42542d79bdaf824d472c15a4d0",
+    "activation_tx_url": "https://sepolia.arbiscan.io/tx/0x878bf81b6100851f5789603b7ca795fae1a58d42542d79bdaf824d472c15a4d0"
+  },
+  "test_suites": {
+    "rust_unit_tests": {
+      "command": "cargo test",
+      "expected_passed": 15,
+      "expected_failed": 0,
+      "receipt_file": "evidence/cargo_test_receipt.txt"
+    },
+    "engine_invariants": {
+      "command": "python3 -m unittest discover -s engine -p 'test_*.py''",
+      "expected_passed": 5,
+      "expected_failed": 0
+    },
+    "extension_js_tests": {
+      "command": "node ext/test_extension.js",
+      "expected_passed": 10,
+      "expected_failed": 0,
+      "receipt_file": "evidence/extension_test_receipt.txt"
+    },
+    "synthetic_demo_benchmark": {
+      "command": "python3 engine/demo.py",
+      "total_cases": 40,
+      "expected_qcsn_accuracy": 100.0,
+      "expected_threshold_accuracy": 95.0,
+      "expected_latency_ms": 0.1
+    },
+    "realdata_benchmark": {
+      "command": "python3 engine/realdata_benchmark.py",
+      "dataset": "engine/data/real_labeled_approves.json",
+      "total_events": 81,
+      "attacks": 14,
+      "benign": 67,
+      "expected_recall": 100.0,
+      "expected_fp_rate": 11.9,
+      "expected_accuracy": 90.1,
+      "receipt_file": "evidence/realdata_benchmark.json"
+    },
+    "honesty_experiment": {
+      "command": "python3 engine/honesty_experiment.py",
+      "total_tested": 1848,
+      "expected_divergences": 0,
+      "receipt_file": "evidence/honesty_experiment.json"
+    },
+    "smoke_v4_onchain": {
+      "command": "python3 proof/smoke_v4.py",
+      "expected_passed": 13,
+      "expected_failed": 0,
+      "receipt_file": "evidence/smoke_v4_receipt.json"
+    },
+    "live_attack_defense_onchain": {
+      "command": "python3 proof/live_attack_defense.py --rpc https://sepolia-rollup.arbitrum.io/rpc --contract 0xa9ef4e9be0e8f45e737f361380743faab72fe76a --victim 0x1718bd9000B81bD5996DeE981eb76232bc2438B3",
+      "expected_passed": 4,
+      "expected_failed": 0,
+      "receipt_file": "evidence/live_attack_defense_receipt.json"
+    }
+  },
+  "secret_absence_check": {
+    "prohibited_patterns": [
+      "MAINNET_PRIVATE_KEY",
+      "AWS_SECRET_ACCESS_KEY",
+      "INFURA_API_KEY",
+      "ALCHEMY_API_KEY"
+    ],
+    "status": "VERIFIED_CLEAN"
+  }
+}

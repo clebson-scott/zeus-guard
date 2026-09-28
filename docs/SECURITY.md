@@ -55,7 +55,7 @@ cd zeus-guard-contract && cargo test
 # 2. Verificação de WASM e ABI Stylus (23,4 KiB)
 cd zeus-guard-contract && cargo stylus check
 
-# 3. Teste de Equivalência do Motor QCSN (quench vs argmin: 0 divergências em 1.863 casos)
+# 3. Teste de Equivalência do Motor QCSN (quench vs argmin: 0 divergências em 1.848 casos)
 python3 engine/honesty_experiment.py
 
 # 4. Benchmark em Dados Reais da Arbitrum Mainnet (100% recall, 11,9% FP, acurácia 90,1%)

@@ -117,7 +117,7 @@
       x[0] = 1; x[4] = 0.9;
       const spender = "0x" + dataHex.slice(34, 74);
       const amount = BigInt("0x" + (dataHex.slice(74, 138) || "0"));
-      
+
       // revogacao on-chain: consulta o registro v4 ANTES de assinar
       if (await revokedOnChain(from, spender)) {
         return { verdict: "BLOQUEAR", archetype: "REVOKED_ONCHAIN", revoked: true, spender, kind };
@@ -138,6 +138,12 @@
       kind = "permit";
       x[0] = 1; x[4] = 0.9; x[1] = 0.5; x[3] = 1;
       x[6] = KNOWN_TOKENS.has(to.toLowerCase()) ? 1 : 0.2; x[7] = 0.1;
+      if (dataHex && dataHex.length >= 138) {
+        const spender = "0x" + dataHex.slice(98, 138);
+        if (await revokedOnChain(from, spender)) {
+          return { verdict: "BLOQUEAR", archetype: "REVOKED_ONCHAIN", revoked: true, spender, kind };
+        }
+      }
     } else if (selector === SEL.transfer || selector === SEL.transferFrom || selector === "0x") {
       kind = "transfer";
       const dest = selector === "0x" ? to : "0x" + dataHex.slice(34, 74);
@@ -184,14 +190,21 @@
         const msg = typedData.message;
         const dom = typedData.domain || {};
         token = dom.verifyingContract || null;
-        
+
         // Identifica estrutura de Permit / Permit2
-        if (msg.spender || msg.operator || msg.grantee) {
-          spender = msg.spender || msg.operator || msg.grantee;
+        if (msg.details) {
+          if (!spender && msg.details.spender) spender = msg.details.spender;
+          if (!token && msg.details.token) token = msg.details.token;
+          if (!value && (msg.details.amount || msg.details.value)) {
+            try { value = BigInt(msg.details.amount || msg.details.value); } catch {}
+          }
+        }
+        if (msg.spender || msg.operator || msg.grantee || spender) {
+          spender = spender || msg.spender || msg.operator || msg.grantee;
           isPermit = true;
         }
-        if (msg.value || msg.amount || msg.allowed) {
-          try { value = BigInt(msg.value || msg.amount || msg.allowed); } catch {}
+        if (msg.value || msg.amount || msg.allowed || value) {
+          try { value = value || BigInt(msg.value || msg.amount || msg.allowed); } catch {}
         }
         if (!owner && (msg.owner || msg.holder)) {
           owner = msg.owner || msg.holder;
@@ -216,7 +229,7 @@
       x[3] = (value >= (1n << 200n) || value === 0n) ? 1 : 0.5;
       x[6] = token && KNOWN_TOKENS.has(token.toLowerCase()) ? 1 : 0.2;
       x[7] = eoa ? 0.1 : 0.7;
-      
+
       const r = qcsn(x);
       return { ...r, kind: "permit_typed_data", spender, token };
     }
@@ -325,7 +338,7 @@
         }
       } catch (e) {
         if (e && e.code === 4001) throw e;
-        
+
         // Falha no RPC / Guardião
         if (failMode === "FAIL_CLOSED" || failMode === "CLOSED") {
           banner("BLOQUEAR", "Transação negada: Guardião/RPC indisponível (modo fail-closed)",

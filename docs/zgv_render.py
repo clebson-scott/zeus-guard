@@ -161,7 +161,7 @@ def panel(d, x, y, w, h, title, kind, t):
         r=44; d.ellipse([cx-r,cy-r,cx+r,cy+r], fill=RED, outline=OUT, width=5)
         d.line([cx-22,cy-22,cx+22,cy+22], fill=WHITE, width=10)
         d.line([cx+22,cy-22,cx-22,cy+22], fill=WHITE, width=10)
-        s=1+0.08*math.sin(t*8); 
+        s=1+0.08*math.sin(t*8);
         d.polygon([(cx-70*s,cy-40*s),(cx+70*s,cy-40*s),(cx+70*s,cy+40*s),(cx-70*s,cy+40*s)], outline=RED, width=6)
     if kind=="revoke":
         d.rectangle([cx-70,cy-40,cx+50,cy+30], fill=(250,245,230), outline=OUT, width=4)

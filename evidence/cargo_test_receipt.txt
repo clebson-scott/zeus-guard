@@ -1,0 +1,35 @@
+
+running 15 tests
+test tests::constantes_de_politica_estaveis ... ok
+test tests::conversao_u64_saturating_sem_panic ... ok
+test tests::disputa_tem_prazo_de_tres_dias ... ok
+test tests::firewall_vale_no_caminho_do_dinheiro ... ok
+test tests::gasto_diario_expira_em_24h ... ok
+test tests::gasto_diario_borda_de_janela ... ok
+test tests::janela_efetiva_e_monotona ... ok
+test tests::janela_minima_de_desafio_sempre_aplicada ... ok
+test tests::limiar_de_bloqueio_e_sesenta_porcento ... ok
+test tests::risco_absurdo_satura_e_bloqueia_em_vez_de_panic ... ok
+test tests::refund_restaura_teto_diario_corretamente ... ok
+test tests::teto_padrao_e_um_mil_usdg ... ok
+test tests::refund_calcula_gasto_na_janela_ativa ... ok
+test tests::valor_maior_que_u128_devolve_erro_tipado_nao_panic ... ok
+test tests::vault_send_autorizacao_e_restricao_de_token ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.32s
+     Running unittests src/lib.rs (target/debug/deps/zeus_guard-b37ba0b8daf3a159)
+     Running unittests src/main.rs (target/debug/deps/zeus_guard-7cc6b5a884ab828c)
+   Doc-tests zeus_guard

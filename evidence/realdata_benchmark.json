@@ -1,0 +1,11 @@
+{
+  "timestamp": 1790542212.226867,
+  "dataset": "engine/data/real_labeled_approves.json",
+  "total_events": 81,
+  "attacks": 14,
+  "benign": 67,
+  "recall": 100.0,
+  "fp_rate": 11.9,
+  "accuracy": 90.1,
+  "raw_stdout": "==================================================================\nBENCHMARK EM DADOS REAIS \u2014 Arbitrum mainnet, rotulagem por desfecho\n==================================================================\neventos reais rotulados:  81  | ataques: 14  | benignos: 67\npulls por terceiro (raw): 23\ndistribuicao verdictos:  BLOQUEAR=10 | ALERTAR=12 | LIBERAR=59\nataques capturados (recall total): 14/14 = 100.0%\n  -> acao direta BLOQUEAR:          10/14\n  -> acao preventiva ALERTAR:       4/14\nfalsos alarmes (FP rate):       8/67 = 11.9%\nacuracia global:                90.1%\n------------------------------------------------------------------\nbaseline 'ilimitado em EOA':    recall 85.7% | FP 0.0%\n\nLabels de ground truth e limitacoes do benchmark:\n  1. ATTACK                 = approve ilimitado em EOA/unverified seguido de pull por terceiro\n  2. BENIGN                 = sem pull de ataque na janela (inclui DEX/routers legitimos)\n  3. Window Right-Censoring = 7200 blocos (~30min na Arbitrum); ataques apos a janela sao truncados\n  4. Feature Token Freq     = acumulada sobre a janela de amostragem de ~60k blocos (~1.5 dias)\n"
+}

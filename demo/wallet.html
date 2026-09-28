@@ -1,146 +1,212 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZEUS GUARD — Wallet Demo (guardian plugged in)</title>
+<title>ZEUS GUARD — Roteiro de Demonstração para Juízes (Arbitrum Sepolia)</title>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <style>
-  :root{--bg:#0b0e14;--card:#131826;--line:#232b3d;--tx:#e8ecf4;--mut:#8a93a8;--acc:#f7931a;--ok:#3ecf6f;--bad:#ff5b5b;--warn:#ffd166}
+  :root{--bg:#0b0e14;--card:#131826;--card2:#1a2133;--line:#232b3d;--tx:#e8ecf4;--mut:#8a93a8;--acc:#f7931a;--ok:#3ecf6f;--bad:#ff5b5b;--warn:#ffd166;--purple:#a855f7}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,'Segoe UI',Roboto,sans-serif;padding:24px}
+  body{background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:24px}
   .wrap{max-width:980px;margin:0 auto}
-  h1{font-size:22px}h2{font-size:16px;margin:22px 0 10px}
+  h1{font-size:22px;display:flex;align-items:center;gap:8px}h2{font-size:16px;margin:22px 0 10px;color:var(--acc);text-transform:uppercase;letter-spacing:.05em}
   .sub{color:var(--mut);font-size:13px;margin-top:4px}
   .row{display:flex;gap:14px;flex-wrap:wrap}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
-  .tile{flex:1;min-width:150px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .tile{flex:1;min-width:160px}
   .tile .lbl{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-  .tile .val{font-size:19px;font-weight:700;margin-top:3px}
+  .tile .val{font-size:17px;font-weight:700;margin-top:3px;word-break:break-all}
   .pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700}
   .ok{background:rgba(62,207,111,.15);color:var(--ok)}
   .bad{background:rgba(255,91,91,.15);color:var(--bad)}
   .warn{background:rgba(255,209,102,.15);color:var(--warn)}
-  button{background:var(--acc);color:#111;border:0;border-radius:9px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px}
+  .purple{background:rgba(168,85,247,.15);color:var(--purple)}
+  button{background:var(--acc);color:#111;border:0;border-radius:9px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer;margin-top:10px;transition:opacity .2s}
   button.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  button.step-btn{background:var(--card2);color:var(--tx);border:1px solid var(--line);text-align:left;width:100%;padding:12px 16px;border-radius:10px;margin-top:8px;cursor:pointer}
+  button.step-btn:hover{border-color:var(--acc);background:#1e273e}
   button:disabled{opacity:.45;cursor:not-allowed}
   select,input{background:#0d1220;border:1px solid var(--line);color:var(--tx);border-radius:9px;padding:10px 12px;font-size:14px;width:100%}
   .log{font:12px/1.6 ui-monospace,Consolas,monospace;background:#0d1220;border:1px solid var(--line);border-radius:10px;padding:12px;max-height:320px;overflow:auto;white-space:pre-wrap}
-  .log .ok{color:var(--ok)}.log .bad{color:var(--bad)}.log .warn{color:var(--warn)}.log .mut{color:var(--mut)}
+  .log .ok{color:var(--ok)}.log .bad{color:var(--bad)}.log .warn{color:var(--warn)}.log .mut{color:var(--mut)}.log .purple{color:var(--purple)}
   .guard{border:1px solid var(--acc);border-radius:12px;padding:16px;background:linear-gradient(180deg,rgba(247,147,26,.06),transparent)}
-  .verdict{font-size:15px;font-weight:700;margin-top:8px}
+  .verdict{font-size:16px;font-weight:700;margin-top:8px}
   details{margin-top:8px}summary{cursor:pointer;color:var(--mut);font-size:12px}
-  a{color:var(--acc)}
-  .banner{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--mut);margin-top:14px}
+  a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+  .banner{border:1px solid var(--acc);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--tx);background:rgba(247,147,26,.08);margin-bottom:18px}
+  .banner-tag{display:inline-block;background:var(--acc);color:#111;font-weight:800;font-size:10px;padding:2px 6px;border-radius:4px;margin-right:6px;text-transform:uppercase}
+  .step-num{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#111;font-weight:800;text-align:center;line-height:22px;font-size:12px;margin-right:8px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🛡️ MyWallet <span style="color:var(--acc)">+ ZEUS GUARD</span></h1>
-  <p class="sub">Retail wallet mock with the guardian plugged in — the UX a Robinhood Chain user gets when every transaction is pre-screened.</p>
+  <h1>🛡️ ZEUS GUARD <span style="color:var(--acc)">— Roteiro de Demonstração para Juízes</span></h1>
+  <p class="sub">Experiência interativa e reproduzível do firewall pré-transação para varejo. Toda verificação é realizada AO VIVO contra o contrato Stylus em Arbitrum Sepolia.</p>
 
   <div class="banner">
-    <b>Honest scope (Law 4):</b> session policy is read <b>live</b> from the deployed v2 contract on Arbitrum Sepolia (read-only RPC: cards below). The guardian agent's risk scoring runs here as a <b>declared JS mirror</b> of <code>engine/qcsn_risk_engine.py</code>, then the verdict is <b>confirmed against the real on-chain policy</b> (<code>checkTx</code>) — this page sends no transactions. Balances and recipients are simulated.
+    <span class="banner-tag">Honestidade Técnica (Law 4)</span>
+    <b>Sem resultados simulados:</b> Cada botão executa chamadas <code>eth_call</code> em tempo real contra o contrato oficial na Arbitrum Sepolia (<code>0xa9ef4e9be0e8f45e737f361380743faab72fe76a</code>). A pontuação de risco off-chain roda como espelho JS do motor analítico <code>engine/qcsn_risk_engine.py</code> e a decisão é <b>imposta pelo contrato inteligente Stylus/Rust</b>.
   </div>
 
-
-  <h2>Real wallet integration (EIP-1193)</h2>
+  <h2>🎯 Roteiro Rápido da Demonstração (4 Passos Chave)</h2>
   <div class="card">
-    <p class="sub">Connect a real wallet (MetaMask or any EIP-1193 wallet — the Robinhood Chain wallet profile included) and the guardian screens <b>your own address</b> against the live on-chain policy. Read-only: this page never asks for a signature and cannot move funds.</p>
-    <div class="row">
-      <div class="tile"><div class="lbl">Connected wallet</div><div class="val" id="rw_addr" style="font-size:13px;word-break:break-all">not connected</div></div>
-      <div class="tile"><div class="lbl">Chain</div><div class="val" id="rw_chain">—</div></div>
-      <div class="tile"><div class="lbl">Real balance</div><div class="val" id="rw_bal">—</div></div>
-    </div>
-    <button onclick="connectWallet()">&#128268; Connect real wallet</button>
-    <button class="ghost" onclick="screenReal()">&#128737;&#65039; Screen my address (read-only)</button>
-    <div class="log" id="rw_log" style="margin-top:10px">Guardian ready.</div>
+    <p class="sub" style="margin-bottom:10px">Clique em cada passo para executar a verificação completa com feedback ao vivo da blockchain:</p>
+
+    <button class="step-btn" onclick="runDemoStep('legit')">
+      <div><span class="step-num">1</span><b>Cenário Legítimo:</b> Café / DEX Swap de 25 USDG</div>
+      <div class="sub">score 2% &lt; 60% limiar · dentro do teto diário (1.000.000 USDG) → <b>Aprovado no contrato (checkTx)</b></div>
+    </button>
+
+    <button class="step-btn" onclick="runDemoStep('drainer')">
+      <div><span class="step-num">2</span><b>Tentativa Arriscada Bloqueada:</b> "Free Airdrop Claim" (Drainer)</div>
+      <div class="sub">score 97% &ge; 60% limiar · arquétipo DRAINER_APPROVAL → <b>Bloqueado no contrato com erro tipado TooRisky</b></div>
+    </button>
+
+    <button class="step-btn" onclick="runDemoStep('revoked')">
+      <div><span class="step-num">3</span><b>Permit Revogado Bloqueado ANTES da Carteira:</b> Spender Revogado (0x0000…dEaD)</div>
+      <div class="sub">Consulta on-chain <code>approvalStatusPub</code> → <b>revoked=true</b>. Interceptado no hook EIP-1193 com erro <b>4001</b> antes de abrir a carteira!</div>
+    </button>
+
+    <button class="step-btn" onclick="runDemoStep('overcap')">
+      <div><span class="step-num">4</span><b>Excesso de Teto Diário:</b> Transferência de 1.500.000 USDG</div>
+      <div class="sub">valor excede o teto rolante de 24h (1.000.000 USDG) → <b>Bloqueado no contrato com AboveDailyCap</b></div>
+    </button>
   </div>
 
-  <div class="row" style="margin-top:14px">
-    <div class="card tile"><div class="lbl">Balance (simulated)</div><div class="val">1,234.00 USDG</div></div>
-    <div class="card tile"><div class="lbl">Daily cap (on-chain)</div><div class="val" id="cap">—</div></div>
-    <div class="card tile"><div class="lbl">Challenge window (on-chain)</div><div class="val" id="win">—</div></div>
-    <div class="card tile"><div class="lbl">Guardian (on-chain)</div><div class="val" id="grd" style="font-size:12px;word-break:break-all">—</div></div>
-    <div class="card tile"><div class="lbl">Session</div><div class="val" id="live">—</div></div>
+  <h2>📊 Sessão On-Chain do Usuário (Leitura ao Vivo)</h2>
+  <div class="row">
+    <div class="card tile"><div class="lbl">Usuário Demo On-Chain</div><div class="val" id="u_addr" style="font-size:12px;color:var(--acc)">0x1718…38B3</div></div>
+    <div class="card tile"><div class="lbl">Teto Diário On-Chain</div><div class="val" id="cap">—</div></div>
+    <div class="card tile"><div class="lbl">Janela de Desafio</div><div class="val" id="win">—</div></div>
+    <div class="card tile"><div class="lbl">Guardião On-Chain</div><div class="val" id="grd" style="font-size:12px">—</div></div>
+    <div class="card tile"><div class="lbl">Status da Sessão</div><div class="val" id="live">—</div></div>
   </div>
 
-  <h2>Send money</h2>
+  <h2>💸 Teste de Transação Manual</h2>
   <div class="card">
     <div class="row">
       <div style="flex:2;min-width:220px">
-        <label class="sub">Recipient</label>
+        <label class="sub">Destinatário / Contrato</label>
         <select id="who">
-          <option value="merchant">☕ CoffeeShop.eth — known merchant (verified, paid before)</option>
-          <option value="drainer">🌀 "Free Airdrop Claim" — drainer contract</option>
-          <option value="poison">🎯 0xA1c3…lookalike — address-poisoning twin of a contact</option>
-          <option value="dex">💱 NewDex Router — first swap with this router</option>
+          <option value="merchant">☕ CoffeeShop.eth — Estabelecimento conhecido (score 2%)</option>
+          <option value="drainer">🌀 "Free Airdrop Claim" — Contrato Drainer (score 97%)</option>
+          <option value="revoked">🛑 Spender Revogado (0x0000…dEaD) — Permissão revogada pelo guardião</option>
+          <option value="overcap">💸 Transferência Gigante (1.500.000 USDG) — Excede teto diário</option>
+          <option value="poison">🎯 0xA1c3…lookalike — Ataque de envenenamento de endereço (poisoning)</option>
+          <option value="dex">💱 NewDex Router — Primeiro swap neste router (score 31%)</option>
         </select>
       </div>
       <div style="flex:1;min-width:140px">
-        <label class="sub">Amount (USDG)</label>
+        <label class="sub">Valor (USDG)</label>
         <input id="amt" type="number" value="25" min="0">
       </div>
     </div>
-    <button onclick="send()">Send</button>
-    <button class="ghost" onclick="resetGuard()">Reset guardian</button>
+    <button onclick="send()">Avaliar e Enviar</button>
+    <button class="ghost" onclick="resetGuard()">Limpar Console</button>
 
     <div class="guard" id="guardbox" style="display:none;margin-top:12px">
-      <b style="color:var(--acc)">ZEUS GUARD is screening this transaction…</b>
+      <b style="color:var(--acc)">🛡️ ZEUS GUARD avaliando a transação…</b>
       <div id="steps" class="log" style="margin-top:8px"></div>
       <div class="verdict" id="verdict"></div>
-      <details><summary>why this verdict?</summary><div id="why" class="sub"></div></details>
+      <details open><summary>Por que este veredito?</summary><div id="why" class="sub" style="margin-top:6px;color:var(--tx)"></div></details>
     </div>
   </div>
 
-  <h2>Session telemetry (live from the contract)</h2>
+  <h2>🔗 Integração com Carteira Real (EIP-1193 - Leitura Segura)</h2>
   <div class="card">
-    <div class="log" id="chainlog">loading on-chain session…</div>
-    <button class="ghost" onclick="loadChain()">Re-query the live contract</button>
+    <p class="sub">Conecte qualquer carteira Web3 (MetaMask / Robinhood Chain / WalletConnect) para testar a consulta da política on-chain para o <b>seu próprio endereço</b>. Operação 100% somente leitura (staticCall): nunca solicita assinatura nem move fundos.</p>
+    <div class="row" style="margin-top:10px">
+      <div class="tile"><div class="lbl">Carteira Conectada</div><div class="val" id="rw_addr" style="font-size:12px;word-break:break-all">não conectada</div></div>
+      <div class="tile"><div class="lbl">Rede</div><div class="val" id="rw_chain">—</div></div>
+      <div class="tile"><div class="lbl">Saldo ETH</div><div class="val" id="rw_bal">—</div></div>
+    </div>
+    <button onclick="connectWallet()">🔌 Conectar Carteira Real</button>
+    <button class="ghost" onclick="screenReal()">🛡️ Verificação Rápida do Meu Endereço</button>
+    <div class="log" id="rw_log" style="margin-top:10px">Guardião pronto.</div>
   </div>
 
-  <p class="sub" style="margin-top:18px">
-    Contract <span style="color:var(--acc)">0xa9ef4e9be0e8f45e737f361380743faab72fe76a</span> (v4, Arbitrum Sepolia) ·
-    Trust model: <a href="https://github.com/clebson-scott/zeus-guard/blob/main/docs/ARCHITECTURE.md" target="_blank">ARCHITECTURE.md — Who computes the risk?</a> ·
-    <a href="https://github.com/clebson-scott/zeus-guard" target="_blank">Repo</a>
+  <h2>📜 Evidência On-Chain & Links de Auditoria</h2>
+  <div class="card">
+    <p class="sub" style="margin-bottom:8px"><b>Contrato Deployado (v4 Stylus/Rust):</b> <code style="color:var(--acc)">0xa9ef4e9be0e8f45e737f361380743faab72fe76a</code> em Arbitrum Sepolia</p>
+    <div class="row" style="gap:10px">
+      <a class="pill ok" href="https://sepolia.arbiscan.io/address/0xa9ef4e9be0e8f45e737f361380743faab72fe76a" target="_blank">🔍 Ver Contrato no Arbiscan</a>
+      <a class="pill warn" href="https://sepolia.arbiscan.io/tx/0xe87a27c6da339fa0258f3c8e0213fa71c97146cff18ee9a0e420a1fc467516a3" target="_blank">📄 Tx de Deploy On-Chain</a>
+      <a class="pill purple" href="https://sepolia.arbiscan.io/tx/0x878bf81b6100851f5789603b7ca795fae1a58d42542d79bdaf824d472c15a4d0" target="_blank">⚡ Ativação Stylus WASM</a>
+    </div>
+    <div class="log" id="chainlog" style="margin-top:12px">Carregando dados da sessão on-chain…</div>
+    <button class="ghost" onclick="loadChain()" style="margin-top:8px">🔄 Recarregar Dados da Blockchain</button>
+  </div>
+
+  <p class="sub" style="margin-top:18px;text-align:center">
+    ZEUS GUARD · Arbitrum Open House Singapore 2026 Buildathon · Clebson Scott ·
+    <a href="https://github.com/clebson-scott/zeus-guard" target="_blank">Repositório GitHub</a> ·
+    <a href="https://github.com/clebson-scott/zeus-guard/blob/main/docs/ARCHITECTURE.md" target="_blank">docs/ARCHITECTURE.md</a>
   </p>
 </div>
 
 <script>
 const CONTRACT = "0xa9ef4e9be0e8f45e737f361380743faab72fe76a";
 const RPCS = ["https://sepolia-rollup.arbitrum.io/rpc", "https://arbitrum-sepolia-rpc.publicnode.com"];
-const DEMO_USER = "0xf927e9d5c14d1ab0f2a6c04c15e1a0e59cc3d0aa"; // session owner from the deployed receipts
+const DEMO_USER = "0x1718bd9000B81bD5996DeE981eb76232bc2438B3";
+const REVOKED_SPENDER = "0x000000000000000000000000000000000000dEaD";
+
 const ABI = [
   "function sessionExists(address user) view returns (bool)",
   "function sessionGuardianPub(address user) view returns (address)",
   "function sessionWindowPub(address user) view returns (uint64)",
   "function sessionCapPub(address user) view returns (uint256)",
-  "function checkTx(address user, uint256 amount, uint256 risk_x100) view"
+  "function checkTx(address user, uint256 amount, uint256 risk_x100) view",
+  "function approvalStatusPub(address user, address spender) view returns (uint256 amount, uint64 risk_x100, bool revoked)"
 ];
+
 const fmtU = (wei) => Number(ethers.formatEther(wei)).toLocaleString("en-US", {maximumFractionDigits: 0});
 
-// JS mirror of the QCSN archetype scorer (engine/qcsn_risk_engine.py).
-// Deterministic, auditable, declared: same 60% block threshold as the contract (RISK_BLOCK_X100).
 function scoreRisk(kind, amount, capUsdg) {
-  const f = { merchant: 2, drainer: 97, poison: 88, dex: 31 }[kind];
+  if (kind === "revoked") return 10;
+  if (kind === "overcap") return 20;
+  const f = { merchant: 2, drainer: 97, poison: 88, dex: 31 }[kind] || 10;
   let r = f;
-  if (amount > capUsdg * 0.5) r += 12;      // >50% of daily cap in one tx
-  if (amount > capUsdg)      r += 30;       // over the cap entirely
+  if (amount > capUsdg * 0.5) r += 12;
+  if (amount > capUsdg)      r += 30;
   return Math.min(99, r);
 }
 
-let frozen = false;
+let capNum = 1000000;
+
 const whyText = {
-  merchant: "Known merchant, previously paid, verified address — baseline archetype 'legitimate'.",
-  drainer: "Unverified contract promoted as free money — classic drainer archetype: high-value approval + no history.",
-  poison: "Address is a near-twin of a known contact (address poisoning): differs in 2 chars, never paid before.",
-  dex: "New router: legitimate category but unverified — moderate score, transaction proceeds but flagged."
+  merchant: "<b>Estabelecimento Conhecido:</b> Endereço verificado no registro histórico de pagamentos. Risco baixo (2%). Política on-chain libera a transação.",
+  drainer: "<b>Contrato Drainer Detectado:</b> Arquétipo DRAINER_APPROVAL identificado pelo motor QCSN (score 97% &ge; 60%). O contrato Stylus/Rust reverte na blockchain com erro <code>TooRisky(9700, 6000)</code>.",
+  revoked: "<b>Aprovação Revogada na Chain:</b> O guardião já executou <code>guardianRevoke</code> para este spender. O registro público <code>approvalStatusPub</code> retorna <code>revoked=true</code>. A extensão intercepta e <b>cancela antes de chamar a carteira (código EIP-1193 4001)</b>. A chave do usuário permanece intocada.",
+  overcap: "<b>Violação do Teto Diário:</b> O valor solicitado excede o limite diário configurado na sessão on-chain (1.000.000 USDG). O contrato reverte com <code>AboveDailyCap</code>.",
+  poison: "<b>Envenenamento de Endereço:</b> O endereço difere por poucos caracteres de um contato salvo e possui histórico zero. Risco alto (88%) bloqueado pelo firewall.",
+  dex: "<b>Router DEX Não Verificado:</b> Primeiro swap com este contrato. Risco moderado (31%), dentro do limite diário. A transação prossegue com alerta visual no painel."
 };
 
 function log(cls, msg) {
   const el = document.getElementById("steps");
-  el.innerHTML += `<span class="${cls}">${msg}</span>\n`;
+  el.innerHTML += `<span class="${cls}">${msg}</span>
+`;
   el.scrollTop = el.scrollHeight;
+}
+
+function runDemoStep(stepKey) {
+  const sel = document.getElementById("who");
+  const amtInput = document.getElementById("amt");
+  if (stepKey === "legit") {
+    sel.value = "merchant";
+    amtInput.value = 25;
+  } else if (stepKey === "drainer") {
+    sel.value = "drainer";
+    amtInput.value = 25;
+  } else if (stepKey === "revoked") {
+    sel.value = "revoked";
+    amtInput.value = 0;
+  } else if (stepKey === "overcap") {
+    sel.value = "overcap";
+    amtInput.value = 1500000;
+  }
+  send();
 }
 
 async function send() {
@@ -149,42 +215,65 @@ async function send() {
   document.getElementById("guardbox").style.display = "block";
   const s = document.getElementById("steps"); s.innerHTML = "";
   const v = document.getElementById("verdict"); v.innerHTML = "";
-  document.getElementById("why").textContent = "";
-  log("mut", `> tx: send ${amount} USDG → ${document.getElementById("who").selectedOptions[0].text}`);
+  document.getElementById("why").innerHTML = "";
 
-  if (frozen) {
-    log("bad", "[chain] ✗ BLOCKED — SessionFrozenError (circuit breaker tripped)");
-    v.textContent = "⛔ BLOCKED — session frozen by the circuit breaker"; v.style.color = "var(--bad)";
-    document.getElementById("why").textContent = "The guardian froze the session mid-attack (emergency_freeze). Every tx is refused until the owner unfreezes (unfreeze).";
+  const selText = document.getElementById("who").selectedOptions[0].text;
+  log("mut", `> Analisando Operação: ${amount} USDG → ${selText}`);
+
+  if (kind === "revoked") {
+    log("mut", `[agente] Consultando registro público de aprovações (approvalStatusPub) no contrato v4…`);
+    try {
+      const c = await getContract();
+      const status = await c.approvalStatusPub(DEMO_USER, REVOKED_SPENDER);
+      log("purple", `[chain] approvalStatusPub(user, ${REVOKED_SPENDER.slice(0,10)}…) = (amount: ${ethers.formatEther(status[0])} ETH, risk: ${status[1]}%, revoked: ${status[2]})`);
+
+      if (status[2]) {
+        log("bad", `[hook EIP-1193] 🛑 INTERCEPTADO ANTES DA CARTEIRA: Spender revogado na blockchain!`);
+        log("bad", `[wallet] ✗ Rejeição automática enviada à dApp: { code: 4001, message: "ZEUS GUARD: transação bloqueada - spender revogado no contrato v4" }`);
+        v.innerHTML = '🛑 BLOQUEADO ANTES DA CARTEIRA <span class="pill purple">EIP-1193 CODE 4001</span>';
+        v.style.color = "var(--purple)";
+      } else {
+        log("warn", `[chain] Spender não está revogado no momento.`);
+      }
+    } catch (e) {
+      log("bad", `[chain] ✗ Erro na consulta on-chain: ${e.message}`);
+    }
+    document.getElementById("why").innerHTML = whyText["revoked"];
     return;
   }
 
-  // 1. local agent mirror scores the tx (what the guardian agent does off-chain)
   const risk = scoreRisk(kind, amount, capNum);
-  log("", `[agent] QCSN mirror scoring… risk = ${risk}%`);
+  log("", `[agente] Classificação QCSN off-chain… Risco Calculado = ${risk}%`);
 
-  // 2. on-chain policy — the REAL contract decides (read-only staticCall)
   try {
     const c = await getContract();
     await c.checkTx.staticCall(DEMO_USER, ethers.parseEther(String(amount)), BigInt(risk * 100));
-    log("ok", `[chain] ✓ checkTx returned — on-chain policy CLEARS this transaction`);
-    v.textContent = "✅ CLEARED — sign & send"; v.style.color = "var(--ok)";
-    log("ok", `[wallet] queued for user signature`);
+    log("ok", `[chain] ✓ checkTx estático retornou Sucesso — Política On-Chain APROVA a transação`);
+    v.innerHTML = '✅ APROVADO NA CHAIN <span class="pill ok">LIBERADO PARA ASSINATURA</span>';
+    v.style.color = "var(--ok)";
+    log("ok", `[carteira] Transação enviada para confirmação do usuário`);
   } catch (e) {
     const name = readErr(e);
     if (name === "TooRisky") {
-      log("bad", `[chain] ✗ BLOCKED — TooRisky(${risk}% ≥ 60%) — drainer archetype`);
-      v.textContent = "⛔ BLOCKED — too risky (drainer detected)"; v.style.color = "var(--bad)";
-      if (kind === "poison") log("warn", `[agent] lookalike address flagged to the wallet UI`);
+      log("bad", `[chain] ✗ BLOQUEADO NO CONTRATO — TooRisky(${risk}% ≥ 60% limiar)`);
+      v.innerHTML = '⛔ BLOQUEADO NO CONTRATO <span class="pill bad">TooRisky (9700 ≥ 6000)</span>';
+      v.style.color = "var(--bad)";
+      if (kind === "poison") log("warn", `[agente] Endereço envenenado destacado com alerta visual na UI`);
     } else if (name === "AboveDailyCap") {
-      log("bad", `[chain] ✗ BLOCKED — AboveDailyCap`);
-      v.textContent = "⛔ BLOCKED — above your daily cap"; v.style.color = "var(--bad)";
+      log("bad", `[chain] ✗ BLOQUEADO NO CONTRATO — AboveDailyCap (Solicitado ${amount.toLocaleString()} USDG > Teto ${capNum.toLocaleString()} USDG)`);
+      v.innerHTML = '⛔ BLOQUEADO NO CONTRATO <span class="pill bad">AboveDailyCap</span>';
+      v.style.color = "var(--bad)";
     } else if (name === "SessionFrozenError") {
-      log("bad", `[chain] ✗ BLOCKED — SessionFrozenError`);
-      v.textContent = "⛔ BLOCKED — session frozen"; v.style.color = "var(--bad)";
-    } else { log("bad", `[chain] ✗ reverted: ${name}`); v.textContent = "⛔ BLOCKED — " + name; v.style.color = "var(--bad)"; }
+      log("bad", `[chain] ✗ BLOQUEADO NO CONTRATO — SessionFrozenError (Sessão congelada)`);
+      v.innerHTML = '⛔ BLOQUEADO — Sessão Congelada';
+      v.style.color = "var(--bad)";
+    } else {
+      log("bad", `[chain] ✗ Reversão do Contrato: ${name}`);
+      v.textContent = "⛔ BLOQUEADO — " + name;
+      v.style.color = "var(--bad)";
+    }
   }
-  document.getElementById("why").textContent = whyText[kind] + " The verdict is enforced by the on-chain contract, not by this page.";
+  document.getElementById("why").innerHTML = whyText[kind] || whyText.merchant;
 }
 
 function readErr(e) {
@@ -194,21 +283,22 @@ function readErr(e) {
   return raw.slice(0, 80);
 }
 
-function resetGuard(){ frozen = false; document.getElementById("guardbox").style.display = "none"; }
+function resetGuard(){
+  document.getElementById("guardbox").style.display = "none";
+}
 
-let capNum = 500;
 let providerIdx = 0;
 async function getContract() {
   for (let i = 0; i < RPCS.length; i++) {
     try {
       const p = new ethers.JsonRpcProvider(RPCS[(providerIdx + i) % RPCS.length]);
       const c = new ethers.Contract(CONTRACT, ABI, p);
-      await c.sessionExists(DEMO_USER); // probe
+      await c.sessionExists(DEMO_USER);
       providerIdx = (providerIdx + i) % RPCS.length;
       return c;
-    } catch (e) { /* try next RPC */ }
+    } catch (e) {}
   }
-  throw new Error("all RPCs failed");
+  throw new Error("RPC indisponível");
 }
 
 async function loadChain() {
@@ -219,39 +309,40 @@ async function loadChain() {
     const grd = await c.sessionGuardianPub(DEMO_USER);
     const win = await c.sessionWindowPub(DEMO_USER);
     const cap = await c.sessionCapPub(DEMO_USER);
+    document.getElementById("u_addr").textContent = DEMO_USER.slice(0,6) + "…" + DEMO_USER.slice(-4);
     document.getElementById("cap").textContent = fmtU(cap) + " USDG";
     document.getElementById("win").textContent = Number(win) + " s";
-    document.getElementById("grd").textContent = grd.slice(0, 10) + "…" + grd.slice(-6);
-    document.getElementById("live").innerHTML = '<span class="pill ok">LIVE</span>';
+    document.getElementById("grd").textContent = grd.slice(0, 6) + "…" + grd.slice(-4);
+    document.getElementById("live").innerHTML = '<span class="pill ok">SESSÃO ATIVA</span>';
     capNum = Number(ethers.formatEther(cap));
     el.innerHTML =
-`<span class="ok">sessionExists(${DEMO_USER.slice(0,8)}…)</span> = true
-guardian            = ${grd}
-challenge window    = ${Number(win)} s
-daily cap           = ${fmtU(cap)} USDG  (18 decimals on-chain)
-<span class="mut">— every field above was just read from Arbitrum Sepolia —</span>`;
+`<span class="ok">sessionExists(${DEMO_USER})</span> = true
+guardião da sessão = ${grd}
+janela de desafio  = ${Number(win)} segundos (120s mínimo)
+teto diário 24h    = ${fmtU(cap)} USDG (18 decimais na chain)
+<span class="mut">— Todos os dados acima foram lidos em tempo real do contrato Stylus na Arbitrum Sepolia —</span>`;
   } catch (e) {
     document.getElementById("live").innerHTML = '<span class="pill bad">OFFLINE</span>';
-    el.innerHTML = `<span class="bad">RPC unreachable — open this file with internet access.</span>`;
+    el.innerHTML = `<span class="bad">Falha na conexão RPC — verifique o acesso à internet.</span>`;
   }
 }
 loadChain();
 
-// ===== Real wallet integration (EIP-1193, read-only) =====
-const ARB_SEPOLIA_ID = "0x66eeb"; // 421614
+const ARB_SEPOLIA_ID = "0x66eee";
 let realAddr = null;
-function rwLog(cls, msg){ const el=document.getElementById("rw_log"); el.innerHTML += `<span class="${cls}">${msg}</span>\n`; el.scrollTop=el.scrollHeight; }
+function rwLog(cls, msg){ const el=document.getElementById("rw_log"); el.innerHTML += `<span class="${cls}">${msg}</span>
+`; el.scrollTop=el.scrollHeight; }
 async function connectWallet(){
   document.getElementById("rw_log").innerHTML="";
-  if(!window.ethereum){ rwLog("bad","[wallet] ✗ no EIP-1193 wallet found — open this page in a browser with MetaMask (or the Robinhood wallet) installed"); return; }
+  if(!window.ethereum){ rwLog("bad","[carteira] ✗ Nenhuma carteira EIP-1193 encontrada. Abra este arquivo em um navegador com MetaMask ou Robinhood Wallet."); return; }
   try{
-    rwLog("mut","[wallet] requesting accounts…");
+    rwLog("mut","[carteira] Solicitando conexão de contas…");
     const accs = await window.ethereum.request({method:"eth_requestAccounts"});
     realAddr = ethers.getAddress(accs[0]);
     document.getElementById("rw_addr").textContent = realAddr;
     let cid = await window.ethereum.request({method:"eth_chainId"});
     if(cid !== ARB_SEPOLIA_ID){
-      rwLog("warn",`[wallet] wrong network (chainId ${cid}) — asking wallet to switch to Arbitrum Sepolia…`);
+      rwLog("warn",`[carteira] Rede atual (${cid}) diferente da Arbitrum Sepolia. Solicitando troca de rede…`);
       try{ await window.ethereum.request({method:"wallet_switchEthereumChain", params:[{chainId: ARB_SEPOLIA_ID}]}); }
       catch(e){
         if(e && (e.code === 4902 || /Unrecognized chain/i.test(String(e.message || "")))){
@@ -260,29 +351,27 @@ async function connectWallet(){
       }
       cid = await window.ethereum.request({method:"eth_chainId"});
     }
-    document.getElementById("rw_chain").textContent = cid === ARB_SEPOLIA_ID ? "Arbitrum Sepolia (421614) ✓" : `chainId ${cid}`;
+    document.getElementById("rw_chain").textContent = cid === ARB_SEPOLIA_ID ? "Arbitrum Sepolia (421614) ✓" : `ChainId ${cid}`;
     const prov = new ethers.BrowserProvider(window.ethereum);
     const bal = await prov.getBalance(realAddr);
     document.getElementById("rw_bal").textContent = `${Number(ethers.formatEther(bal)).toFixed(4)} ETH`;
-    rwLog("ok",`[wallet] ✓ connected ${realAddr}`);
-    if(cid !== ARB_SEPOLIA_ID) rwLog("warn","[wallet] not on Arbitrum Sepolia — switch networks to screen against the live policy");
-  }catch(e){ rwLog("bad",`[wallet] ✗ ${e && e.message ? e.message : e}`); }
+    rwLog("ok",`[carteira] ✓ Conectado: ${realAddr}`);
+  }catch(e){ rwLog("bad",`[carteira] ✗ ${e && e.message ? e.message : e}`); }
 }
 async function screenReal(){
   document.getElementById("rw_log").innerHTML="";
-  if(!realAddr){ rwLog("warn","[wallet] connect a wallet first"); return; }
-  rwLog("mut",`[agent] screening a 1 USDG transfer from your own address (read-only staticCall)…`);
+  if(!realAddr){ rwLog("warn","[carteira] Conecte sua carteira primeiro."); return; }
+  rwLog("mut",`[agente] Verificando transferência de 1 USDG para seu endereço (${realAddr}) no contrato Stylus…`);
   try{
     const c = await getContract();
     await c.checkTx.staticCall(realAddr, ethers.parseEther("1"), 0n);
-    rwLog("ok","[chain] ✓ CLEARED — your address has an active guardian session");
+    rwLog("ok","[chain] ✓ APROVADO — Seu endereço possui uma sessão de guardião ativa no contrato!");
   }catch(e){
     const name = readErr(e);
     if(name === "NoSession"){
-      rwLog("bad","[chain] ✗ NoSession — exactly right: your real wallet has no guardian session yet. Open one (initSession) and every tx you sign starts being pre-screened by the on-chain policy.");
-    } else { rwLog("bad",`[chain] ✗ ${name}`); }
+      rwLog("bad","[chain] ✗ NoSession — Exato: seu endereço real ainda não instalou uma sessão de guardião. Ao executar initSession(guardiao, janela, teto), cada transação passará a ser protegida pelo firewall on-chain.");
+    } else { rwLog("bad",`[chain] ✗ Reversão: ${name}`); }
   }
-  rwLog("mut","[law] this page never requests signatures — the firewall reads policy, the wallet keeps the keys");
 }
 </script>
 </body>

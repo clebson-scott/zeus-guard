@@ -1,9 +1,13 @@
 """Rotulagem por desfecho: approve seguido de pull por terceiro.
 
 Diferenciacao estrita entre:
-  - pulled_by_third_party: transferencia por terceiro (tx.from != owner) na janela de 4h
-  - ATTACK: ataque de drainer confirmado (pulled por terceiro em approve ilimitado ou EOA/drainer)
-  - BENIGN: sem pull por terceiro, OU operacao legitima em contrato de protocolo/DEX
+  - pulled_by_third_party: transferencia por terceiro (tx.from != owner) na janela de observacao
+  - ATTACK: ataque de drainer confirmado (pull por terceiro em approve ilimitado em EOA/contrato nao auditado)
+  - BENIGN: sem pull por terceiro, OU operacao legitima em contrato de protocolo/DEX conhecido
+
+Limitacao temporal conhecida:
+  - Janela de observacao do RPC: 7200 blocos (~30 minutos na Arbitrum mainnet).
+  - Transacoes proximas ao fim do periodo de coleta sofrem truncamento a direita (right-censoring).
 """
 import json, time
 from concurrent.futures import ThreadPoolExecutor
@@ -30,9 +34,9 @@ def process(a):
     owner = a["owner"]
     spender = a["spender"]
     token = a["token"]
-    
+
     try:
-        # transfers do owner do token aprovado, ate 4h apos o approve
+        # transfers do owner do token aprovado (7200 blocos = ~30min na Arbitrum)
         logs = w3.eth.get_logs({"fromBlock": a["block"], "toBlock": a["block"] + 7200,
                                 "address": Web3.to_checksum_address(token),
                                 "topics": [TRANSFER, pad(owner)]})
@@ -43,18 +47,18 @@ def process(a):
             if tx["from"].lower() != owner.lower():        # pull por terceiro!
                 amount = int(lg["data"].hex() or "0x0", 16)
                 pulled += amount
-                
+
         amount = int(a["amount"])
         approval_unlimited = amount >= UNLIMITED
         sp_lower = spender.lower()
         is_known_proto = sp_lower in KNOWN_PROTOCOLS
         is_eoa = a.get("spender_eoa", 0) == 1
-        
+
         # Registra o desfecho bruto
         out["pulled_by_third_party"] = pulled
         out["approval_unlimited"] = approval_unlimited
-        
-        # Ground truth: ATTACK = pull por terceiro em approve ilimitado ou EOA/drainer sem protocolo conhecido
+
+        # Ground truth: ATTACK = pull por terceiro em approve ilimitado/EOA sem protocolo conhecido
         is_attack = (pulled > 0) and not is_known_proto and (approval_unlimited or (is_eoa and pulled >= 1_000_000))
         out["label"] = "ATTACK" if is_attack else "BENIGN"
         return out
@@ -62,5 +66,4 @@ def process(a):
         return {"owner": owner, "error": str(e)[:50]}
 
 if __name__ == "__main__":
-    eoa_apps = json.load(open("eoa_approves.json")) if False else []
-    print("Módulo label_by_outcome carregado.")
+    print("Modulo label_by_outcome carregado com sucesso.")

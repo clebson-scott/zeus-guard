@@ -128,7 +128,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--rpc", required=True)
     ap.add_argument("--contract", required=True)
-    ap.add_argument("--victim", default=None, help="endereco da vitima (default: lido da sessao existente)")
+    ap.add_argument("--victim", default="0x1718bd9000B81bD5996DeE981eb76232bc2438B3", help="endereco da vitima (default: sessao ativa v4)")
     ap.add_argument("--attacker", default="0x000000000000000000000000000000000000dEaD")
     ap.add_argument("--execute", action="store_true", help="envia transacoes REAIS (precisa ZEUS_PRIVATE_KEY)")
     args = ap.parse_args()
@@ -232,7 +232,7 @@ def main():
         print("\n[DEFESA 0] Instalando sessao do guardiao (initSession):")
         data = SEL["initSession"] + addr_pad(victim) + i_pad(3600) + i_pad(500 * 10**18)
         rcpt, err = send_tx(data, "initSession")
-        report("Sessao instalada on-chain (tx REAL)", "tx", 
+        report("Sessao instalada on-chain (tx REAL)", "tx",
                rcpt["transactionHash"] if rcpt else str(err), bool(rcpt and rcpt["status"] == "0x1"))
 
         # pagamento legitimo em modo ledger (usdg = address(0)): escrow REAL

@@ -270,6 +270,86 @@ async function runTests() {
     assert.strictEqual(provider.calls.length, 0, "A carteira NUNCA deve ser chamada em fail-closed");
   });
 
+  // --- Teste 8: Instalação automática via atribuição window.ethereum = provider ---
+  await test("Instalação automática via atribuição window.ethereum = provider (Object.defineProperty trap)", async (hook) => {
+    const provider = createMockProvider();
+    window.ethereum = provider;
+    assert.strictEqual(window.ethereum.__zeus, true, "Provider atribuído via setter deve ser embrulhado automaticamente");
+    assert.notStrictEqual(window.ethereum.request, provider.originalRequest, "Método request deve ter sido substituído pelo wrapper");
+  });
+
+  // --- Teste 9: Intercepção e Bloqueio de Assinatura Permit2 (EIP-712 PermitSingle) ---
+  await test("Bloqueio de assinatura Permit2 (EIP-712 PermitSingle) para spender revogado (código 4001)", async (hook) => {
+    const provider = createMockProvider();
+    hook.wrapEthereum(provider);
+
+    window.__ZEUS_MOCK_RPC = async (method, params) => {
+      if (method === "eth_call") {
+        return "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+      }
+      return "0x0";
+    };
+
+    const permit2Data = {
+      domain: { verifyingContract: TOKEN, chainId: 421614 },
+      primaryType: "PermitSingle",
+      message: {
+        details: { token: TOKEN, amount: "1000000000000000000", expiration: "9999999999", nonce: "0" },
+        spender: REVOKED_SPENDER,
+        sigDeadline: "9999999999"
+      }
+    };
+
+    let thrownError = null;
+    try {
+      await provider.request({
+        method: "eth_signTypedData_v4",
+        params: [USER, JSON.stringify(permit2Data)]
+      });
+    } catch (e) {
+      thrownError = e;
+    }
+
+    assert.ok(thrownError, "Assinatura Permit2 deveria ter sido bloqueada");
+    assert.strictEqual(thrownError.code, 4001, "Erro deve conter code 4001");
+    assert.ok(thrownError.message.includes("ZEUS GUARD: assinatura bloqueada"), "Mensagem de erro deve indicar bloqueio de assinatura");
+    assert.strictEqual(provider.calls.length, 0, "A carteira NUNCA deve ser chamada");
+  });
+
+  // --- Teste 10: Bloqueio de Transação de Permit On-Chain para Spender Revogado ---
+  await test("Bloqueio de transação de permit on-chain para spender revogado (código 4001, sem chamada à carteira)", async (hook) => {
+    const provider = createMockProvider();
+    hook.wrapEthereum(provider);
+
+    window.__ZEUS_MOCK_RPC = async (method, params) => {
+      if (method === "eth_call") {
+        return "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+      }
+      return "0x0";
+    };
+
+    const permitTxData = "0xd505accf" +
+      USER.slice(2).padStart(64, "0") +
+      REVOKED_SPENDER.slice(2).padStart(64, "0") +
+      "00000000000000000000000000000000000000000000000000000000000000ff" +
+      "00000000000000000000000000000000000000000000000000000000ffffffff";
+
+    let thrownError = null;
+    try {
+      await provider.request({
+        method: "eth_sendTransaction",
+        params: [{ from: USER, to: TOKEN, data: permitTxData }]
+      });
+    } catch (e) {
+      thrownError = e;
+    }
+
+    assert.ok(thrownError, "Transação de permit on-chain para spender revogado deveria ter sido bloqueada");
+    assert.strictEqual(thrownError.code, 4001, "Erro deve conter code 4001");
+    assert.ok(thrownError.message.includes("ZEUS GUARD: transação bloqueada"), "Mensagem deve indicar bloqueio pelo ZEUS GUARD");
+    assert.strictEqual(provider.calls.length, 0, "A carteira NUNCA deve ser chamada");
+  });
+
   console.log("\n-------------------------------------------------");
   console.log(`📊 Resultado dos Testes: ${passed} passaram, ${failed} falharam.`);
   console.log("-------------------------------------------------\n");

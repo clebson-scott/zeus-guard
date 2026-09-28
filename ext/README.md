@@ -55,6 +55,18 @@ node ext/test_extension.js
 5. `Cancelamento de alerta de assinatura arriscada (eth_sign cega) pelo usuário (código 4001)`
 6. `Indisponibilidade do RPC em modo FAIL_OPEN (libera transação para a carteira)`
 7. `Indisponibilidade do RPC em modo FAIL_CLOSED (bloqueia transação com código 4001)`
+8. `Instalação automática via atribuição window.ethereum = provider (Object.defineProperty trap)`
+9. `Bloqueio de assinatura Permit2 (EIP-712 PermitSingle) para spender revogado (código 4001)`
+10. `Bloqueio de transação de permit on-chain para spender revogado (código 4001, sem chamada à carteira)`
+
+---
+
+## ⚠️ Limitações Conhecidas
+
+1. **Provedores Não-EIP-1193 / RPC Direto**:
+   - DApps que utilizem bibliotecas com signers locais rodando chave privada direta via HTTP RPC ou WebSocket sem passar pelo `window.ethereum` (EIP-1193 / EIP-6963) não são interceptados pela extensão do navegador.
+2. **Indisponibilidade de RPC no Modo Fail-Open**:
+   - No modo padrão (`FAIL_OPEN`), falhas de conexão com o RPC da Arbitrum Sepolia resultam na liberação da transação para a carteira do usuário. Para ambientes com política de segurança estrita, recomenda-se configurar o modo `FAIL_CLOSED` (`window.__ZEUS_FAIL_MODE = "FAIL_CLOSED"`).
 
 ---
 

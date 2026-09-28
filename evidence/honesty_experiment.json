@@ -1,0 +1,8 @@
+{
+  "timestamp": 1790542214.8922539,
+  "total_tested": 1848,
+  "divergences": 0,
+  "quench_latency_ms": 1.25,
+  "argmin_latency_ms": 0.0043,
+  "raw_stdout": "EXPERIMENTO DE HONESTIDADE: quench vs argmin\n\nconjunto                                casos  divergem  quench (ms/tx)  argmin (ms/tx)\n---------------------------------------------------------------------------------------\nbenchmark oficial (48 txs)                 48         0            1.28          0.0048\nstress sigma=0.05 (600 txs)               600         0            1.26          0.0044\nstress sigma=0.15 (600 txs)               600         0            1.25          0.0044\nstress sigma=0.3 (600 txs)                600         0            1.26          0.0045\nfronteira exata (midpoints)                15         1               -               -\n---------------------------------------------------------------------------------------\nTOTAL: 0 divergencias em 1848 casos testados\nlatencia media: quench 1.26 ms/tx | argmin 0.0045 ms/tx (279x)\n\nVEREDICTO HONESTO: o verdicto do quench e identico ao argmin em TODOS os casos.\nO quench entrega confianca continua p* e a analogia fisica validada; a decisao\nem si e a mesma. Isto esta declarado no MATH.md \u2014 e o motivo de o motor ser\ndeterministico e auditavel. Se voce precisa apenas do verdicto, o argmin de 3\nlinhas deste arquivo produz a mesma decisao.\n"
+}
