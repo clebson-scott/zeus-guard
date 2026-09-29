@@ -46,6 +46,9 @@ pub const RISK_BLOCK_X100: u64 = 6000; // score >= 60% => drainer (saida QCSN)
 pub const DAILY_CAP_DEFAULT: u128 = 1000 * 10_u128.pow(18); // 1.000 USDG/dia
 pub const DISPUTE_GRACE_DEFAULT: u64 = 3 * 86400; // 3 dias para o guardiao resolver a disputa
 
+/// v5: precompile EVM 0x01 — ecrecover nativo (o stylus-sdk 0.10 nao exporta crypto::ecrecover).
+pub const ECRECOVER_PRECOMPILE: Address = stylus_sdk::alloy_primitives::address!("0000000000000000000000000000000000000001");
+
 sol! {
     event SessionInit(address indexed owner, address indexed guardian, uint64 challenge_window);
     event ApprovalLogged(address indexed user, address indexed spender, uint256 amount, uint64 risk_x100);
@@ -58,6 +61,8 @@ sol! {
     event UsdgTokenSet(address indexed user, address usdg);
     event PaymentRefunded(bytes32 indexed payment_id, address indexed payer, uint256 amount);
     event VaultSent(address indexed user, address indexed token, address payee, uint256 amount, uint64 risk_x100);
+    event OracleInitialized(address indexed oracle);
+    event OracleSignedCheck(address indexed user, uint256 amount, uint64 risk_x100, uint256 nonce);
 
     error NoSession();
     error NotSessionOwner();
@@ -77,6 +82,14 @@ sol! {
     error DisputeExpired();
     error NotVaultAuthorized();
     error ReentrancyGuard();
+    // v5: oraculo analitico — score so vale assinado criptograficamente
+    error OracleNotInitialized();
+    error OracleAlreadyInitialized();
+    error OracleZeroAddress();
+    error InvalidSignatureLength(uint256 got);
+    error InvalidOracleSignature();
+    error OracleNonceReplayed(uint256 nonce);
+    error EcrecoverFailed();
 }
 
 /// Todas as formas de falha do guardiao.
@@ -100,6 +113,13 @@ pub enum ZeusError {
     DisputeExpired(DisputeExpired),
     NotVaultAuthorized(NotVaultAuthorized),
     ReentrancyGuard(ReentrancyGuard),
+    OracleNotInitialized(OracleNotInitialized),
+    OracleAlreadyInitialized(OracleAlreadyInitialized),
+    OracleZeroAddress(OracleZeroAddress),
+    InvalidSignatureLength(InvalidSignatureLength),
+    InvalidOracleSignature(InvalidOracleSignature),
+    OracleNonceReplayed(OracleNonceReplayed),
+    EcrecoverFailed(EcrecoverFailed),
 }
 
 // IERC20 minimo para o cofre USDG nativo (Paxos Global Dollar) e o vault real.
@@ -138,6 +158,9 @@ sol_storage! {
         // ---- teto diario (janela rolante de 24h) ----
         mapping(address => uint128) daily_spent;
         mapping(address => uint64) daily_window_start;
+        // ---- oraculo analitico (v5): score on-chain so vale assinado pelo oraculo ----
+        address trusted_oracle;                      // address(0) = ainda nao inicializado
+        mapping(bytes32 => bool) oracle_nonce_used;  // anti-replay: hash(user, nonce)
         // ---- reentrancy lock ----
         bool reentrancy_locked;
     }
@@ -201,6 +224,27 @@ fn restore_daily_spent(current_spent: U128, amount: U256) -> U128 {
     }
 }
 
+/// v5: hash canonico do oraculo — bytes exatos do payload assinado.
+/// keccak256(user(20 bytes, SEM padding) || amount(32 BE) || risk(32 BE) || nonce(32 BE)).
+/// O servidor Python (engine/oracle_service.py) espelha esta ordem byte a byte;
+/// codificacoes eth_abi (que fazem padding do address) NAO batem com o contrato.
+fn oracle_message_hash(user: Address, amount: U256, risk_x100: U256, nonce: U256) -> B256 {
+    stylus_sdk::crypto::keccak(
+        [
+            user.as_slice(),
+            &amount.to_be_bytes::<32>(),
+            &risk_x100.to_be_bytes::<32>(),
+            &nonce.to_be_bytes::<32>(),
+        ]
+        .concat(),
+    )
+}
+
+/// v5: chave de anti-replay do nonce — keccak256(user || nonce).
+fn oracle_nonce_key(user: Address, nonce: U256) -> B256 {
+    stylus_sdk::crypto::keccak([user.as_slice(), &nonce.to_be_bytes::<32>()].concat())
+}
+
 impl ZeusGuard {
     fn require_session(&self, user: Address) -> Result<(), ZeusError> {
         if self.session_exists.getter(user).get() {
@@ -216,6 +260,28 @@ impl ZeusGuard {
             now,
             self.daily_spent.getter(user).get(),
         )
+    }
+
+    /// v5: ecrecover nativo via precompile 0x01.
+    /// Layout padrao EVM: hash(32) || v(32, right-aligned) || r(32) || s(32).
+    fn recover_signer(&self, msg_hash: B256, v: u8, r: B256, s: B256) -> Result<Address, ZeusError> {
+        let mut input = [0u8; 128];
+        input[..32].copy_from_slice(msg_hash.as_slice());
+        input[63] = v; // valor no byte menos significativo da palavra de 32 bytes
+        input[64..96].copy_from_slice(r.as_slice());
+        input[96..128].copy_from_slice(s.as_slice());
+        let out = unsafe {
+            RawCall::new_static(self.vm()).call(ECRECOVER_PRECOMPILE, &input)
+        }
+        .map_err(|_| ZeusError::EcrecoverFailed(EcrecoverFailed {}))?;
+        if out.len() != 32 {
+            return Err(ZeusError::EcrecoverFailed(EcrecoverFailed {}));
+        }
+        let recovered = Address::from_slice(&out[12..32]); // saida: 32 bytes, address nos 20 ultimos
+        if recovered == Address::ZERO {
+            return Err(ZeusError::EcrecoverFailed(EcrecoverFailed {}));
+        }
+        Ok(recovered)
     }
 
     /// v3: politica completa no caminho do dinheiro (sessao, freeze, valor, risco, teto).
@@ -729,6 +795,85 @@ impl ZeusGuard {
         self.reentrancy_locked.set(false);
         Ok(())
     }
+    /// v5: registra o oraculo analitico oficial (uma unica vez, pelo deployer).
+    /// O endereco publico vem de generate_keys.py — a chave privada fica no .env do servidor.
+    pub fn init_oracle(&mut self, oracle: Address) -> Result<(), ZeusError> {
+        if self.trusted_oracle.get() != Address::ZERO {
+            return Err(ZeusError::OracleAlreadyInitialized(OracleAlreadyInitialized {}));
+        }
+        if oracle == Address::ZERO {
+            return Err(ZeusError::OracleZeroAddress(OracleZeroAddress {}));
+        }
+        self.trusted_oracle.set(oracle);
+        self.vm().log(OracleInitialized { oracle });
+        Ok(())
+    }
+
+    /// v5: consulta publica — endereco do oraculo confiavel (address(0) = nao inicializado).
+    pub fn trusted_oracle_pub(&self) -> Result<Address, ZeusError> {
+        Ok(self.trusted_oracle.get())
+    }
+
+    /// v5: firewall de transacao com score ASSINADO pelo oraculo.
+    /// Barreira 1: reentrancia | Barreira 2: sessao congelada (disjuntor)
+    /// Barreira 3: hash reconstruido nos bytes exatos | Barreira 4: ecrecover + oraculo
+    /// Barreira 5: anti-replay do nonce | Barreira 6: politica da v4 (sessao, risco, teto)
+    pub fn check_tx_signed(
+        &mut self,
+        user: Address,
+        amount: U256,
+        risk_x100: U256,
+        nonce: U256,
+        signature: Vec<u8>,
+    ) -> Result<(), ZeusError> {
+        if self.reentrancy_locked.get() {
+            return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
+        }
+        self.reentrancy_locked.set(true);
+        macro_rules! bail {
+            ($e:expr) => {{
+                self.reentrancy_locked.set(false);
+                return Err($e);
+            }};
+        }
+
+        if self.trusted_oracle.get() == Address::ZERO {
+            bail!(ZeusError::OracleNotInitialized(OracleNotInitialized {}));
+        }
+        if self.session_frozen.getter(user).get() {
+            bail!(ZeusError::SessionFrozen(SessionFrozenError {}));
+        }
+        if signature.len() != 65 {
+            bail!(ZeusError::InvalidSignatureLength(InvalidSignatureLength { got: U256::from(signature.len() as u64) }));
+        }
+        let r = B256::from_slice(&signature[0..32]);
+        let s = B256::from_slice(&signature[32..64]);
+        let mut v = signature[64];
+        if v < 27 { v += 27; } // normalizacao EVM: v 0/1 vira 27/28
+
+        let msg_hash = oracle_message_hash(user, amount, risk_x100, nonce);
+        let signer = match self.recover_signer(msg_hash, v, r, s) {
+            Ok(a) => a,
+            Err(e) => bail!(e),
+        };
+        if signer != self.trusted_oracle.get() {
+            bail!(ZeusError::InvalidOracleSignature(InvalidOracleSignature {}));
+        }
+
+        let nonce_key = oracle_nonce_key(user, nonce);
+        if self.oracle_nonce_used.getter(nonce_key).get() {
+            bail!(ZeusError::OracleNonceReplayed(OracleNonceReplayed { nonce }));
+        }
+        self.oracle_nonce_used.setter(nonce_key).set(true);
+
+        if let Err(e) = self.policy_gate(user, amount, risk_x100) {
+            bail!(e);
+        }
+
+        self.vm().log(OracleSignedCheck { user, amount, risk_x100: risk_saturating(risk_x100), nonce });
+        self.reentrancy_locked.set(false);
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -773,6 +918,42 @@ mod tests {
         assert_eq!(spent_in_window(0, u64::MAX, spent), U128::ZERO);
         // agora ANTERIOR ao inicio (saturating): trata como dentro
         assert_eq!(spent_in_window(500, 100, spent), spent);
+    }
+
+    #[test]
+    fn oraculo_hash_bate_com_o_servidor_python() {
+        // vetor gerado por engine/oracle_service.py (oracle_message_hash):
+        // user=0x00000000000000000000000000000000000000AA, amount=1e18, risk=1500, nonce=1
+        let user = Address::from_slice(&[0xAA; 20]);
+        let h = oracle_message_hash(user, U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64));
+        assert_eq!(
+            hex::encode(h.as_slice()),
+            "e3c3f91c260860b2bbd0f16560f0adf995b0f920de87a4c139d609eb1a146805"
+        );
+    }
+
+    #[test]
+    fn oraculo_nonce_key_e_anti_replay_deterministico() {
+        let user = Address::from_slice(&[0xAA; 20]);
+        let k1 = oracle_nonce_key(user, U256::from(1u64));
+        let k2 = oracle_nonce_key(user, U256::from(1u64));
+        let k3 = oracle_nonce_key(user, U256::from(2u64));
+        assert_eq!(k1, k2);       // mesmo nonce => mesma chave
+        assert_ne!(k1, k3);       // nonce novo => chave nova
+        assert_eq!(
+            hex::encode(k1.as_slice()),
+            "1d9cc831d43cebd5f9a4d865649395054531ac35ae2d9f2b4833375d7e5a53f5"
+        );
+    }
+
+    #[test]
+    fn hash_do_oraculo_nao_e_o_mesmo_com_outro_usuario() {
+        // 1 byte de diferenca no usuario muda o hash (sem padding, sem colisao de prefixo)
+        let a = Address::from_slice(&[0xAA; 20]);
+        let b = Address::from_slice(&[0xAB; 20]);
+        let ha = oracle_message_hash(a, U256::from(1u64), U256::from(1u64), U256::from(1u64));
+        let hb = oracle_message_hash(b, U256::from(1u64), U256::from(1u64), U256::from(1u64));
+        assert_ne!(ha, hb);
     }
 
     #[test]

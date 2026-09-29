@@ -11,6 +11,9 @@ alloy-primitives = "1.5.7"
 alloy-sol-types = "1.5.7"
 stylus-sdk = "0.10.9"
 
+[dev-dependencies]
+hex = "0.4"
+
 [lib]
 crate-type = ["lib", "cdylib"]
 

@@ -10,6 +10,10 @@
   const RPC = "https://sepolia-rollup.arbitrum.io/rpc";
   const CHAIN_ID_EXPECTED = "0x66eee"; // 421614
 
+  // oraculo analitico v5: score ASSINADO off-chain antes da carteira abrir.
+  // Aponte para o servidor engine/oracle_service.py em producao.
+  const ORACLE_ENDPOINT = "http://localhost:8080/score";
+
   // seletores (keccak)
   const SEL = {
     approve: "0x095ea7b3",
@@ -286,6 +290,45 @@
     return e;
   }
 
+  // ======== oraculo v5: score assinado off-chain (falha em modo de contingencia) ========
+  async function oraclePreCheck(tx) {
+    if (!ORACLE_ENDPOINT) return null;
+    let validation = null;
+    try {
+      const res = await fetch(ORACLE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: tx.from || "0x0000000000000000000000000000000000000000",
+          amount: tx.value ? parseInt(tx.value, 16) : 0,
+          nonce: tx.nonce ? parseInt(tx.nonce, 16) : 0,
+          origin: (typeof window !== "undefined" && window.location) ? window.location.origin : "",
+          raw_tx: tx
+        })
+      });
+      if (res.ok) validation = await res.json();
+    } catch (err) {
+      console.error("[ZEUS GUARD] Oraculo indisponivel — operando em modo de contingencia (firewall on-chain local).", err);
+      return null;
+    }
+    if (!validation) return null;
+
+    // bloqueio do oraculo NUNCA vira falha silenciosa
+    if (validation.verdict === "BLOQUEAR" || validation.score >= 6000) {
+      const e = buildRejectionError(
+        "ZEUS GUARD: transacao rejeitada pelo oraculo (score " + validation.score +
+        " — padrao de drainer)"
+      );
+      throw e;
+    }
+    // metadados para o contrato validar on-chain em check_tx_signed
+    if (validation.signature) {
+      tx.zeus_score = validation.score;
+      tx.zeus_sig = validation.signature;
+    }
+    return validation;
+  }
+
   // ======== hook ========
   function wrapEthereum(eth) {
     if (!eth || eth.__zeus) return;
@@ -299,6 +342,7 @@
         if (method === "eth_sendTransaction" || method === "eth_signTransaction") {
           const tx = params && params[0];
           if (tx && tx.from) {
+            await oraclePreCheck(tx); // v5: score assinado pelo oraculo (bloqueio = 4001)
             const r = await analyzeTx(tx.from, tx.to || "0x", tx.value, tx.data || "0x");
             if (r.verdict === "BLOQUEAR") {
               const why = r.revoked ? "spender REVOGADO no registro on-chain do ZEUS GUARD" : r.archetype;

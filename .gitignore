@@ -3,3 +3,5 @@ zeus-guard-contract/target/
 *.wasm.tmp
 __pycache__/
 *.pyc
+.env
+oracle_key.txt

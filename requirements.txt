@@ -4,3 +4,7 @@ pycryptodome>=3.20.0   # keccak-256 selectors for real chain screening + live pr
 pillow>=10.0.0         # renderizador de video (docs/zgv_render.py)
 web3>=6.0.0            # RPC on-chain smoke tests + live proof
 eth-utils>=2.0.0
+
+flask>=3.0.0
+python-dotenv>=1.0.0
+eth-account>=0.13.0
