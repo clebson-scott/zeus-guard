@@ -88,7 +88,7 @@ def oracle_message_hash(user: str, amount: int, risk_x100: int, nonce: int, cont
     )
 
 
-SELECTOR = Web3.keccak(text="check_tx_signed(address,uint256,uint256,uint256,bytes[])")[:4]
+SELECTOR = Web3.keccak(text="checkTxSigned(address,uint256,uint256,uint256,bytes[])")[:4]
 
 
 def forge_calldata(user: str, amount: int, risk_x100: int, nonce: int, signatures: list) -> str:
@@ -105,30 +105,27 @@ def forge_calldata(user: str, amount: int, risk_x100: int, nonce: int, signature
 #    (nomes exatos do sol! do lib.rs v6)
 # ============================================================================
 TYPED_ERRORS = {
-    "OracleNotInitialized()": ("OracleNotInitialized", []),
-    "OracleAlreadyInitialized()": ("OracleAlreadyInitialized", []),
-    "OracleZeroAddress()": ("OracleZeroAddress", []),
-    "InvalidSignatureLength(uint256)": ("InvalidSignatureLength", ["uint256"]),
-    "OracleNonceReplayed(uint256)": ("OracleNonceReplayed", ["uint256"]),
-    "NotContractOwner()": ("NotContractOwner", []),
-    "OracleKeyNotFound()": ("OracleKeyNotFound", []),
-    "OracleKeyDuplicate()": ("OracleKeyDuplicate", []),
-    "OracleCountInvalid(uint256)": ("OracleCountInvalid", ["uint256"]),
-    "OracleThresholdNotMet(uint256,uint256)": ("OracleThresholdNotMet", ["uint256", "uint256"]),
-    "SignatureListTooLong(uint256)": ("SignatureListTooLong", ["uint256"]),
-    "SignatureMalleable()": ("SignatureMalleable", []),
-    "EcrecoverFailed()": ("EcrecoverFailed", []),
-    "ReentrancyGuard()": ("ReentrancyGuard", []),
-    "SessionFrozenError()": ("SessionFrozenError", []),
-    "NoSession()": ("NoSession", []),
-    "TooRisky(uint64,uint64)": ("TooRisky", ["uint64", "uint64"]),
+    # "assinatura": (nome, [campos], [tipos])
+    "OracleThresholdNotMet(uint256,uint256)": ("OracleThresholdNotMet", ["got", "needed"], ["uint256", "uint256"]),
+    "OracleNonceReplayed(uint256)": ("OracleNonceReplayed", ["nonce"], ["uint256"]),
+    "InvalidSignatureLength(uint256)": ("InvalidSignatureLength", ["got"], ["uint256"]),
+    "SignatureListTooLong(uint256)": ("SignatureListTooLong", ["got"], ["uint256"]),
+    "OracleNotInitialized()": ("OracleNotInitialized", [], []),
+    "NoSession()": ("NoSession", [], []),
+    "EcrecoverFailed()": ("EcrecoverFailed", [], []),
+    "SignatureMalleable()": ("SignatureMalleable", [], []),
+    "ReentrancyGuard()": ("ReentrancyGuard", [], []),
+    "SessionFrozenError()": ("SessionFrozenError", [], []),
+    "NotContractOwner()": ("NotContractOwner", [], []),
+    "TooRisky(uint64,uint64)": ("TooRisky", ["risk", "limit"], ["uint64", "uint64"]),
+    "AboveDailyCap(uint256,uint256)": ("AboveDailyCap", ["spent", "cap"], ["uint256", "uint256"]),
 }
 
 
 def _selectors():
     out = {}
-    for sig, (name, types) in TYPED_ERRORS.items():
-        out[Web3.keccak(text=sig)[:4]] = (name, types)
+    for sig, (name, fields, types) in TYPED_ERRORS.items():
+        out[Web3.keccak(text=sig)[:4]] = (name, fields, types)
     return out
 
 
@@ -149,11 +146,11 @@ def decode_revert(exc) -> tuple:
     raw = bytes.fromhex(data[2:] if isinstance(data, str) else bytes(data).hex())
     sel = raw[:4]
     if sel in ERROR_SELECTORS:
-        name, types = ERROR_SELECTORS[sel]
+        name, fields, types = ERROR_SELECTORS[sel]
         if types:
             from eth_abi import decode as abi_decode
             values = abi_decode(types, raw[4:])
-            return (name, dict(zip(types, [str(v) for v in values])))
+            return (name, dict(zip(fields, [str(v) for v in values])))
         return (name, {})
     return ("RevertDesconhecido", {"selector": "0x" + sel.hex()})
 
@@ -203,7 +200,7 @@ def offline_selfcheck() -> bool:
 # ============================================================================
 def probe_contract(w3, ca) -> None:
     """Confirma que o alvo tem a ABI v6 (senao o ataque atesta nada)."""
-    sel = Web3.keccak(text="oracle_threshold_pub()")[:4]
+    sel = Web3.keccak(text="oracleThresholdPub()")[:4]
     try:
         r = w3.eth.call({"to": ca, "data": "0x" + sel.hex()})
         thr = int.from_bytes(r, "big")
@@ -288,13 +285,31 @@ def attack_3_replay(w3, ca) -> None:
 
     attacker = Account.from_key(ATTACKER_PRIVATE_KEY)
     user = Web3.to_checksum_address(bundle.get("user", attacker.address))
+    # a barreira 7 (policy_gate v4) exige sessao ativa: matricula o usuario antes
+    ses_data = Web3.keccak(text="initSession(address,uint256,uint256)")[:4] + abi_encode(
+        ["address", "uint256", "uint256"], [user, 3600, 10**18])
+    try:
+        w3.eth.call({"from": attacker.address, "to": ca, "data": ses_data.hex() if isinstance(ses_data, str) else ses_data})
+    except Exception:
+        pass  # sessao ja existente: o eth_call reverte, o send abaixo e o que importa
+    ses_tx = {"from": attacker.address, "to": ca, "data": "0x" + ses_data.hex(),
+              "nonce": w3.eth.get_transaction_count(attacker.address, "pending"),
+              "chainId": w3.eth.chain_id, "gas": 300000,
+              "gasPrice": max(w3.eth.gas_price, 10**9)}
+    signed_ses = Account.sign_transaction(ses_tx, attacker.key)
+    ses_hash = w3.eth.send_raw_transaction(signed_ses.raw_transaction)
+    ses_rc = w3.eth.wait_for_transaction_receipt(ses_hash)
+    if ses_rc["status"] == 1:
+        print("    sessao matriculada (guardiao=janela 3600s, teto 1 ETH)")
+    else:
+        print("    sessao ja existia (tx de matricula revertida) — seguindo")
     amount = int(bundle["amount"])
     nonce = int(bundle["nonce"])
     risk = int(bundle["score"])
     sigs = [bytes.fromhex(s[2:] if s.startswith("0x") else s) for s in bundle["signatures"]]
 
     contract = w3.eth.contract(address=ca, abi=[{
-        "name": "check_tx_signed", "type": "function", "stateMutability": "nonpayable",
+        "name": "checkTxSigned", "type": "function", "stateMutability": "nonpayable",
         "inputs": [
             {"name": "user", "type": "address"}, {"name": "amount", "type": "uint256"},
             {"name": "risk_x100", "type": "uint256"}, {"name": "nonce", "type": "uint256"},
@@ -302,8 +317,8 @@ def attack_3_replay(w3, ca) -> None:
         ],
         "outputs": [],
     }])
-    tx1 = contract.functions.check_tx_signed(user, amount, risk, nonce, sigs).build_transaction({
-        "from": attacker.address, "nonce": w3.eth.get_transaction_count(attacker.address),
+    tx1 = contract.functions.checkTxSigned(user, amount, risk, nonce, sigs).build_transaction({
+        "from": attacker.address, "nonce": w3.eth.get_transaction_count(attacker.address, "pending"),
         "chainId": w3.eth.chain_id, "gas": 400000,
     })
     signed = Account.sign_transaction(tx1, attacker.key)
@@ -314,8 +329,8 @@ def attack_3_replay(w3, ca) -> None:
           f"hash={h1.hex()}")
 
     # replay: MESMO bundle, MESMO nonce — o anti-replay tem que matar
-    tx2 = contract.functions.check_tx_signed(user, amount, risk, nonce, sigs).build_transaction({
-        "from": attacker.address, "nonce": w3.eth.get_transaction_count(attacker.address),
+    tx2 = contract.functions.checkTxSigned(user, amount, risk, nonce, sigs).build_transaction({
+        "from": attacker.address, "nonce": w3.eth.get_transaction_count(attacker.address, "pending"),
         "chainId": w3.eth.chain_id, "gas": 400000,
     })
     signed2 = Account.sign_transaction(tx2, attacker.key)

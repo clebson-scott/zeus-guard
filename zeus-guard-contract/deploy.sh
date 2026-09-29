@@ -64,13 +64,13 @@ cargo test
 
 # ---- 2. validacao WASM (binario otimizado, hoje ~23.4 KiB) ----
 step "2/6 cargo stylus check (binario WASM otimizado)"
-cargo stylus check
+cargo stylus check --endpoint "$RPC"
 
 # ---- 3. deploy ----
 step "3/6 cargo stylus deploy (Stylus, Arbitrum Sepolia)"
 DEPLOY_LOG="$(mktemp)"
 trap 'rm -f "$DEPLOY_LOG"' EXIT
-cargo stylus deploy --private-key "$DEPLOYER_PRIVATE_KEY" --endpoint "$RPC" 2>&1 | tee "$DEPLOY_LOG"
+cargo stylus deploy --no-verify --max-fee-per-gas-gwei 0.1 --private-key "$DEPLOYER_PRIVATE_KEY" --endpoint "$RPC" 2>&1 | tee "$DEPLOY_LOG"
 
 # captura o endereco do contrato (exatamente 40 hex — tx hashes tem 64 e nao casam)
 CONTRACT="$(grep -oE '0x[a-fA-F0-9]{40}\b' "$DEPLOY_LOG" | tail -n1 || true)"
@@ -79,15 +79,15 @@ echo "contrato v6 deployado: $CONTRACT"
 
 # ---- 4. init_oracle(multisig 2-de-3) ----
 step "4/6 init_oracle([oracle1, oracle2, oracle3])"
-cast send "$CONTRACT" "init_oracle(address[])" "[$O1,$O2,$O3]" \
+cast send "$CONTRACT" "initOracle(address[])" "[$O1,$O2,$O3]" \
   --rpc-url "$RPC" --private-key "$DEPLOYER_PRIVATE_KEY"
 
 # ---- 5. verificacao on-chain ----
 step "5/6 Verificacao on-chain"
 echo "oracles_pub():"
-cast call "$CONTRACT" "oracles_pub()(address[])" --rpc-url "$RPC"
+cast call "$CONTRACT" "oraclesPub()(address[])" --rpc-url "$RPC"
 echo "oracle_threshold_pub():"
-THRESHOLD="$(cast call "$CONTRACT" "oracle_threshold_pub()(uint256)" --rpc-url "$RPC")"
+THRESHOLD="$(cast call "$CONTRACT" "oracleThresholdPub()(uint256)" --rpc-url "$RPC")"
 echo "$THRESHOLD"
 [ "$(cast --to-base "$THRESHOLD" 10 2>/dev/null || echo "$THRESHOLD")" = "2" ] \
   || [ "$THRESHOLD" = "2" ] \

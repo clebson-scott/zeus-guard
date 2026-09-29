@@ -53,7 +53,7 @@ use stylus_sdk::prelude::*;
 use stylus_sdk::call::RawCall;
 use stylus_sdk::alloy_sol_types::SolCall;
 use stylus_sdk::alloy_sol_types::sol;
-use stylus_sdk::alloy_primitives::{Address, B256, U64, U128, U256};
+use stylus_sdk::alloy_primitives::{Address, Bytes, B256, U64, U128, U256};
 use stylus_sdk::stylus_core::{AccountAccess, ChainAccess};
 
 pub const MIN_CHALLENGE_WINDOW: u64 = 120; // 2 min de protecao minima
@@ -387,7 +387,7 @@ impl ZeusGuard {
         amount: U256,
         risk_x100: U256,
         nonce: U256,
-        signatures: &[Vec<u8>],
+        signatures: &[Bytes],
     ) -> Result<(), ZeusError> {
         if !self.oracle_is_initialized() {
             return Err(ZeusError::OracleNotInitialized(OracleNotInitialized {}));
@@ -411,7 +411,7 @@ impl ZeusGuard {
         // contagem distinct por slot — mesma chave assinando 2x conta 1x so
         let (mut hit0, mut hit1, mut hit2) = (false, false, false);
         for sig in signatures {
-            let (r, s, v) = parse_signature(sig)?;
+            let (r, s, v) = parse_signature(&sig[..])?;
             let signer = self.recover_signer(msg_hash, v, r, s)?;
             if !hit0 && signer == self.oracle_slot0.get() { hit0 = true; }
             if !hit1 && signer == self.oracle_slot1.get() { hit1 = true; }
@@ -905,7 +905,7 @@ impl ZeusGuard {
         amount: U256,
         risk_x100: U256,
         nonce: U256,
-        signatures: Vec<Vec<u8>>,
+        signatures: Vec<Bytes>,
     ) -> Result<(), ZeusError> {
         if self.reentrancy_locked.get() {
             return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
@@ -1079,7 +1079,7 @@ impl ZeusGuard {
         amount: U256,
         risk_x100: U256,
         nonce: U256,
-        signatures: Vec<Vec<u8>>,
+        signatures: Vec<Bytes>,
     ) -> Result<(), ZeusError> {
         self.oracle_verify_signatures(user, amount, risk_x100, nonce, &signatures)?;
         self.policy_gate(user, amount, risk_x100)?;
@@ -1098,7 +1098,7 @@ impl ZeusGuard {
         amount: U256,
         risk_x100: U256,
         nonce: U256,
-        signatures: Vec<Vec<u8>>,
+        signatures: Vec<Bytes>,
     ) -> Result<(), ZeusError> {
         if self.reentrancy_locked.get() {
             return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
