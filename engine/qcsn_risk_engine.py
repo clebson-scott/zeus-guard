@@ -27,6 +27,23 @@ ARCHETYPES = {
     "LEGIT_SW":          np.array([0.2, 0.0, 0.1, 0.3, 0.0, 0.0, 0.8, 0.9]),
     "LEGIT_PAYMENT":     np.array([0.0, 0.5, 0.2, 0.4, 0.0, 0.0, 0.95, 0.8]),
 }
+def validate_features(tx_features):
+    """Sanitizacao adversarial (achado do fuzz harness v4.1):
+
+    1. Recusa NaN/Inf com ValueError explicito (INV7: nunca aceitar calado).
+    2. Projeta o vetor no dominio documentado das features [0,1] — arquétipos
+       vivem em [0,1]^8; entradas fora do dominio sao saturadas nas bordas,
+       garantindo custos finitos sob QUALQUER magnitude (INV2/INV6: sem
+       overflow ate 1e300).
+    """
+    x = np.asarray(tx_features, dtype=np.float64)
+    if x.shape != (8,):
+        raise ValueError(f"vetor de features deve ter shape (8,), recebido {x.shape}")
+    if not np.all(np.isfinite(x)):
+        raise ValueError("features contem NaN/Inf — recusado explicitamente")
+    return np.clip(x, 0.0, 1.0)
+
+
 RISK_OF = {
     "DRAINER_APPROVAL": "BLOQUEAR",
     "ADDRESS_POISONING": "BLOQUEAR",
@@ -55,7 +72,8 @@ class QCSNRiskEngine:
 
     def classify(self, tx_features):
         """Caminho analitico (producao): identico ao quench, sem o loop de integracao."""
-        E = self._costs(tx_features)
+        x = validate_features(tx_features)
+        E = self._costs(x)
         i = int(np.argmin(E))
         # probabilidade de Gibbs exata em beta final: p_i = exp(-beta_f*E_i)/Z
         logits = -self.beta_f * (E - E.min())
@@ -65,7 +83,8 @@ class QCSNRiskEngine:
 
     def classify_quench(self, tx_features):
         """Quench numerico completo (reproducao da validacao quantica)."""
-        E = self._costs(tx_features)
+        x = validate_features(tx_features)
+        E = self._costs(x)
         n = len(E)
         P = np.ones(n) / n
         dE0 = E[:, None] - E[None, :]

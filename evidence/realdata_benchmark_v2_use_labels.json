@@ -1,0 +1,26 @@
+{
+  "accuracy": 84.8,
+  "alerted_preventive": 47,
+  "attacks": 527,
+  "benign": 14764,
+  "blocked_direct": 7,
+  "fp_rate": 12.6,
+  "labels_mode": "identity-layer",
+  "recall": 10.2,
+  "total_events": 15291,
+  "version": "v2_scaled",
+  "wilson_95": {
+    "accuracy": [
+      0.842,
+      0.8534
+    ],
+    "fp_rate": [
+      0.1204,
+      0.1311
+    ],
+    "recall": [
+      0.0794,
+      0.1313
+    ]
+  }
+}

@@ -17,7 +17,7 @@ O **ZEUS GUARD v4** é um sistema de defesa ativa em duas camadas independentes 
 
 2. **Cofre On-Chain Imutável em Rust / Stylus WASM**: Caso uma transação chegue à blockchain, o contrato imutável Stylus v4 (`0xa9ef...76a`, apenas 23.4 KiB WASM) atua como firewall determinístico. Ele impõe teto de risco (Score ≥ 60%), limite diário rolante de 24 horas, janela de contestação de custódia (≥120s para pagamentos USDG) e congelamento de sessão de emergência por um guardião.
 
-3. **Motor de Risco QCSN Sem Quantum Washing**: O motor analítico é derivado de física de Redes de Spins Contínuos Quânticas (QCSN), validado no QPU `ibm_fez` da IBM (fidelidade 0.997). Em produção, roda o argmin analítico determinístico em **<0.1 ms por transação**, com **100.0% de recall em 14 ataques reais da Arbitrum Mainnet** e **0 divergências em 1.848 testes** com a integração quântica.
+3. **Motor de Risco Determinístico (<0.1 ms/tx)**: Em produção o ZEUS GUARD roda um classificador argmin **100% determinístico e auditável**, com **100.0% de recall em 54 ataques reais da Arbitrum Mainnet** (GT corrigido por camada de identidade; IC95 [93.4%, 100%]) e **0 divergências em 1.848 testes** contra o modelo teórico. Origem de pesquisa: física de redes de spins quânticas, validada no QPU `ibm_fez` da IBM (fidelidade 0.997) — como documentação científica, não como componente de runtime.
 
 ---
 

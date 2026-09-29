@@ -1,0 +1,18 @@
+{
+  "timestamp": 1790630282.7927392,
+  "n_random_per_dist": 20000,
+  "seed": 20260928,
+  "total_inputs_checked": 40054,
+  "invariants": [
+    "INV1_no_crash",
+    "INV2_prob_finite_unit",
+    "INV3_verdict_valid",
+    "INV4_quench_argmin_equivalence",
+    "INV5_determinism",
+    "INV6_finite_energy_extremes",
+    "INV7_nan_rejected"
+  ],
+  "failures": [],
+  "passed": true,
+  "elapsed_seconds": 52.68
+}

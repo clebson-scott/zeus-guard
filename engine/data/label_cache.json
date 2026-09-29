@@ -1,0 +1,5105 @@
+{
+ "0x0000000000000000000000000000000000000000": {
+  "address": "0x0000000000000000000000000000000000000000",
+  "fetched_at": 1790641321.891277,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x0000000000001ff3684f28c67538d4d072c22734": {
+  "address": "0x0000000000001ff3684f28c67538d4d072c22734",
+  "fetched_at": 1790641322.8627658,
+  "klass": "protocol",
+  "name": "AllowanceHolder",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x000000000000c9b3e2c3ec88b1b4c0cd853f4321": {
+  "address": "0x000000000000c9b3e2c3ec88b1b4c0cd853f4321",
+  "fetched_at": 1790641323.8761694,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x000000000004598d17aad017bf0734a364c5588b": {
+  "address": "0x000000000004598d17aad017bf0734a364c5588b",
+  "fetched_at": 1790641326.2103703,
+  "klass": "protocol",
+  "name": "Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x000000000022d473030f116ddee9f6b43ac78ba3": {
+  "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+  "fetched_at": 1790641326.2116282,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x00000000005bbb0ef59571e58418f9a4357b68a0": {
+  "address": "0x00000000005bbb0ef59571e58418f9a4357b68a0",
+  "fetched_at": 1790641326.6471083,
+  "klass": "protocol",
+  "name": "PendleRouterV3",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x00000000009726632680fb29d3f7a9734e3010e2": {
+  "address": "0x00000000009726632680fb29d3f7a9734e3010e2",
+  "fetched_at": 1790641327.3125348,
+  "klass": "protocol",
+  "name": "RainbowRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0000000000bbf5c5fd284e657f01bd000933c96d": {
+  "address": "0x0000000000bbf5c5fd284e657f01bd000933c96d",
+  "fetched_at": 1790641327.9260569,
+  "klass": "protocol",
+  "name": "Adapter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x000000001dc8bd45d7e7829fb1c969cbe4d0d1ec": {
+  "address": "0x000000001dc8bd45d7e7829fb1c969cbe4d0d1ec",
+  "fetched_at": 1790641328.435527,
+  "klass": "protocol",
+  "name": "MultiDepositorVault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0000000021526b5c055653a55df60b21b73da999": {
+  "address": "0x0000000021526b5c055653a55df60b21b73da999",
+  "fetched_at": 1790641329.5072525,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x00550b6b6a1f8f497e5340812812e5f1cdd05500": {
+  "address": "0x00550b6b6a1f8f497e5340812812e5f1cdd05500",
+  "fetched_at": 1790641330.8624105,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x00669a4cf01450b64e8a2a20e9b1fcb71e61ef03": {
+  "address": "0x00669a4cf01450b64e8a2a20e9b1fcb71e61ef03",
+  "fetched_at": 1790641331.8662748,
+  "klass": "protocol",
+  "name": "GraphProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x00724a470ee46c47bcb8c446236d5fbdc9b58454": {
+  "address": "0x00724a470ee46c47bcb8c446236d5fbdc9b58454",
+  "fetched_at": 1790641333.8809855,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x00a966cfb83f9c078a2a202ebd22194eeb8fd483": {
+  "address": "0x00a966cfb83f9c078a2a202ebd22194eeb8fd483",
+  "fetched_at": 1790641334.3158603,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x00fc00edbe7c003b006f870068c548940000223e": {
+  "address": "0x00fc00edbe7c003b006f870068c548940000223e",
+  "fetched_at": 1790641337.8812342,
+  "klass": "protocol",
+  "name": "InputSettlerEscrowLIFI",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0183d055c77310af03dcb397efaa7e9cfb6db59b": {
+  "address": "0x0183d055c77310af03dcb397efaa7e9cfb6db59b",
+  "fetched_at": 1790641338.863105,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x01a3c8e513b758ebb011f7afaf6c37616c9c24d9": {
+  "address": "0x01a3c8e513b758ebb011f7afaf6c37616c9c24d9",
+  "fetched_at": 1790641339.437228,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x01d8af7e9bdd28d465d672e6b6409bb345af6ea1": {
+  "address": "0x01d8af7e9bdd28d465d672e6b6409bb345af6ea1",
+  "fetched_at": 1790641340.88021,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x02947c5ff221e6edae24f3da2949d6f295ba89fa": {
+  "address": "0x02947c5ff221e6edae24f3da2949d6f295ba89fa",
+  "fetched_at": 1790641341.3579926,
+  "klass": "protocol",
+  "name": "FrontierDeposit",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x02d0123a89ae6ef27419d5ebb158d1ed4cf24fa3": {
+  "address": "0x02d0123a89ae6ef27419d5ebb158d1ed4cf24fa3",
+  "fetched_at": 1790641342.8230863,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x02dd3067bb257963a16e563a30f5d5c8c524ce3c": {
+  "address": "0x02dd3067bb257963a16e563a30f5d5c8c524ce3c",
+  "fetched_at": 1790641343.3088448,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x02e5be68d46dac0b524905bff209cf47ee6db2a9": {
+  "address": "0x02e5be68d46dac0b524905bff209cf47ee6db2a9",
+  "fetched_at": 1790641343.8627517,
+  "klass": "protocol",
+  "name": "SwapProxy",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x03743372098aa51e1fce537d51025f08b55c4144": {
+  "address": "0x03743372098aa51e1fce537d51025f08b55c4144",
+  "fetched_at": 1790641344.3269453,
+  "klass": "protocol",
+  "name": "TransferProxy",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0493b890f65699ebbb1c32204c27cbb3d371076d": {
+  "address": "0x0493b890f65699ebbb1c32204c27cbb3d371076d",
+  "fetched_at": 1790641345.0085394,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x05c0aeaaba10778ff7cbaa484c19161551132581": {
+  "address": "0x05c0aeaaba10778ff7cbaa484c19161551132581",
+  "fetched_at": 1790641345.82983,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x06288c1aca8242cfce56f562c858681535069700": {
+  "address": "0x06288c1aca8242cfce56f562c858681535069700",
+  "fetched_at": 1790641346.8629897,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x06cb6c245cd9219262442a7730d9484b3cfdd901": {
+  "address": "0x06cb6c245cd9219262442a7730d9484b3cfdd901",
+  "fetched_at": 1790641347.8726964,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x07964f135f276412b3182a3b2407b8dd45000000": {
+  "address": "0x07964f135f276412b3182a3b2407b8dd45000000",
+  "fetched_at": 1790641351.8621535,
+  "klass": "protocol",
+  "name": "TransitSwapRouterV5",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0850a762fe5c6fd1b41e39c9d29f95e125675251": {
+  "address": "0x0850a762fe5c6fd1b41e39c9d29f95e125675251",
+  "fetched_at": 1790641352.5102406,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x08d35eaa9dc982ff6d96ea5d69df94278a7b9005": {
+  "address": "0x08d35eaa9dc982ff6d96ea5d69df94278a7b9005",
+  "fetched_at": 1790641353.8626125,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x092baadb7def4c3981454dd9c0a0d7ff07bcfc86": {
+  "address": "0x092baadb7def4c3981454dd9c0a0d7ff07bcfc86",
+  "fetched_at": 1790641354.8829737,
+  "klass": "protocol",
+  "name": "MOROFT",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x09986b4e255b3c548041a30a2ee312fe176731c2": {
+  "address": "0x09986b4e255b3c548041a30a2ee312fe176731c2",
+  "fetched_at": 1790641355.3319926,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x09bd2a33c47746ff03b86bce4e885d03c74a8e8c": {
+  "address": "0x09bd2a33c47746ff03b86bce4e885d03c74a8e8c",
+  "fetched_at": 1790641355.8628144,
+  "klass": "protocol",
+  "name": "RouteProcessor3_2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x09dc8c3fe24697161fc8523e73b2534936bef3f7": {
+  "address": "0x09dc8c3fe24697161fc8523e73b2534936bef3f7",
+  "fetched_at": 1790641356.8849819,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x0a1a1a107e45b7ced86833863f482bc5f4ed82ef": {
+  "address": "0x0a1a1a107e45b7ced86833863f482bc5f4ed82ef",
+  "fetched_at": 1790641359.2318268,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0b15d6cf5e843c88034f64664d7fe66e5f79c5f2": {
+  "address": "0x0b15d6cf5e843c88034f64664d7fe66e5f79c5f2",
+  "fetched_at": 1790641360.0167294,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0b2402144bb366a632d14b83f244d2e0e21bd39c": {
+  "address": "0x0b2402144bb366a632d14b83f244d2e0e21bd39c",
+  "fetched_at": 1790641361.0313237,
+  "klass": "protocol",
+  "name": "TokenBridge",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0b2b2b2076d95dda7817e785989fe353fe955ef9": {
+  "address": "0x0b2b2b2076d95dda7817e785989fe353fe955ef9",
+  "fetched_at": 1790641362.7078676,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0bafed8b6f6216c3edb5a6cc9219dab4e7b87f54": {
+  "address": "0x0bafed8b6f6216c3edb5a6cc9219dab4e7b87f54",
+  "fetched_at": 1790641363.8759406,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0be99020775d3a13c7649ee04a496bcc045d0ea6": {
+  "address": "0x0be99020775d3a13c7649ee04a496bcc045d0ea6",
+  "fetched_at": 1790641364.8619363,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0d2d2d20962f2468566f4d1a4ddeb482915c4d4a": {
+  "address": "0x0d2d2d20962f2468566f4d1a4ddeb482915c4d4a",
+  "fetched_at": 1790641365.315609,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0d9d44b6d55f0413c9fd168e78e9e2aab794bfbd": {
+  "address": "0x0d9d44b6d55f0413c9fd168e78e9e2aab794bfbd",
+  "fetched_at": 1790641382.1401684,
+  "klass": "protocol",
+  "name": "Vault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0db3fe3b770c95a0b99d1ed6f2627933466c0dd8": {
+  "address": "0x0db3fe3b770c95a0b99d1ed6f2627933466c0dd8",
+  "fetched_at": 1790641382.8625183,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0e9c1a3aa696299e38b00a8144bf6dc16c1f5400": {
+  "address": "0x0e9c1a3aa696299e38b00a8144bf6dc16c1f5400",
+  "fetched_at": 1790641383.8621256,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x0fc85a171bd0b53bf0bbace74f04b66170ae3eab": {
+  "address": "0x0fc85a171bd0b53bf0bbace74f04b66170ae3eab",
+  "fetched_at": 1790641384.2049193,
+  "klass": "protocol",
+  "name": "NativeRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x10151139eef47da97d728882156262a1aa27d190": {
+  "address": "0x10151139eef47da97d728882156262a1aa27d190",
+  "fetched_at": 1790641385.0399761,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x10417734001162ea139e8b044dfe28dbb8b28ad0": {
+  "address": "0x10417734001162ea139e8b044dfe28dbb8b28ad0",
+  "fetched_at": 1790641386.9523916,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1080808080f145b14228443212e62447c112adad": {
+  "address": "0x1080808080f145b14228443212e62447c112adad",
+  "fetched_at": 1790641389.1062567,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x10e5b62b39b7210fb06812e88dadab344be49080": {
+  "address": "0x10e5b62b39b7210fb06812e88dadab344be49080",
+  "fetched_at": 1790641389.8619134,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x111111125421ca6dc452d289314280a0f8842a65": {
+  "address": "0x111111125421ca6dc452d289314280a0f8842a65",
+  "fetched_at": 1790641389.8636851,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x1111111254eeb25477b68fb85ed929f73a960582": {
+  "address": "0x1111111254eeb25477b68fb85ed929f73a960582",
+  "fetched_at": 1790641390.3248556,
+  "klass": "protocol",
+  "name": "AggregationRouterV5",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1111111254fb6c44bac0bed2854e76f90643097d": {
+  "address": "0x1111111254fb6c44bac0bed2854e76f90643097d",
+  "fetched_at": 1790641391.87711,
+  "klass": "protocol",
+  "name": "AggregationRouterV4",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1195cf65f83b3a5768f3c496d3a05ad6412c64b7": {
+  "address": "0x1195cf65f83b3a5768f3c496d3a05ad6412c64b7",
+  "fetched_at": 1790641392.8620822,
+  "klass": "protocol",
+  "name": "Layer3 CUBE",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x11b3a7e08eb2fdea2745e4cb64648b10b28524a8": {
+  "address": "0x11b3a7e08eb2fdea2745e4cb64648b10b28524a8",
+  "fetched_at": 1790641393.2104297,
+  "klass": "protocol",
+  "name": "Vault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x121def62291a5d8fd3c9720f1ab3d6666580c6fa": {
+  "address": "0x121def62291a5d8fd3c9720f1ab3d6666580c6fa",
+  "fetched_at": 1790641394.2395556,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae": {
+  "address": "0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae",
+  "fetched_at": 1790641271.1927524,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x1255c28858debca4eef7d3697cabf7a6231a2d79": {
+  "address": "0x1255c28858debca4eef7d3697cabf7a6231a2d79",
+  "fetched_at": 1790641394.8657258,
+  "klass": "protocol",
+  "name": "Intellectual Property Token",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x13caf44396293d99f157fe85e0fc395acfba2ef2": {
+  "address": "0x13caf44396293d99f157fe85e0fc395acfba2ef2",
+  "fetched_at": 1790641395.3570375,
+  "klass": "protocol",
+  "name": "Cow Uniswap Arb LINK-USDT",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x14e4a1b13bf7f943c8ff7c51fb60fa964a298d92": {
+  "address": "0x14e4a1b13bf7f943c8ff7c51fb60fa964a298d92",
+  "fetched_at": 1790641396.863161,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x163dbe0a66fb338f6cfdd450a153b5c73bd20197": {
+  "address": "0x163dbe0a66fb338f6cfdd450a153b5c73bd20197",
+  "fetched_at": 1790641397.338586,
+  "klass": "protocol",
+  "name": "BeaconProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1767c7fcd3b3be0e8b9825e6beaa6c8cf5ef88ff": {
+  "address": "0x1767c7fcd3b3be0e8b9825e6beaa6c8cf5ef88ff",
+  "fetched_at": 1790641397.9104009,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1794fe17eb780619fad46baf80f7628f7495378b": {
+  "address": "0x1794fe17eb780619fad46baf80f7628f7495378b",
+  "fetched_at": 1790641399.8627334,
+  "klass": "protocol",
+  "name": "HTLC",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x18556da13313f3532c54711497a8fedac273220e": {
+  "address": "0x18556da13313f3532c54711497a8fedac273220e",
+  "fetched_at": 1790641400.2128773,
+  "klass": "protocol",
+  "name": "LBRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x186cf879186986a20aadfb7ead50e3c20cb26cec": {
+  "address": "0x186cf879186986a20aadfb7ead50e3c20cb26cec",
+  "fetched_at": 1790641400.9156768,
+  "klass": "protocol",
+  "name": "CurveStableSwapNG",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x18cd9270dbdca86d470cfb3be1b156241fffa9de": {
+  "address": "0x18cd9270dbdca86d470cfb3be1b156241fffa9de",
+  "fetched_at": 1790641401.3370922,
+  "klass": "protocol",
+  "name": "ElementEx",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x19330d10d9cc8751218eaf51e8885d058642e08a": {
+  "address": "0x19330d10d9cc8751218eaf51e8885d058642e08a",
+  "fetched_at": 1790641401.6319518,
+  "klass": "protocol",
+  "name": "TokenMessenger",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x193926ba0109c70d658cf2e0273fc6ce6a8dd0db": {
+  "address": "0x193926ba0109c70d658cf2e0273fc6ce6a8dd0db",
+  "fetched_at": 1790641402.420505,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1a996cb54bb95462040408c06122d45d6cdb6096": {
+  "address": "0x1a996cb54bb95462040408c06122d45d6cdb6096",
+  "fetched_at": 1790641402.862695,
+  "klass": "protocol",
+  "name": "fToken",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1a9ec30e181784d6fe57cef71a88f93c253f5b48": {
+  "address": "0x1a9ec30e181784d6fe57cef71a88f93c253f5b48",
+  "fetched_at": 1790641403.3302457,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506": {
+  "address": "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506",
+  "fetched_at": 1790641404.4302464,
+  "klass": "protocol",
+  "name": "UniswapV2Router02",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1b07d3344188908fb6deceac381f3ee63c48477a": {
+  "address": "0x1b07d3344188908fb6deceac381f3ee63c48477a",
+  "fetched_at": 1790641405.8628545,
+  "klass": "protocol",
+  "name": "Billing",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1b4ec865915872aec7a30423fda2584c9fa894c5": {
+  "address": "0x1b4ec865915872aec7a30423fda2584c9fa894c5",
+  "fetched_at": 1790641406.2087493,
+  "klass": "protocol",
+  "name": "FluidVaultT1",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1b81d678ffb9c0263b24a97847620c99d213eb14": {
+  "address": "0x1b81d678ffb9c0263b24a97847620c99d213eb14",
+  "fetched_at": 1790641407.8842306,
+  "klass": "protocol",
+  "name": "SwapRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1b8e7fe3daefb3301cd456f6c7f90bb913acb3cd": {
+  "address": "0x1b8e7fe3daefb3301cd456f6c7f90bb913acb3cd",
+  "fetched_at": 1790641408.5434608,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1c29464409746d1d38eb6405562fbc87ab13342c": {
+  "address": "0x1c29464409746d1d38eb6405562fbc87ab13342c",
+  "fetched_at": 1790641411.8839836,
+  "klass": "protocol",
+  "name": "SingleRandomRoulette",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1c34204fcfe5314dcf53be2671c02c35db58b4e3": {
+  "address": "0x1c34204fcfe5314dcf53be2671c02c35db58b4e3",
+  "fetched_at": 1790641412.2215903,
+  "klass": "protocol",
+  "name": "CurveStableSwapNG",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1dc392497ea097427384c2e6ebcf060fe1a7f2ba": {
+  "address": "0x1dc392497ea097427384c2e6ebcf060fe1a7f2ba",
+  "fetched_at": 1790641412.9529982,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1e0049783f008a0085193e00003d00cd54003c71": {
+  "address": "0x1e0049783f008a0085193e00003d00cd54003c71",
+  "fetched_at": 1790641413.3085241,
+  "klass": "protocol",
+  "name": "Conduit",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1f721e2e82f6676fce4ea07a5958cf098d339e18": {
+  "address": "0x1f721e2e82f6676fce4ea07a5958cf098d339e18",
+  "fetched_at": 1790641415.1048992,
+  "klass": "protocol",
+  "name": "SwapRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x1f7c4f45c8a398381616c74269f9fb8060e3ddc9": {
+  "address": "0x1f7c4f45c8a398381616c74269f9fb8060e3ddc9",
+  "fetched_at": 1790641415.8769841,
+  "klass": "protocol",
+  "name": "YodlRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x20d27f895965247624d90cbed1e739c4ab5c4cf7": {
+  "address": "0x20d27f895965247624d90cbed1e739c4ab5c4cf7",
+  "fetched_at": 1790641416.8629272,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x20f6ee51340adeed01a59b0e65cb3703f3dc860c": {
+  "address": "0x20f6ee51340adeed01a59b0e65cb3703f3dc860c",
+  "fetched_at": 1790641418.2124474,
+  "klass": "protocol",
+  "name": "DexAggregator",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x213083105fcddcd51cb5a2a6e0ba5bbceb173534": {
+  "address": "0x213083105fcddcd51cb5a2a6e0ba5bbceb173534",
+  "fetched_at": 1790641418.8627646,
+  "klass": "protocol",
+  "name": "BeaconProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x216b4b4ba9f3e719726886d34a177484278bfcae": {
+  "address": "0x216b4b4ba9f3e719726886d34a177484278bfcae",
+  "fetched_at": 1790641419.8626611,
+  "klass": "protocol",
+  "name": "TokenTransferProxy",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x220690e908d51d564099649469e423568f70e639": {
+  "address": "0x220690e908d51d564099649469e423568f70e639",
+  "fetched_at": 1790641420.8740416,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x225a38bc71102999dd13478bfabd7c4d53f2dc17": {
+  "address": "0x225a38bc71102999dd13478bfabd7c4d53f2dc17",
+  "fetched_at": 1790641421.8626852,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x22c6d4971bcff2afb901975844a84155fbdd5e0b": {
+  "address": "0x22c6d4971bcff2afb901975844a84155fbdd5e0b",
+  "fetched_at": 1790641422.8620617,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x22d78fb4bc72e191c765807f8891b5e1785c8014": {
+  "address": "0x22d78fb4bc72e191c765807f8891b5e1785c8014",
+  "fetched_at": 1790641423.862753,
+  "klass": "protocol",
+  "name": "GraphProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x230840ee2ea20e17a96dff9debf1e9ee8deec3df": {
+  "address": "0x230840ee2ea20e17a96dff9debf1e9ee8deec3df",
+  "fetched_at": 1790641424.8622446,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x236ea2408d22c072c263576bc7a1f22d3c9e23ba": {
+  "address": "0x236ea2408d22c072c263576bc7a1f22d3c9e23ba",
+  "fetched_at": 1790641425.8618503,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x23981fc34e69eedfe2bd9a0a9fcb0719fe09dbfc": {
+  "address": "0x23981fc34e69eedfe2bd9a0a9fcb0719fe09dbfc",
+  "fetched_at": 1790641426.3211427,
+  "klass": "protocol",
+  "name": "MetaBridge",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x23a0f6c10300adbf43c9f12ef197b063a65a85a4": {
+  "address": "0x23a0f6c10300adbf43c9f12ef197b063a65a85a4",
+  "fetched_at": 1790641427.2107444,
+  "klass": "protocol",
+  "name": "SolidlyV3Pool",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x23ac21063fde26ef95a447eca3fc26818affca6a": {
+  "address": "0x23ac21063fde26ef95a447eca3fc26818affca6a",
+  "fetched_at": 1790641427.863662,
+  "klass": "protocol",
+  "name": "FlowHybridAdapter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x24b10c3a35b1c50e32ecc9307a7d7da1eb283a73": {
+  "address": "0x24b10c3a35b1c50e32ecc9307a7d7da1eb283a73",
+  "fetched_at": 1790641440.1095107,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x24fc568e5346145f1ec7796deeb5fc316066bdfa": {
+  "address": "0x24fc568e5346145f1ec7796deeb5fc316066bdfa",
+  "fetched_at": 1790641441.2285178,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x2552364fa12bf79623a8785ceea1c910ee28329a": {
+  "address": "0x2552364fa12bf79623a8785ceea1c910ee28329a",
+  "fetched_at": 1790641441.9432151,
+  "klass": "protocol",
+  "name": "LiveTradingProcessor",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x25ab3efd52e6470681ce037cd546dc60726948d3": {
+  "address": "0x25ab3efd52e6470681ce037cd546dc60726948d3",
+  "fetched_at": 1790641442.8627386,
+  "klass": "protocol",
+  "name": "ProxyToMeson",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x26283a5b3b5991aa6a16191a03d817eb9105a9b5": {
+  "address": "0x26283a5b3b5991aa6a16191a03d817eb9105a9b5",
+  "fetched_at": 1790641443.8627698,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x26e1ef676c118977db3547a1b5de61a5251e83fe": {
+  "address": "0x26e1ef676c118977db3547a1b5de61a5251e83fe",
+  "fetched_at": 1790641444.4101102,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x27117f7e48e07f9e23042931ab39fe02a62ec587": {
+  "address": "0x27117f7e48e07f9e23042931ab39fe02a62ec587",
+  "fetched_at": 1790641446.862915,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x27b2633d79b12bb4032fbbda07a137c0d195bb30": {
+  "address": "0x27b2633d79b12bb4032fbbda07a137c0d195bb30",
+  "fetched_at": 1790641447.4198678,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x282794192f59f77ca3f5cc3d88b5dca91e9c5054": {
+  "address": "0x282794192f59f77ca3f5cc3d88b5dca91e9c5054",
+  "fetched_at": 1790641448.009246,
+  "klass": "protocol",
+  "name": "FlowHybridAdapter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x28b5a0e9c621a5badaa536219b3a228c8168cf5d": {
+  "address": "0x28b5a0e9c621a5badaa536219b3a228c8168cf5d",
+  "fetched_at": 1790641451.225239,
+  "klass": "protocol",
+  "name": "AdminUpgradableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x29709b11d488a65188f06996a0a01561cea5129f": {
+  "address": "0x29709b11d488a65188f06996a0a01561cea5129f",
+  "fetched_at": 1790641451.8626199,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x29a6fcd065131aaede6068a2e87ac48b8911526a": {
+  "address": "0x29a6fcd065131aaede6068a2e87ac48b8911526a",
+  "fetched_at": 1790641452.2646685,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x2a018036337485ea9a872b5143c826a5f36e1c94": {
+  "address": "0x2a018036337485ea9a872b5143c826a5f36e1c94",
+  "fetched_at": 1790641452.862662,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x2b05f8e1cacc6974fd79a673a341fe1f58d27266": {
+  "address": "0x2b05f8e1cacc6974fd79a673a341fe1f58d27266",
+  "fetched_at": 1790641453.8623426,
+  "klass": "protocol",
+  "name": "PSM3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x2bfe8165c24dad607a0fbfbdb253a5d02921c492": {
+  "address": "0x2bfe8165c24dad607a0fbfbdb253a5d02921c492",
+  "fetched_at": 1790641454.8645506,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x2cc0c7981d846b9f2a16276556f6e8cb52bfb633": {
+  "address": "0x2cc0c7981d846b9f2a16276556f6e8cb52bfb633",
+  "fetched_at": 1790641455.8628535,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x2df1c51e09aecf9cacb7bc98cb1742757f163df7": {
+  "address": "0x2df1c51e09aecf9cacb7bc98cb1742757f163df7",
+  "fetched_at": 1790641459.8770232,
+  "klass": "protocol",
+  "name": "Bridge2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x2eb0fd10eead48f7155be3b627f902e534262d85": {
+  "address": "0x2eb0fd10eead48f7155be3b627f902e534262d85",
+  "fetched_at": 1790641460.415738,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x2fca31153a64ab085c50747ed65f6bde69d4e79a": {
+  "address": "0x2fca31153a64ab085c50747ed65f6bde69d4e79a",
+  "fetched_at": 1790641461.322982,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x30a388a64b99192702a83d2ca9b95d79702afbf2": {
+  "address": "0x30a388a64b99192702a83d2ca9b95d79702afbf2",
+  "fetched_at": 1790641462.3357017,
+  "klass": "protocol",
+  "name": "BlueBundlesV1",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x30a65f2096ae6ef6ff0dd27c0b00c3173596a970": {
+  "address": "0x30a65f2096ae6ef6ff0dd27c0b00c3173596a970",
+  "fetched_at": 1790641463.8647966,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x30df229cefa463e991e29d42db0bae2e122b2ac7": {
+  "address": "0x30df229cefa463e991e29d42db0bae2e122b2ac7",
+  "fetched_at": 1790641464.8636255,
+  "klass": "protocol",
+  "name": "Curve.fi Factory USD Metapool: MIM",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3138a80ca8f943441678d074d83d25609357afb4": {
+  "address": "0x3138a80ca8f943441678d074d83d25609357afb4",
+  "fetched_at": 1790641465.8622587,
+  "klass": "protocol",
+  "name": "MayanForwarderWithReferrer",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3169844a120c0f517b4eb4a750c08d8518c8466a": {
+  "address": "0x3169844a120c0f517b4eb4a750c08d8518c8466a",
+  "fetched_at": 1790641467.1323507,
+  "klass": "protocol",
+  "name": "Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x31c2f6fcff4f8759b3bd5bf0e1084a055615c768": {
+  "address": "0x31c2f6fcff4f8759b3bd5bf0e1084a055615c768",
+  "fetched_at": 1790641467.8628068,
+  "klass": "protocol",
+  "name": "Permit2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x321b0c48c35a6a9d4fd984b505c9aee1588e44f8": {
+  "address": "0x321b0c48c35a6a9d4fd984b505c9aee1588e44f8",
+  "fetched_at": 1790641468.8792572,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x32226588378236fd0c7c4053999f88ac0e5cac77": {
+  "address": "0x32226588378236fd0c7c4053999f88ac0e5cac77",
+  "fetched_at": 1790641469.8770347,
+  "klass": "protocol",
+  "name": "SmartRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x326feef97e1bd3a641770b70d5be9cdc06f9b632": {
+  "address": "0x326feef97e1bd3a641770b70d5be9cdc06f9b632",
+  "fetched_at": 1790641473.1421907,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x32c4ff984aa5898fa62c4caca1970fb55ea0c3e1": {
+  "address": "0x32c4ff984aa5898fa62c4caca1970fb55ea0c3e1",
+  "fetched_at": 1790641473.9321024,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x33333381c18a6c046b6510322195ca046ba7da2d": {
+  "address": "0x33333381c18a6c046b6510322195ca046ba7da2d",
+  "fetched_at": 1790641474.8850288,
+  "klass": "protocol",
+  "name": "RelayRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3335733c454805df6a77f825f266e136fb4a3333": {
+  "address": "0x3335733c454805df6a77f825f266e136fb4a3333",
+  "fetched_at": 1790641475.309906,
+  "klass": "protocol",
+  "name": "ERC20Proxy",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x334aaeb5851b6f97f0015459162ab7e446fcd77b": {
+  "address": "0x334aaeb5851b6f97f0015459162ab7e446fcd77b",
+  "fetched_at": 1790641476.5360696,
+  "klass": "protocol",
+  "name": "LLAMMA - crvUSD AMM",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x33545a07268c5d01a5c9da9799b565e97832ac66": {
+  "address": "0x33545a07268c5d01a5c9da9799b565e97832ac66",
+  "fetched_at": 1790641477.669869,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x337685fdab40d39bd02028545a4ffa7d287cc3e2": {
+  "address": "0x337685fdab40d39bd02028545a4ffa7d287cc3e2",
+  "fetched_at": 1790641479.158132,
+  "klass": "protocol",
+  "name": "MayanForwarder2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x338c9061992590c6ac5087b1d8ea2381f81d5585": {
+  "address": "0x338c9061992590c6ac5087b1d8ea2381f81d5585",
+  "fetched_at": 1790641479.9370418,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x342a5bf9a29772e04945dc3889d23a9619eb6944": {
+  "address": "0x342a5bf9a29772e04945dc3889d23a9619eb6944",
+  "fetched_at": 1790641480.6250591,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x345ec36363780c2be00159d413d6099c1bfd0c11": {
+  "address": "0x345ec36363780c2be00159d413d6099c1bfd0c11",
+  "fetched_at": 1790641485.9894657,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x348be44f63a458be9c1b13d6fd8e99048f297bc3": {
+  "address": "0x348be44f63a458be9c1b13d6fd8e99048f297bc3",
+  "fetched_at": 1790641486.86304,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x35db01d1425685789dcc9228d47c7a5c049388d8": {
+  "address": "0x35db01d1425685789dcc9228d47c7a5c049388d8",
+  "fetched_at": 1790641487.4082325,
+  "klass": "protocol",
+  "name": "ExclusiveDutchOrderReactor",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3629a282146b4f42331e579bada14c0427ea4d64": {
+  "address": "0x3629a282146b4f42331e579bada14c0427ea4d64",
+  "fetched_at": 1790641488.8641539,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3743c756b64ecd0770f1d4f47696a73d2a46dcbe": {
+  "address": "0x3743c756b64ecd0770f1d4f47696a73d2a46dcbe",
+  "fetched_at": 1790641489.353815,
+  "klass": "protocol",
+  "name": "MetaRouterGateway",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x37687d638ea2d25df5350d37d5bccbf7fff1f2b3": {
+  "address": "0x37687d638ea2d25df5350d37d5bccbf7fff1f2b3",
+  "fetched_at": 1790641489.760266,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x37e853e78d267e088cd0668d8fa842ed87e8aaff": {
+  "address": "0x37e853e78d267e088cd0668d8fa842ed87e8aaff",
+  "fetched_at": 1790641490.8622634,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x37fb96a04fc80f804cd245fd757cfcc34b63b64f": {
+  "address": "0x37fb96a04fc80f804cd245fd757cfcc34b63b64f",
+  "fetched_at": 1790641491.866155,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x38798e2fd26fae18909b0c1b001d80c308741b4a": {
+  "address": "0x38798e2fd26fae18909b0c1b001d80c308741b4a",
+  "fetched_at": 1790641493.188096,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3972b8c106dcdef2c263ff98d18bf4fc62abe730": {
+  "address": "0x3972b8c106dcdef2c263ff98d18bf4fc62abe730",
+  "fetched_at": 1790641493.862224,
+  "klass": "protocol",
+  "name": "NativeRFQPool",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x39b912a67c392e241e1c6bb7ee6d55ae16b86e56": {
+  "address": "0x39b912a67c392e241e1c6bb7ee6d55ae16b86e56",
+  "fetched_at": 1790641494.1316073,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x3a23f943181408eac424116af7b7790c94cb97a5": {
+  "address": "0x3a23f943181408eac424116af7b7790c94cb97a5",
+  "fetched_at": 1790641494.8989663,
+  "klass": "protocol",
+  "name": "SocketGateway",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3a4f4962f1677c498b93bc300b8298990dccfb00": {
+  "address": "0x3a4f4962f1677c498b93bc300b8298990dccfb00",
+  "fetched_at": 1790641495.3141785,
+  "klass": "protocol",
+  "name": "CarvBridge",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3a52ad74006d927e3471746d4eac73c9366974ee": {
+  "address": "0x3a52ad74006d927e3471746d4eac73c9366974ee",
+  "fetched_at": 1790641495.3163354,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x3a53c8971d42ebc73d8f442dc6f3679d9f6bebfe": {
+  "address": "0x3a53c8971d42ebc73d8f442dc6f3679d9f6bebfe",
+  "fetched_at": 1790641495.9249873,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3adf984c937fa6846e5a24e0a68521bdaf767ce1": {
+  "address": "0x3adf984c937fa6846e5a24e0a68521bdaf767ce1",
+  "fetched_at": 1790641496.8630357,
+  "klass": "protocol",
+  "name": "CurveStableSwapNG",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3bbcf1b92147cbbc116e9b5170e6a3cd66ab8247": {
+  "address": "0x3bbcf1b92147cbbc116e9b5170e6a3cd66ab8247",
+  "fetched_at": 1790641498.0470388,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x3bc03e9793d2e67298fb30871a08050414757ca7": {
+  "address": "0x3bc03e9793d2e67298fb30871a08050414757ca7",
+  "fetched_at": 1790641498.4082067,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3c0441b42195f4ad6aa9a0978e06096ea616cda7": {
+  "address": "0x3c0441b42195f4ad6aa9a0978e06096ea616cda7",
+  "fetched_at": 1790641499.6065307,
+  "klass": "protocol",
+  "name": "FluidDexT1",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3c6c4fc94f1493b9d76c5e4c4cdedb444d3cc0a2": {
+  "address": "0x3c6c4fc94f1493b9d76c5e4c4cdedb444d3cc0a2",
+  "fetched_at": 1790641500.8811476,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x3c9425821d0dd866a12d1bed5b053a3f7bd672fd": {
+  "address": "0x3c9425821d0dd866a12d1bed5b053a3f7bd672fd",
+  "fetched_at": 1790641501.8627834,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x3cd7436d225f8a90048e8ddbf754dc1198053b4d": {
+  "address": "0x3cd7436d225f8a90048e8ddbf754dc1198053b4d",
+  "fetched_at": 1790641502.537071,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3d8971b77546cebcd9b7ea2b22d27483283c9a2f": {
+  "address": "0x3d8971b77546cebcd9b7ea2b22d27483283c9a2f",
+  "fetched_at": 1790641503.3125672,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x3e07be15370d8b12d80a159a7ef14b9e51869497": {
+  "address": "0x3e07be15370d8b12d80a159a7ef14b9e51869497",
+  "fetched_at": 1790641505.2234035,
+  "klass": "protocol",
+  "name": "FulfillHelper",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3e4771c7ff0952791769084a8b33f159be1eb075": {
+  "address": "0x3e4771c7ff0952791769084a8b33f159be1eb075",
+  "fetched_at": 1790641505.9250078,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x3fc547b5d2fc181fe0e7a81cad237d925848e662": {
+  "address": "0x3fc547b5d2fc181fe0e7a81cad237d925848e662",
+  "fetched_at": 1790641506.863442,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x40ffe85a28dc9993541449464d7529a922142960": {
+  "address": "0x40ffe85a28dc9993541449464d7529a922142960",
+  "fetched_at": 1790641508.9432533,
+  "klass": "protocol",
+  "name": "SwiftSource",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x41a6e14a31ce635bad726221b383f68337ce2832": {
+  "address": "0x41a6e14a31ce635bad726221b383f68337ce2832",
+  "fetched_at": 1790641509.877081,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x41b84aea119e945f4c275bada0ed38b8afe864c8": {
+  "address": "0x41b84aea119e945f4c275bada0ed38b8afe864c8",
+  "fetched_at": 1790641510.3158193,
+  "klass": "protocol",
+  "name": "ActionExecutor",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4231edb0fe11e1780c03002835aa085dd0356efd": {
+  "address": "0x4231edb0fe11e1780c03002835aa085dd0356efd",
+  "fetched_at": 1790641511.8891323,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x433d4fa718f16c60d70fe8f9b3f52cf506f8534d": {
+  "address": "0x433d4fa718f16c60d70fe8f9b3f52cf506f8534d",
+  "fetched_at": 1790641512.8626566,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x43b4351864fa4947879355c9470fd932d10c6d43": {
+  "address": "0x43b4351864fa4947879355c9470fd932d10c6d43",
+  "fetched_at": 1790641513.864755,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x443e7df2396252872a3a0521decb3d602f13ef22": {
+  "address": "0x443e7df2396252872a3a0521decb3d602f13ef22",
+  "fetched_at": 1790641514.8630428,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x44dae22ed6f467c687f04ab993c0543902ec595d": {
+  "address": "0x44dae22ed6f467c687f04ab993c0543902ec595d",
+  "fetched_at": 1790641515.343005,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x455baf5248d4f967b49a7e21a363b87b7de6786f": {
+  "address": "0x455baf5248d4f967b49a7e21a363b87b7de6786f",
+  "fetched_at": 1790641515.946009,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x4582f67698843dfb6a9f195c0ddee05b0a8c973f": {
+  "address": "0x4582f67698843dfb6a9f195c0ddee05b0a8c973f",
+  "fetched_at": 1790641516.8633301,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4670d0026d1eb5ae4aed415caf5f196797b1e69a": {
+  "address": "0x4670d0026d1eb5ae4aed415caf5f196797b1e69a",
+  "fetched_at": 1790641522.863768,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x469ae1ad4ff73ad3399dcd989dfeac2b1909ee11": {
+  "address": "0x469ae1ad4ff73ad3399dcd989dfeac2b1909ee11",
+  "fetched_at": 1790641523.4106343,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x46a15b0b27311cedf172ab29e4f4766fbe7f4364": {
+  "address": "0x46a15b0b27311cedf172ab29e4f4766fbe7f4364",
+  "fetched_at": 1790641524.864382,
+  "klass": "protocol",
+  "name": "NonfungiblePositionManager",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4730e03eb4a58a5e20244062d5f9a99bcf5770a6": {
+  "address": "0x4730e03eb4a58a5e20244062d5f9a99bcf5770a6",
+  "fetched_at": 1790641525.31801,
+  "klass": "protocol",
+  "name": "SwapRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24": {
+  "address": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+  "fetched_at": 1790641526.0109043,
+  "klass": "protocol",
+  "name": "UniswapV2Router02",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x47ebcf27421858d4019238620a44a4ea10ebb5d9": {
+  "address": "0x47ebcf27421858d4019238620a44a4ea10ebb5d9",
+  "fetched_at": 1790641526.8780067,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x49a9833d95878fe2d52c411f7c828f06a5df661a": {
+  "address": "0x49a9833d95878fe2d52c411f7c828f06a5df661a",
+  "fetched_at": 1790641527.310089,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x49b720f1aab26260beaec93a7beb5bf2925b2a8f": {
+  "address": "0x49b720f1aab26260beaec93a7beb5bf2925b2a8f",
+  "fetched_at": 1790641527.749045,
+  "klass": "protocol",
+  "name": "CurveStableSwapNG",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4a03f37e7d3fc243e3f99341d36f4b829bee5e03": {
+  "address": "0x4a03f37e7d3fc243e3f99341d36f4b829bee5e03",
+  "fetched_at": 1790641528.3216376,
+  "klass": "protocol",
+  "name": "fToken",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4ade86667760f45cbd5255a5bc8b4c3a703dda7a": {
+  "address": "0x4ade86667760f45cbd5255a5bc8b4c3a703dda7a",
+  "fetched_at": 1790641529.0794024,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4c4af8dbc524681930a27b2f1af5bcc8062e6fb7": {
+  "address": "0x4c4af8dbc524681930a27b2f1af5bcc8062e6fb7",
+  "fetched_at": 1790641529.8629792,
+  "klass": "protocol",
+  "name": "WooRouterV2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4cd00e387622c35bddb9b4c962c136462338bc31": {
+  "address": "0x4cd00e387622c35bddb9b4c962c136462338bc31",
+  "fetched_at": 1790641536.8627963,
+  "klass": "protocol",
+  "name": "RelayDepository",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4d2df1a59cfd31428167c182dc7bc677f534ae34": {
+  "address": "0x4d2df1a59cfd31428167c182dc7bc677f534ae34",
+  "fetched_at": 1790641537.5305088,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4db3b86fd9564f5926b1c32f874d0eac57ac134d": {
+  "address": "0x4db3b86fd9564f5926b1c32f874d0eac57ac134d",
+  "fetched_at": 1790641538.862778,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x4f1edca9c4c91e925907d28214db06e7140b5b5f": {
+  "address": "0x4f1edca9c4c91e925907d28214db06e7140b5b5f",
+  "fetched_at": 1790641539.4031892,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4f754e0f0924afd74980886b0b479fa1d7c58d0d": {
+  "address": "0x4f754e0f0924afd74980886b0b479fa1d7c58d0d",
+  "fetched_at": 1790641540.1522598,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x4fbac9d94d21d6b23f9b492465b6426820c63e8f": {
+  "address": "0x4fbac9d94d21d6b23f9b492465b6426820c63e8f",
+  "fetched_at": 1790641540.7614486,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5002a6fb7fb5adc5cf36cf4f81c5d87834fca1e3": {
+  "address": "0x5002a6fb7fb5adc5cf36cf4f81c5d87834fca1e3",
+  "fetched_at": 1790641541.8627052,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x504bf61620ffbfd4c6da3ebc35d4e4f7785d228f": {
+  "address": "0x504bf61620ffbfd4c6da3ebc35d4e4f7785d228f",
+  "fetched_at": 1790641542.8632023,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x50828545aaa08f9c4100cedd15d7e48e98f25b2e": {
+  "address": "0x50828545aaa08f9c4100cedd15d7e48e98f25b2e",
+  "fetched_at": 1790641543.4161468,
+  "klass": "protocol",
+  "name": "XGBT",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x50c4e75a512f2a14a7b304787adf79c4531a5909": {
+  "address": "0x50c4e75a512f2a14a7b304787adf79c4531a5909",
+  "fetched_at": 1790641544.862806,
+  "klass": "protocol",
+  "name": "AllowanceHolder",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x50c8e97feb1e629196012b7ccca4d4785ed1eb1f": {
+  "address": "0x50c8e97feb1e629196012b7ccca4d4785ed1eb1f",
+  "fetched_at": 1790641545.8793044,
+  "klass": "protocol",
+  "name": "CamelotYakRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x518fa135d29219e1c538dcf2ff93bb4309bbd6b8": {
+  "address": "0x518fa135d29219e1c538dcf2ff93bb4309bbd6b8",
+  "fetched_at": 1790641546.8690417,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5283beced7adf6d003225c13896e536f2d4264ff": {
+  "address": "0x5283beced7adf6d003225c13896e536f2d4264ff",
+  "fetched_at": 1790641547.8627853,
+  "klass": "protocol",
+  "name": "WrappedTokenGatewayV3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x530476d5583724a89c8841eb6da76e7af4c0f17e": {
+  "address": "0x530476d5583724a89c8841eb6da76e7af4c0f17e",
+  "fetched_at": 1790641548.3153515,
+  "klass": "protocol",
+  "name": "DXswapRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x53bf833a5d6c4dda888f69c22c88c9f356a41614": {
+  "address": "0x53bf833a5d6c4dda888f69c22c88c9f356a41614",
+  "fetched_at": 1790641549.316355,
+  "klass": "protocol",
+  "name": "Router",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5449c9576f42ebbca54e984c40597a1197267079": {
+  "address": "0x5449c9576f42ebbca54e984c40597a1197267079",
+  "fetched_at": 1790641550.8935363,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x55019b682683658c0a3eb4507338017c11415efd": {
+  "address": "0x55019b682683658c0a3eb4507338017c11415efd",
+  "fetched_at": 1790641551.879033,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5520385bfcf07ec87c4c53a7d8d65595dff69fa4": {
+  "address": "0x5520385bfcf07ec87c4c53a7d8d65595dff69fa4",
+  "fetched_at": 1790641554.8751845,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x57331027091994fcb9c5aec48ea92cef0a93cf6a": {
+  "address": "0x57331027091994fcb9c5aec48ea92cef0a93cf6a",
+  "fetched_at": 1790641558.0170522,
+  "klass": "protocol",
+  "name": "Diamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x573310db6d160b26026b8706ebe9831c7def1d09": {
+  "address": "0x573310db6d160b26026b8706ebe9831c7def1d09",
+  "fetched_at": 1790641558.9250612,
+  "klass": "protocol",
+  "name": "Diamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x57f96440f1b1cad53b40a8924bd540b1279a491c": {
+  "address": "0x57f96440f1b1cad53b40a8924bd540b1279a491c",
+  "fetched_at": 1790641560.8628564,
+  "klass": "protocol",
+  "name": "AggregatorGuard",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5813877cdda5f0f56eeab9326a42804a09e2cd8c": {
+  "address": "0x5813877cdda5f0f56eeab9326a42804a09e2cd8c",
+  "fetched_at": 1790641561.3151278,
+  "klass": "protocol",
+  "name": "UTB",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x58b061d70d0ec28bbda7b7be77cf3c2a74b7c3b1": {
+  "address": "0x58b061d70d0ec28bbda7b7be77cf3c2a74b7c3b1",
+  "fetched_at": 1790641562.2499938,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x58e1a847da9f92f9f555c6a880193736c522f8e7": {
+  "address": "0x58e1a847da9f92f9f555c6a880193736c522f8e7",
+  "fetched_at": 1790641563.8631568,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x590f7e2b211fa5ff7840dd3c425b543363797701": {
+  "address": "0x590f7e2b211fa5ff7840dd3c425b543363797701",
+  "fetched_at": 1790641565.2240458,
+  "klass": "protocol",
+  "name": "CurveTwocryptoOptimized",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5977a9682d7af81d347cfc338c61692163a2784c": {
+  "address": "0x5977a9682d7af81d347cfc338c61692163a2784c",
+  "fetched_at": 1790641566.4329016,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x59919c80f1b198898f33276f5cd87d3b7d873486": {
+  "address": "0x59919c80f1b198898f33276f5cd87d3b7d873486",
+  "fetched_at": 1790641567.8773084,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x59c2a172e52a61c4f1bb6dbdcab41b76d9349461": {
+  "address": "0x59c2a172e52a61c4f1bb6dbdcab41b76d9349461",
+  "fetched_at": 1790641568.2359812,
+  "klass": "protocol",
+  "name": "FeeTransferHelper",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x59f629846cb0cd70df85f264c4d3f09abd918966": {
+  "address": "0x59f629846cb0cd70df85f264c4d3f09abd918966",
+  "fetched_at": 1790641568.8627367,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x5a10f66f14ae061ecb7cde4fe2b14a82035ef868": {
+  "address": "0x5a10f66f14ae061ecb7cde4fe2b14a82035ef868",
+  "fetched_at": 1790641569.8779747,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5aaf06c5379b55f4d9896690e31c071dabfd52d7": {
+  "address": "0x5aaf06c5379b55f4d9896690e31c071dabfd52d7",
+  "fetched_at": 1790641570.3162289,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5b39bbcd12f310af76f028e7eca92a10405d504f": {
+  "address": "0x5b39bbcd12f310af76f028e7eca92a10405d504f",
+  "fetched_at": 1790641571.0387106,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x5b9ff4adcedba83d8fff032e13cba61cf8740cdc": {
+  "address": "0x5b9ff4adcedba83d8fff032e13cba61cf8740cdc",
+  "fetched_at": 1790641571.862717,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5c0c306aaa9f877de636f4d5822ca9f2e81563ba": {
+  "address": "0x5c0c306aaa9f877de636f4d5822ca9f2e81563ba",
+  "fetched_at": 1790641572.8646653,
+  "klass": "protocol",
+  "name": "MetaMorphoV1_1",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5c4b3bc90f5bb86b94b217f941142af73e3fa407": {
+  "address": "0x5c4b3bc90f5bb86b94b217f941142af73e3fa407",
+  "fetched_at": 1790641573.4284093,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5ca8209da38aba8fdced6c1275457e597edf2e3e": {
+  "address": "0x5ca8209da38aba8fdced6c1275457e597edf2e3e",
+  "fetched_at": 1790641573.907703,
+  "klass": "protocol",
+  "name": "DepositWaitingList",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5d6f3b27d1464a02be5ada30ca0703ef0e5c8e2c": {
+  "address": "0x5d6f3b27d1464a02be5ada30ca0703ef0e5c8e2c",
+  "fetched_at": 1790641574.428894,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5e027ad442e031424b5a2c0ad6f656662be32882": {
+  "address": "0x5e027ad442e031424b5a2c0ad6f656662be32882",
+  "fetched_at": 1790641575.3223362,
+  "klass": "protocol",
+  "name": "Vault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5e09acf80c0296740ec5d6f643005a4ef8daa694": {
+  "address": "0x5e09acf80c0296740ec5d6f643005a4ef8daa694",
+  "fetched_at": 1790641579.8855114,
+  "klass": "protocol",
+  "name": "MasterChefV3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5eb4ed9f745531221fae41906e11d37642b15da6": {
+  "address": "0x5eb4ed9f745531221fae41906e11d37642b15da6",
+  "fetched_at": 1790641580.3319933,
+  "klass": "protocol",
+  "name": "Unwrapper",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5eb6543d20015e68c4674fba2ce2273d16ad51b7": {
+  "address": "0x5eb6543d20015e68c4674fba2ce2273d16ad51b7",
+  "fetched_at": 1790641580.3347456,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x5ed22f7693fea5a0b45db31771aa94e941b6df8a": {
+  "address": "0x5ed22f7693fea5a0b45db31771aa94e941b6df8a",
+  "fetched_at": 1790641581.015572,
+  "klass": "protocol",
+  "name": "WINRBankroll",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5ef75536b47d7286590396666068a8057f0215b9": {
+  "address": "0x5ef75536b47d7286590396666068a8057f0215b9",
+  "fetched_at": 1790641581.8621433,
+  "klass": "protocol",
+  "name": "ExenAllowanceHolder",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5f513ca572e7ed10487cef2b0636c07ea9b82ad8": {
+  "address": "0x5f513ca572e7ed10487cef2b0636c07ea9b82ad8",
+  "fetched_at": 1790641582.4232266,
+  "klass": "protocol",
+  "name": "UniversalLiquidator",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x5fbe219e88f6c6f214ce6f5b1fcaa0294f31ae1b": {
+  "address": "0x5fbe219e88f6c6f214ce6f5b1fcaa0294f31ae1b",
+  "fetched_at": 1790641583.3146608,
+  "klass": "protocol",
+  "name": "DeltaSwapRouter02",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x60cc10c6079977f3c37baad7eff264988888ba78": {
+  "address": "0x60cc10c6079977f3c37baad7eff264988888ba78",
+  "fetched_at": 1790641584.862655,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x60fccb9b58d5e806ca5cb8bfce721c2274609de4": {
+  "address": "0x60fccb9b58d5e806ca5cb8bfce721c2274609de4",
+  "fetched_at": 1790641585.3146236,
+  "klass": "protocol",
+  "name": "TransferDelegate",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6131b5fae19ea4f9d964eac0408e4408b66337b5": {
+  "address": "0x6131b5fae19ea4f9d964eac0408e4408b66337b5",
+  "fetched_at": 1790641588.2372262,
+  "klass": "protocol",
+  "name": "MetaAggregationRouterV2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6150059e9847e0613bf6eac5d72fd9e866b1c79f": {
+  "address": "0x6150059e9847e0613bf6eac5d72fd9e866b1c79f",
+  "fetched_at": 1790641589.0442395,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x62abc1b634a5e87972e0d50e1e58021eb7ba42e8": {
+  "address": "0x62abc1b634a5e87972e0d50e1e58021eb7ba42e8",
+  "fetched_at": 1790641589.8722308,
+  "klass": "protocol",
+  "name": "ArcanaMigrationSource",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x62b07412eb3e76064eafdee79c15baff81637136": {
+  "address": "0x62b07412eb3e76064eafdee79c15baff81637136",
+  "fetched_at": 1790641591.1440098,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6352a56caadc4f1e25cd6c75970fa768a3304e64": {
+  "address": "0x6352a56caadc4f1e25cd6c75970fa768a3304e64",
+  "fetched_at": 1790641591.960046,
+  "klass": "protocol",
+  "name": "OpenOceanExchangeProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x63b2d3b0a26c1938bb0ae9779b96073946d4e4af": {
+  "address": "0x63b2d3b0a26c1938bb0ae9779b96073946d4e4af",
+  "fetched_at": 1790641592.8772824,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x641c59b568630073c5bfca7c899b5c5a10bdbe25": {
+  "address": "0x641c59b568630073c5bfca7c899b5c5a10bdbe25",
+  "fetched_at": 1790641593.2681057,
+  "klass": "protocol",
+  "name": "Zap",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x641d543f7659724eebbc95272ee7ae08979b7095": {
+  "address": "0x641d543f7659724eebbc95272ee7ae08979b7095",
+  "fetched_at": 1790641593.8629618,
+  "klass": "protocol",
+  "name": "HyperliquidDepositor",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6539cd27fb2517227b684f904b47fc055b284418": {
+  "address": "0x6539cd27fb2517227b684f904b47fc055b284418",
+  "fetched_at": 1790641594.8627472,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x655ff6ab58edfa6bb585d69a1925ef764ab44315": {
+  "address": "0x655ff6ab58edfa6bb585d69a1925ef764ab44315",
+  "fetched_at": 1790641595.3740425,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251": {
+  "address": "0x663dc15d3c1ac63ff12e45ab68fea3f0a883c251",
+  "fetched_at": 1790641596.0841153,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x66b53dba061715cc52059b466eb64e3bf49f12eb": {
+  "address": "0x66b53dba061715cc52059b466eb64e3bf49f12eb",
+  "fetched_at": 1790641596.863262,
+  "klass": "protocol",
+  "name": "TristeroEscrow",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6797f1d5759a637de1878528caa6bed6835035fd": {
+  "address": "0x6797f1d5759a637de1878528caa6bed6835035fd",
+  "fetched_at": 1790641597.4190624,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x68a19810afaa08ce9c100ea1df3c2c51fca66f26": {
+  "address": "0x68a19810afaa08ce9c100ea1df3c2c51fca66f26",
+  "fetched_at": 1790641598.8632157,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45": {
+  "address": "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45",
+  "fetched_at": 1790641598.866275,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x68ee3b4819d4909a0204ed836afb79bbc4850ee1": {
+  "address": "0x68ee3b4819d4909a0204ed836afb79bbc4850ee1",
+  "fetched_at": 1790641600.0730212,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x69460570c93f9de5e2edbc3052bf10125f0ca22d": {
+  "address": "0x69460570c93f9de5e2edbc3052bf10125f0ca22d",
+  "fetched_at": 1790641602.8833442,
+  "klass": "protocol",
+  "name": "RangoDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x694b729fef80432a9adf647145a33dccd5c1e3cb": {
+  "address": "0x694b729fef80432a9adf647145a33dccd5c1e3cb",
+  "fetched_at": 1790641603.3179166,
+  "klass": "protocol",
+  "name": "Provisioner",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x696316c31c57a8c64a0522a1233015c61e6e1064": {
+  "address": "0x696316c31c57a8c64a0522a1233015c61e6e1064",
+  "fetched_at": 1790641604.0088804,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x6a000f20005980200259b80c5102003040001068": {
+  "address": "0x6a000f20005980200259b80c5102003040001068",
+  "fetched_at": 1790641605.8621242,
+  "klass": "protocol",
+  "name": "AugustusV6",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6bd780e7fdf01d77e4d475c821f1e7ae05409072": {
+  "address": "0x6bd780e7fdf01d77e4d475c821f1e7ae05409072",
+  "fetched_at": 1790641606.863272,
+  "klass": "protocol",
+  "name": "DolomiteMargin",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6bd7b3a21407781441b0ce956c16b11426bf2316": {
+  "address": "0x6bd7b3a21407781441b0ce956c16b11426bf2316",
+  "fetched_at": 1790641607.416933,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x6c0ad82f9721a6dc986381d19338601a2e6370e5": {
+  "address": "0x6c0ad82f9721a6dc986381d19338601a2e6370e5",
+  "fetched_at": 1790641608.4266295,
+  "klass": "protocol",
+  "name": "SKTokenTransferProxy",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6c0f4ddf5e29e2c867fb897dec36068399a12eef": {
+  "address": "0x6c0f4ddf5e29e2c867fb897dec36068399a12eef",
+  "fetched_at": 1790641609.326596,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6c247b1f6182318877311737bac0844baa518f5e": {
+  "address": "0x6c247b1f6182318877311737bac0844baa518f5e",
+  "fetched_at": 1790641610.7062633,
+  "klass": "protocol",
+  "name": "Morpho",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6c9ab1c1dc392b53f9fb2ea6d9dace5f99efdc48": {
+  "address": "0x6c9ab1c1dc392b53f9fb2ea6d9dace5f99efdc48",
+  "fetched_at": 1790641611.3162692,
+  "klass": "protocol",
+  "name": "SolidlyV3Pool",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x6d191ed0044bceef04cebeccec146122e527799d": {
+  "address": "0x6d191ed0044bceef04cebeccec146122e527799d",
+  "fetched_at": 1790641621.8629699,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x6eb43ae849f8c8a8753d2ea0b497e870900af72e": {
+  "address": "0x6eb43ae849f8c8a8753d2ea0b497e870900af72e",
+  "fetched_at": 1790641622.2874622,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x70c765e913eed89a62fa675dbdf66562b8c5e43d": {
+  "address": "0x70c765e913eed89a62fa675dbdf66562b8c5e43d",
+  "fetched_at": 1790641623.8624043,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x70cbb871e8f30fc8ce23609e9e0ea87b6b222f58": {
+  "address": "0x70cbb871e8f30fc8ce23609e9e0ea87b6b222f58",
+  "fetched_at": 1790641623.865812,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x7135766f279b9a50f7a7199cff1be284521a0409": {
+  "address": "0x7135766f279b9a50f7a7199cff1be284521a0409",
+  "fetched_at": 1790641624.5105653,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7142ccf2c2092fe82b05ef5659252c92413369b5": {
+  "address": "0x7142ccf2c2092fe82b05ef5659252c92413369b5",
+  "fetched_at": 1790641625.317504,
+  "klass": "protocol",
+  "name": "CurveTricryptoOptimizedWETH",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x718d1fb1a4ede89ea85eea5bdebc2a5c0f7f21c7": {
+  "address": "0x718d1fb1a4ede89ea85eea5bdebc2a5c0f7f21c7",
+  "fetched_at": 1790641626.2462234,
+  "klass": "protocol",
+  "name": "NonFungibleFarm",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x721e60c3ac4bd731e3ac691c2c4ed92f4d0282d0": {
+  "address": "0x721e60c3ac4bd731e3ac691c2c4ed92f4d0282d0",
+  "fetched_at": 1790641626.9149718,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x73af1150f265419ef8a5db41908b700c32d49135": {
+  "address": "0x73af1150f265419ef8a5db41908b700c32d49135",
+  "fetched_at": 1790641627.864356,
+  "klass": "protocol",
+  "name": "CurveStableSwapNG",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x73d8bd54f7cf5fab43fe4ef40a62d390644946db": {
+  "address": "0x73d8bd54f7cf5fab43fe4ef40a62d390644946db",
+  "fetched_at": 1790641628.303416,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7452c558d45f8afc8c83dae62c3f8a5be19c71f6": {
+  "address": "0x7452c558d45f8afc8c83dae62c3f8a5be19c71f6",
+  "fetched_at": 1790641628.3070173,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x74e6afef5705beb126c6d3bf46f8fad8f3e07825": {
+  "address": "0x74e6afef5705beb126c6d3bf46f8fad8f3e07825",
+  "fetched_at": 1790641629.293042,
+  "klass": "protocol",
+  "name": "Revert Lend Arbitrum USDC,",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x75220b7600c300005038432a0000f308e0000068": {
+  "address": "0x75220b7600c300005038432a0000f308e0000068",
+  "fetched_at": 1790641630.357961,
+  "klass": "protocol",
+  "name": "OutputSettlerSimple",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x757adbd4c53370c6b87eb34ca9875f0ed6cb7921": {
+  "address": "0x757adbd4c53370c6b87eb34ca9875f0ed6cb7921",
+  "fetched_at": 1790641633.1302745,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x77652d5aba086137b595875263fc200182919b92": {
+  "address": "0x77652d5aba086137b595875263fc200182919b92",
+  "fetched_at": 1790641634.9239306,
+  "klass": "protocol",
+  "name": "UsdtOFT",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x777777777777aec03fd955926dbf81597e66834c": {
+  "address": "0x777777777777aec03fd955926dbf81597e66834c",
+  "fetched_at": 1790641634.927357,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x77f73343b58317d1f2ed05eb36091db56b7a1432": {
+  "address": "0x77f73343b58317d1f2ed05eb36091db56b7a1432",
+  "fetched_at": 1790641635.8623703,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x789adf5f66731ced048c2a04904a47c0ef693920": {
+  "address": "0x789adf5f66731ced048c2a04904a47c0ef693920",
+  "fetched_at": 1790641637.118078,
+  "klass": "protocol",
+  "name": "ERC20PaymasterV07",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x794a61358d6845594f94dc1db02a252b5b4814ad": {
+  "address": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
+  "fetched_at": 1790641637.1212993,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0x79a82f83a7e43068fdbbee2d709f61905360d249": {
+  "address": "0x79a82f83a7e43068fdbbee2d709f61905360d249",
+  "fetched_at": 1790641637.5122185,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x79b7e0b2dbd3c84890095c8b5a1dec38b7b5b8d2": {
+  "address": "0x79b7e0b2dbd3c84890095c8b5a1dec38b7b5b8d2",
+  "fetched_at": 1790641638.330368,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7a08b29a7ad4a19a5eca0c82f5f082872488d135": {
+  "address": "0x7a08b29a7ad4a19a5eca0c82f5f082872488d135",
+  "fetched_at": 1790641639.5015512,
+  "klass": "protocol",
+  "name": "PerpetualProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7aae8ae011927bc36cb4d0d3e81f2e6e30dae06d": {
+  "address": "0x7aae8ae011927bc36cb4d0d3e81f2e6e30dae06d",
+  "fetched_at": 1790641640.4401095,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7b10680ee6ff24bdc7300781fb01adb60677ecb4": {
+  "address": "0x7b10680ee6ff24bdc7300781fb01adb60677ecb4",
+  "fetched_at": 1790641640.7082171,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x7b19d5eb066e94fd424de9b24fed9795efa9bab7": {
+  "address": "0x7b19d5eb066e94fd424de9b24fed9795efa9bab7",
+  "fetched_at": 1790641643.8621936,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7b1c5a9f40ba3bc5fd6071a7af9d97c40f96dde7": {
+  "address": "0x7b1c5a9f40ba3bc5fd6071a7af9d97c40f96dde7",
+  "fetched_at": 1790641644.4440389,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7b55800de02e4799f7b00a2c9963575464053f6a": {
+  "address": "0x7b55800de02e4799f7b00a2c9963575464053f6a",
+  "fetched_at": 1790641645.210134,
+  "klass": "protocol",
+  "name": "MultiSigPool",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7c53fb208c20c18a2e8d9ff1dba22e4a73072fbc": {
+  "address": "0x7c53fb208c20c18a2e8d9ff1dba22e4a73072fbc",
+  "fetched_at": 1790641645.932371,
+  "klass": "protocol",
+  "name": "BeaconProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7c56059649ce8ea23f33af24d72c94eb999ba001": {
+  "address": "0x7c56059649ce8ea23f33af24d72c94eb999ba001",
+  "fetched_at": 1790641646.909828,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7cc9a6642e521f9495c98f2a58e48df8c27140bd": {
+  "address": "0x7cc9a6642e521f9495c98f2a58e48df8c27140bd",
+  "fetched_at": 1790641647.8660583,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x7d1613b33e0d0e5c5707287b148cadb3590e702a": {
+  "address": "0x7d1613b33e0d0e5c5707287b148cadb3590e702a",
+  "fetched_at": 1790641648.5207648,
+  "klass": "protocol",
+  "name": "Alphix4626WrapperAave",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7d1bfb264764b69db25565edb6d71bbcf58be46f": {
+  "address": "0x7d1bfb264764b69db25565edb6d71bbcf58be46f",
+  "fetched_at": 1790641650.5356987,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x7d1c4889df6113b3e4581a8c0484374bdec3341b": {
+  "address": "0x7d1c4889df6113b3e4581a8c0484374bdec3341b",
+  "fetched_at": 1790641651.541452,
+  "klass": "protocol",
+  "name": "NativeRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7ec9672678509a574f6305f112a7e3703845a98b": {
+  "address": "0x7ec9672678509a574f6305f112a7e3703845a98b",
+  "fetched_at": 1790641652.3343775,
+  "klass": "protocol",
+  "name": "ApprovalProxy",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7ef5629c21cdf10c91e962d76ef1f9cd99dc5196": {
+  "address": "0x7ef5629c21cdf10c91e962d76ef1f9cd99dc5196",
+  "fetched_at": 1790641656.3449965,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7f6501d3b98ee91f9b9535e4b0ac710fb0f9e0bc": {
+  "address": "0x7f6501d3b98ee91f9b9535e4b0ac710fb0f9e0bc",
+  "fetched_at": 1790641657.8812528,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7f90122bf0700f9e7e1f688fe926940e8839f353": {
+  "address": "0x7f90122bf0700f9e7e1f688fe926940e8839f353",
+  "fetched_at": 1790641660.320959,
+  "klass": "protocol",
+  "name": "Vyper_contract",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x7fb8c7260b63934d8da38af902f87ae6e284a845": {
+  "address": "0x7fb8c7260b63934d8da38af902f87ae6e284a845",
+  "fetched_at": 1790641660.863186,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x8080808080dab95efed788a9214e400ba552def6": {
+  "address": "0x8080808080dab95efed788a9214e400ba552def6",
+  "fetched_at": 1790641663.8419437,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x80eaccb4135c648ac45d9836e7dfd0a4df28a8e0": {
+  "address": "0x80eaccb4135c648ac45d9836e7dfd0a4df28a8e0",
+  "fetched_at": 1790641664.333044,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x811a96d59368ae6bdb36b5fc2544bed0e178f81e": {
+  "address": "0x811a96d59368ae6bdb36b5fc2544bed0e178f81e",
+  "fetched_at": 1790641665.1143818,
+  "klass": "protocol",
+  "name": "AlienzoneYoloZoneV3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x811e0d66fa69f38b47dfbeb836deb64c78abc0b1": {
+  "address": "0x811e0d66fa69f38b47dfbeb836deb64c78abc0b1",
+  "fetched_at": 1790641665.8627436,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x8157a9d65807521fbb8db8f37eeecefdd247e9b1": {
+  "address": "0x8157a9d65807521fbb8db8f37eeecefdd247e9b1",
+  "fetched_at": 1790641666.8624604,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x816f722424b49cf1275cc86da9840fbd5a6167e9": {
+  "address": "0x816f722424b49cf1275cc86da9840fbd5a6167e9",
+  "fetched_at": 1790641668.0081747,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x81754ff5fed44ba4f1496c06d4017daeaa283652": {
+  "address": "0x81754ff5fed44ba4f1496c06d4017daeaa283652",
+  "fetched_at": 1790641668.878972,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x818cf8eac008376d053059ab2093b742450e8567": {
+  "address": "0x818cf8eac008376d053059ab2093b742450e8567",
+  "fetched_at": 1790641670.8627372,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x81b52bda76726cda2349a7eb76098438c37ff92f": {
+  "address": "0x81b52bda76726cda2349a7eb76098438c37ff92f",
+  "fetched_at": 1790641674.3285592,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x82670f35306253222f8a165869b28c64739ac62e": {
+  "address": "0x82670f35306253222f8a165869b28c64739ac62e",
+  "fetched_at": 1790641674.9496844,
+  "klass": "protocol",
+  "name": "CurveTricryptoOptimizedWETH",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x82675d0553d802039e6776c006beb1b820a69d55": {
+  "address": "0x82675d0553d802039e6776c006beb1b820a69d55",
+  "fetched_at": 1790641676.1946502,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x82a562fd9f02d4346b95d3a2a501411979c8f920": {
+  "address": "0x82a562fd9f02d4346b95d3a2a501411979c8f920",
+  "fetched_at": 1790641676.9087868,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+  "address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+  "fetched_at": 1790641681.9225912,
+  "klass": "protocol",
+  "name": "Arbitrum Bridged WETH (Arbitrum One)",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x82dfd2b94222bdb603aa6b34a8d37311ab3db800": {
+  "address": "0x82dfd2b94222bdb603aa6b34a8d37311ab3db800",
+  "fetched_at": 1790641682.5090005,
+  "klass": "protocol",
+  "name": "UniswapV2Router02",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x832c542c323766f2b8a50ebd0a95fb743d1d4b55": {
+  "address": "0x832c542c323766f2b8a50ebd0a95fb743d1d4b55",
+  "fetched_at": 1790641683.3101919,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x83f26369618635e05fcbb97863a2911527934865": {
+  "address": "0x83f26369618635e05fcbb97863a2911527934865",
+  "fetched_at": 1790641688.4404552,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x845c8bc94610807fcbab5dd2bc7ac9dabaff3c55": {
+  "address": "0x845c8bc94610807fcbab5dd2bc7ac9dabaff3c55",
+  "fetched_at": 1790641689.8632615,
+  "klass": "protocol",
+  "name": "CurveTricryptoOptimizedWETH",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x84949938ccd72c87af6398910ffec4e028239f75": {
+  "address": "0x84949938ccd72c87af6398910ffec4e028239f75",
+  "fetched_at": 1790641690.4092636,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x864f01c5e46b0712643b956bca607bf883e0dbc5": {
+  "address": "0x864f01c5e46b0712643b956bca607bf883e0dbc5",
+  "fetched_at": 1790641691.1103396,
+  "klass": "protocol",
+  "name": "SmartWalletProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x869ada38e72bbc189109e19fe7f7de3703eeb87a": {
+  "address": "0x869ada38e72bbc189109e19fe7f7de3703eeb87a",
+  "fetched_at": 1790641691.8627293,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x888888888889758f76e7103c6cbf23abbf58f946": {
+  "address": "0x888888888889758f76e7103c6cbf23abbf58f946",
+  "fetched_at": 1790641692.8899941,
+  "klass": "protocol",
+  "name": "PendleRouterV4",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x893cd19936e606b6beab03580af4518ec2bd0599": {
+  "address": "0x893cd19936e606b6beab03580af4518ec2bd0599",
+  "fetched_at": 1790641694.2250342,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x89ae36e3b567b914a5e97e6488c6eb5b9c5d0231": {
+  "address": "0x89ae36e3b567b914a5e97e6488c6eb5b9c5d0231",
+  "fetched_at": 1790641694.5706522,
+  "klass": "protocol",
+  "name": "SpartaDexRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x89c5670354cea38b324ec5c6b99e9eee8720e3ca": {
+  "address": "0x89c5670354cea38b324ec5c6b99e9eee8720e3ca",
+  "fetched_at": 1790641695.6085093,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x89c6340b1a1f4b25d36cd8b063d49045caf3f818": {
+  "address": "0x89c6340b1a1f4b25d36cd8b063d49045caf3f818",
+  "fetched_at": 1790641273.8633163,
+  "klass": "protocol",
+  "name": "Permit2Proxy",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x8a9869fbbf7ebe83989a3d963460ba9f8558cb64": {
+  "address": "0x8a9869fbbf7ebe83989a3d963460ba9f8558cb64",
+  "fetched_at": 1790641696.8629153,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x8a9923355b5f6665e957fd2f6d39701b678f5919": {
+  "address": "0x8a9923355b5f6665e957fd2f6d39701b678f5919",
+  "fetched_at": 1790641697.863684,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x8b1ce8520ad3222e171059ba54d94956c67f210a": {
+  "address": "0x8b1ce8520ad3222e171059ba54d94956c67f210a",
+  "fetched_at": 1790641700.9380915,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x8bf0a4de59919fc7cde2344c26b809016f3f4f20": {
+  "address": "0x8bf0a4de59919fc7cde2344c26b809016f3f4f20",
+  "fetched_at": 1790641702.0349073,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x8cdec10054b4943acfd3cab0c5759a54bc3700dc": {
+  "address": "0x8cdec10054b4943acfd3cab0c5759a54bc3700dc",
+  "fetched_at": 1790641702.8629434,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x8cfe327cec66d1c090dd72bd0ff11d690c33a2eb": {
+  "address": "0x8cfe327cec66d1c090dd72bd0ff11d690c33a2eb",
+  "fetched_at": 1790641703.9129598,
+  "klass": "protocol",
+  "name": "PancakeRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x8ddd7a8f386560740088c12309b3ac386e92c6d7": {
+  "address": "0x8ddd7a8f386560740088c12309b3ac386e92c6d7",
+  "fetched_at": 1790641709.8840935,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x8de29a04dee5894d7bd536a7b4c924560f2dff57": {
+  "address": "0x8de29a04dee5894d7bd536a7b4c924560f2dff57",
+  "fetched_at": 1790641711.9275723,
+  "klass": "protocol",
+  "name": "DaimoPayLegacyMeshBridger",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x8ebbf37c80afe0fcfa569deac810bde641225e4f": {
+  "address": "0x8ebbf37c80afe0fcfa569deac810bde641225e4f",
+  "fetched_at": 1790641712.5170374,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x8fae092a9bbc7e4036c8c815c821e450a3e359f8": {
+  "address": "0x8fae092a9bbc7e4036c8c815c821e450a3e359f8",
+  "fetched_at": 1790641713.445267,
+  "klass": "protocol",
+  "name": "SLSburnVault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x906fbbf4128e05bc54d4a19d57825e2cc9fe3ae3": {
+  "address": "0x906fbbf4128e05bc54d4a19d57825e2cc9fe3ae3",
+  "fetched_at": 1790641714.3390331,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x90a2abc92dc57ea170e22f616fe93d56ad93ea64": {
+  "address": "0x90a2abc92dc57ea170e22f616fe93d56ad93ea64",
+  "fetched_at": 1790641716.873517,
+  "klass": "protocol",
+  "name": "SwapManager",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x90a5f37dbd1386b1c55281dc2b01ab8782f13043": {
+  "address": "0x90a5f37dbd1386b1c55281dc2b01ab8782f13043",
+  "fetched_at": 1790641717.862751,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x90f971938f6bb6c668e5a0717042a9d7b633bed6": {
+  "address": "0x90f971938f6bb6c668e5a0717042a9d7b633bed6",
+  "fetched_at": 1790641718.507982,
+  "klass": "protocol",
+  "name": "BeaconProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x918d3d76f8d33712c491e5020c8f9eab072b4534": {
+  "address": "0x918d3d76f8d33712c491e5020c8f9eab072b4534",
+  "fetched_at": 1790641719.8618898,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x91ef047ce85861073ce40af1261330a6a59a9c33": {
+  "address": "0x91ef047ce85861073ce40af1261330a6a59a9c33",
+  "fetched_at": 1790641721.013725,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x924f147c50ea59f5180a26031a8b65b2aa1e81cd": {
+  "address": "0x924f147c50ea59f5180a26031a8b65b2aa1e81cd",
+  "fetched_at": 1790641722.0361452,
+  "klass": "protocol",
+  "name": "TychoRouterV3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x937897fe19f675c96a71078820f21ca9bd637180": {
+  "address": "0x937897fe19f675c96a71078820f21ca9bd637180",
+  "fetched_at": 1790641723.0309978,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x93c30e6e09f698cfea99b09b5166ed90cfaedd17": {
+  "address": "0x93c30e6e09f698cfea99b09b5166ed90cfaedd17",
+  "fetched_at": 1790641728.8626513,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x94f1834c60504d6ef01a74d8b7605ef61ac21c9d": {
+  "address": "0x94f1834c60504d6ef01a74d8b7605ef61ac21c9d",
+  "fetched_at": 1790641729.861973,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x95667a8ae0a845434826a0f7122fa38bfd6a0639": {
+  "address": "0x95667a8ae0a845434826a0f7122fa38bfd6a0639",
+  "fetched_at": 1790641730.8632555,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x957a8af7894e76e16db17c2a913496a4e60b7090": {
+  "address": "0x957a8af7894e76e16db17c2a913496a4e60b7090",
+  "fetched_at": 1790641731.86246,
+  "klass": "protocol",
+  "name": "LzIndirectOFTV2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x95e8a6920c8494138c7a527b41503b252126d203": {
+  "address": "0x95e8a6920c8494138c7a527b41503b252126d203",
+  "fetched_at": 1790641732.8644087,
+  "klass": "protocol",
+  "name": "SGPTradingProcessor",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x960ea3e3c7fb317332d990873d354e18d7645590": {
+  "address": "0x960ea3e3c7fb317332d990873d354e18d7645590",
+  "fetched_at": 1790641736.2265663,
+  "klass": "protocol",
+  "name": "Vyper_contract",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x96a03fecff931fef6a1cdfbf1fb5abe666b7c068": {
+  "address": "0x96a03fecff931fef6a1cdfbf1fb5abe666b7c068",
+  "fetched_at": 1790641736.9181013,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x96aaf8f6a2e3f45aaf548b753a0e004211e0ad63": {
+  "address": "0x96aaf8f6a2e3f45aaf548b753a0e004211e0ad63",
+  "fetched_at": 1790641737.8627996,
+  "klass": "protocol",
+  "name": "CurveTricryptoOptimizedWETH",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x972ada3036e7a094d0e4bf23ecef5dc7a34a291e": {
+  "address": "0x972ada3036e7a094d0e4bf23ecef5dc7a34a291e",
+  "fetched_at": 1790641738.4261324,
+  "klass": "protocol",
+  "name": "UmamiBonsaiMigrator",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9731469d56c01ce39cf28f89507abb5cd35bdadd": {
+  "address": "0x9731469d56c01ce39cf28f89507abb5cd35bdadd",
+  "fetched_at": 1790641742.2540581,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x973d990c749fc2e9191f8f052c88a4c4bcdf03eb": {
+  "address": "0x973d990c749fc2e9191f8f052c88a4c4bcdf03eb",
+  "fetched_at": 1790641744.5142658,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x97ccdbea4632140639ad5ea9b944aa034eb15fd4": {
+  "address": "0x97ccdbea4632140639ad5ea9b944aa034eb15fd4",
+  "fetched_at": 1790641747.318177,
+  "klass": "protocol",
+  "name": "SpokePoolPeriphery",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x98a6aee58699e4f4e13d8d8d0800e4e9cbbcf8dd": {
+  "address": "0x98a6aee58699e4f4e13d8d8d0800e4e9cbbcf8dd",
+  "fetched_at": 1790641747.8626955,
+  "klass": "protocol",
+  "name": "AmlpManager",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x98b2b6cbc2a768520938a29f02e37b641ed867c2": {
+  "address": "0x98b2b6cbc2a768520938a29f02e37b641ed867c2",
+  "fetched_at": 1790641748.4070926,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x998d7c178a1f9607b47ea3a8e22426451b3ce707": {
+  "address": "0x998d7c178a1f9607b47ea3a8e22426451b3ce707",
+  "fetched_at": 1790641749.8920588,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9992f660137979c1ca7f8b119cd16361594e3681": {
+  "address": "0x9992f660137979c1ca7f8b119cd16361594e3681",
+  "fetched_at": 1790641750.3260927,
+  "klass": "protocol",
+  "name": "SiloRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9a01857f33aa382b1d5bb96c3180347862432b0d": {
+  "address": "0x9a01857f33aa382b1d5bb96c3180347862432b0d",
+  "fetched_at": 1790641751.0105217,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9a93db7409ce323c91e70a7c1f7d3a1dcb880e06": {
+  "address": "0x9a93db7409ce323c91e70a7c1f7d3a1dcb880e06",
+  "fetched_at": 1790641751.6392124,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9b910603111ece21e3ff78bd8c692c60c87ccbcf": {
+  "address": "0x9b910603111ece21e3ff78bd8c692c60c87ccbcf",
+  "fetched_at": 1790641752.311973,
+  "klass": "protocol",
+  "name": "SwapRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9bdc029b3eb330a16b9b41c0ee8dd9a4eb5818e0": {
+  "address": "0x9bdc029b3eb330a16b9b41c0ee8dd9a4eb5818e0",
+  "fetched_at": 1790641752.9330184,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x9c4ec768c28520b50860ea7a15bd7213a9ff58bf": {
+  "address": "0x9c4ec768c28520b50860ea7a15bd7213a9ff58bf",
+  "fetched_at": 1790641755.0097597,
+  "klass": "protocol",
+  "name": "Compound USDC",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9cb28c64f9bf85dc16f1090e9a81e131c477c6a8": {
+  "address": "0x9cb28c64f9bf85dc16f1090e9a81e131c477c6a8",
+  "fetched_at": 1790641756.13986,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9cd19f7babc8d1ad152e0577222ad8d1cf456430": {
+  "address": "0x9cd19f7babc8d1ad152e0577222ad8d1cf456430",
+  "fetched_at": 1790641756.997994,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9da88677e47bd8ead09b6b96d747a00f21bab114": {
+  "address": "0x9da88677e47bd8ead09b6b96d747a00f21bab114",
+  "fetched_at": 1790641758.121005,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9dd329f5411466d9e0c488ff72519ca9fef0cb40": {
+  "address": "0x9dd329f5411466d9e0c488ff72519ca9fef0cb40",
+  "fetched_at": 1790641758.8627431,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9dd3f844747ab78d616bf76db92756e17a064add": {
+  "address": "0x9dd3f844747ab78d616bf76db92756e17a064add",
+  "fetched_at": 1790641759.1556587,
+  "klass": "protocol",
+  "name": "VaultV2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9dda6ef3d919c9bc8885d5560999a3640431e8e6": {
+  "address": "0x9dda6ef3d919c9bc8885d5560999a3640431e8e6",
+  "fetched_at": 1790641759.592275,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0x9e36cb86a159d479ced94fa05036f235ac40e1d5": {
+  "address": "0x9e36cb86a159d479ced94fa05036f235ac40e1d5",
+  "fetched_at": 1790641760.8700144,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9e58ce1eeda64102904483ea9ef27c84b036ac04": {
+  "address": "0x9e58ce1eeda64102904483ea9ef27c84b036ac04",
+  "fetched_at": 1790641761.2800655,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9e6641a98621b2fac6206a54d9cde9af7fafbd1c": {
+  "address": "0x9e6641a98621b2fac6206a54d9cde9af7fafbd1c",
+  "fetched_at": 1790641761.8632526,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9e87184fa67f6b2dee3ff1f0b31ff404874dfbb1": {
+  "address": "0x9e87184fa67f6b2dee3ff1f0b31ff404874dfbb1",
+  "fetched_at": 1790641762.354083,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0x9ef4a86b0f299b28510fd37e6f1361ec0f769a65": {
+  "address": "0x9ef4a86b0f299b28510fd37e6f1361ec0f769a65",
+  "fetched_at": 1790641762.7630374,
+  "klass": "protocol",
+  "name": "NativeRFQPool",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa0a84eb478c34b10e0482fb3a411f4e39bb01128": {
+  "address": "0xa0a84eb478c34b10e0482fb3a411f4e39bb01128",
+  "fetched_at": 1790641763.4438336,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa15cfd1a071ac0285f22cabfa735e7ed1a92e096": {
+  "address": "0xa15cfd1a071ac0285f22cabfa735e7ed1a92e096",
+  "fetched_at": 1790641764.8627846,
+  "klass": "protocol",
+  "name": "VaultDepositooorV2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa36178b9a1179d5bb1c192e3f6c752ad7197f69b": {
+  "address": "0xa36178b9a1179d5bb1c192e3f6c752ad7197f69b",
+  "fetched_at": 1790641766.8528724,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa3752af0d28549a04b2bb90c9fb5533d380c8ffa": {
+  "address": "0xa3752af0d28549a04b2bb90c9fb5533d380c8ffa",
+  "fetched_at": 1790641767.284951,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa3bec9999c95ddab45485a3598df714043198922": {
+  "address": "0xa3bec9999c95ddab45485a3598df714043198922",
+  "fetched_at": 1790641767.9695585,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xa4d9e650012714c99173660d3cb907f85a028978": {
+  "address": "0xa4d9e650012714c99173660d3cb907f85a028978",
+  "fetched_at": 1790641768.4255238,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa51afafe0263b40edaef0df8781ea9aa03e381a3": {
+  "address": "0xa51afafe0263b40edaef0df8781ea9aa03e381a3",
+  "fetched_at": 1790641774.5021372,
+  "klass": "protocol",
+  "name": "UniversalRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa5679c4272a056bb83f039961fae7d99c48529f5": {
+  "address": "0xa5679c4272a056bb83f039961fae7d99c48529f5",
+  "fetched_at": 1790641775.5341716,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa5a33ab9063395a90ccbea2d86a62eccf27b5742": {
+  "address": "0xa5a33ab9063395a90ccbea2d86a62eccf27b5742",
+  "fetched_at": 1790641776.2249951,
+  "klass": "protocol",
+  "name": "Swap",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa5c4f4fc2a3287f60b9c0b46a40a89232aa5676c": {
+  "address": "0xa5c4f4fc2a3287f60b9c0b46a40a89232aa5676c",
+  "fetched_at": 1790641776.9201524,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xa65ba125a25b51539a3d10910557b28215097810": {
+  "address": "0xa65ba125a25b51539a3d10910557b28215097810",
+  "fetched_at": 1790641777.364038,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa669e7a0d4b3e4fa48af2de86bd4cd7126be4e13": {
+  "address": "0xa669e7a0d4b3e4fa48af2de86bd4cd7126be4e13",
+  "fetched_at": 1790641778.0530393,
+  "klass": "protocol",
+  "name": "OdosRouterV2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa6d12574efb239fc1d2099732bd8b5dc6306897f": {
+  "address": "0xa6d12574efb239fc1d2099732bd8b5dc6306897f",
+  "fetched_at": 1790641778.8941429,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa867241cdc8d3b0c07c85cc06f25a0cd3b5474d8": {
+  "address": "0xa867241cdc8d3b0c07c85cc06f25a0cd3b5474d8",
+  "fetched_at": 1790641779.4092295,
+  "klass": "protocol",
+  "name": "DODOApprove",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa89d65def0a001947d8d5fdda93f9c4f8453902e": {
+  "address": "0xa89d65def0a001947d8d5fdda93f9c4f8453902e",
+  "fetched_at": 1790641780.0096543,
+  "klass": "protocol",
+  "name": "EVABurnVault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa977aaa39a091fe4f8ca26a66f493f7d4e9a94bf": {
+  "address": "0xa977aaa39a091fe4f8ca26a66f493f7d4e9a94bf",
+  "fetched_at": 1790641780.8625946,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xa9e1f487c67153055e659e2fcd4962a4be20b63a": {
+  "address": "0xa9e1f487c67153055e659e2fcd4962a4be20b63a",
+  "fetched_at": 1790641781.4519634,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xaa277cb7914b7e5514946da92cb9de332ce610ef": {
+  "address": "0xaa277cb7914b7e5514946da92cb9de332ce610ef",
+  "fetched_at": 1790641782.214764,
+  "klass": "protocol",
+  "name": "RamsesTransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaa301070448385cfaac5913a67b16c4392944a8f": {
+  "address": "0xaa301070448385cfaac5913a67b16c4392944a8f",
+  "fetched_at": 1790641783.9228091,
+  "klass": "protocol",
+  "name": "SwapAdapter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaa3a72baadebb341ed26340682b2fac300f159c1": {
+  "address": "0xaa3a72baadebb341ed26340682b2fac300f159c1",
+  "fetched_at": 1790641785.103182,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaaa559bcfd9cb4fd434fbbc92f014d3e0bc9cb25": {
+  "address": "0xaaa559bcfd9cb4fd434fbbc92f014d3e0bc9cb25",
+  "fetched_at": 1790641785.4126546,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xaaa87963efeb6f7e0a2711f397663105acb1805e": {
+  "address": "0xaaa87963efeb6f7e0a2711f397663105acb1805e",
+  "fetched_at": 1790641785.9290264,
+  "klass": "protocol",
+  "name": "RamsesTransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaaf889b14d4266a04f85c963d53cf08826789b80": {
+  "address": "0xaaf889b14d4266a04f85c963d53cf08826789b80",
+  "fetched_at": 1790641786.4129467,
+  "klass": "protocol",
+  "name": "ArbitrumZap",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaafbab65723550efaf80b42a7aed60bb7dc211f0": {
+  "address": "0xaafbab65723550efaf80b42a7aed60bb7dc211f0",
+  "fetched_at": 1790641788.9413245,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xab6d8d24fd2cce57e83118261682ee95909dbc68": {
+  "address": "0xab6d8d24fd2cce57e83118261682ee95909dbc68",
+  "fetched_at": 1790641790.1241572,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xac4c6e212a361c968f1725b4d055b47e63f80b75": {
+  "address": "0xac4c6e212a361c968f1725b4d055b47e63f80b75",
+  "fetched_at": 1790641790.8618753,
+  "klass": "protocol",
+  "name": "RedSnwapper",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xac87cd580640cf128ed3339a824e11a842e6ddb9": {
+  "address": "0xac87cd580640cf128ed3339a824e11a842e6ddb9",
+  "fetched_at": 1790641791.9470966,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xadf56f4966f965d1759ecd3d63028d610e773817": {
+  "address": "0xadf56f4966f965d1759ecd3d63028d610e773817",
+  "fetched_at": 1790641792.87902,
+  "klass": "protocol",
+  "name": "SolidlyV3Pool",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaebf6caf33d362f3f104b240e6a9a60d3be31969": {
+  "address": "0xaebf6caf33d362f3f104b240e6a9a60d3be31969",
+  "fetched_at": 1790641793.2077084,
+  "klass": "protocol",
+  "name": "LocalBridge",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaec53efdc5582dc78f52ed4cfa852bfa5bf0c1d3": {
+  "address": "0xaec53efdc5582dc78f52ed4cfa852bfa5bf0c1d3",
+  "fetched_at": 1790641793.8633482,
+  "klass": "protocol",
+  "name": "DaimoPayCCTPV2Bridger",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaf2426e21b129f30a8b77e24929aa51c173a7ab9": {
+  "address": "0xaf2426e21b129f30a8b77e24929aa51c173a7ab9",
+  "fetched_at": 1790641796.9161465,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaf5e2b036784c758ee6dd655abd83259a0524f4a": {
+  "address": "0xaf5e2b036784c758ee6dd655abd83259a0524f4a",
+  "fetched_at": 1790641797.326174,
+  "klass": "protocol",
+  "name": "Zap",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xafa50389bec13c13b154e3a424e0f232080774d6": {
+  "address": "0xafa50389bec13c13b154e3a424e0f232080774d6",
+  "fetched_at": 1790641799.355056,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xafbb81e05aefef718e591e35cb2ebb89b31bfab0": {
+  "address": "0xafbb81e05aefef718e591e35cb2ebb89b31bfab0",
+  "fetched_at": 1790641800.197987,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xaffd3c3cd06cf499deddf78b26868018a93f2c31": {
+  "address": "0xaffd3c3cd06cf499deddf78b26868018a93f2c31",
+  "fetched_at": 1790641800.8627412,
+  "klass": "protocol",
+  "name": "AdapterProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb0cc4845d539095182f79295780281aea0648e5c": {
+  "address": "0xb0cc4845d539095182f79295780281aea0648e5c",
+  "fetched_at": 1790641801.2432504,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xb141f554188cf306fde443f6e991949636f80e49": {
+  "address": "0xb141f554188cf306fde443f6e991949636f80e49",
+  "fetched_at": 1790641801.8636825,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xb18fba08a7e24b650d5c7064e76cbb584a8e8bef": {
+  "address": "0xb18fba08a7e24b650d5c7064e76cbb584a8e8bef",
+  "fetched_at": 1790641802.875061,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb280c373f57c9169e009a66496ee556084afad24": {
+  "address": "0xb280c373f57c9169e009a66496ee556084afad24",
+  "fetched_at": 1790641803.8780408,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xb2b5565d2c0ab7ebc9b9fb3c0e4a9e8741e107f1": {
+  "address": "0xb2b5565d2c0ab7ebc9b9fb3c0e4a9e8741e107f1",
+  "fetched_at": 1790641805.8630843,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb2cb9ada6e00118da8e83a6a53df1ec6331a60a6": {
+  "address": "0xb2cb9ada6e00118da8e83a6a53df1ec6331a60a6",
+  "fetched_at": 1790641806.8628948,
+  "klass": "protocol",
+  "name": "Vault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb300000b72deaeb607a12d5f54773d1c19c7028d": {
+  "address": "0xb300000b72deaeb607a12d5f54773d1c19c7028d",
+  "fetched_at": 1790641809.011685,
+  "klass": "protocol",
+  "name": "Diamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb33849aabb6232ba87e5fdeb1b9472a3004e470b": {
+  "address": "0xb33849aabb6232ba87e5fdeb1b9472a3004e470b",
+  "fetched_at": 1790641809.8631043,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb35456255d5956c823e3258cb60ee43774264418": {
+  "address": "0xb35456255d5956c823e3258cb60ee43774264418",
+  "fetched_at": 1790641810.8632934,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb3fa262d0fb521cc93be83d87b322b8a23daf3f0": {
+  "address": "0xb3fa262d0fb521cc93be83d87b322b8a23daf3f0",
+  "fetched_at": 1790641811.8750641,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb41dd984730daf82f5c41489e21ac79d5e3b61bc": {
+  "address": "0xb41dd984730daf82f5c41489e21ac79d5e3b61bc",
+  "fetched_at": 1790641812.310066,
+  "klass": "protocol",
+  "name": "NewUniswapV2ExchangeRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb4315e873dbcf96ffd0acd8ea43f689d8c20fb30": {
+  "address": "0xb4315e873dbcf96ffd0acd8ea43f689d8c20fb30",
+  "fetched_at": 1790641812.862849,
+  "klass": "protocol",
+  "name": "LBRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb444b352c3f070bc4419ec732b5555847f477ab2": {
+  "address": "0xb444b352c3f070bc4419ec732b5555847f477ab2",
+  "fetched_at": 1790641813.3176699,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb47ae00e7800936e00214fb09960a6a7f6331d8e": {
+  "address": "0xb47ae00e7800936e00214fb09960a6a7f6331d8e",
+  "fetched_at": 1790641814.1192389,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb49781e8c39c75f413c1178f395bf68b0bee8d00": {
+  "address": "0xb49781e8c39c75f413c1178f395bf68b0bee8d00",
+  "fetched_at": 1790641814.878455,
+  "klass": "protocol",
+  "name": "MarginVault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb4acbc082b5e7ded571c98ee4257778a9d784b36": {
+  "address": "0xb4acbc082b5e7ded571c98ee4257778a9d784b36",
+  "fetched_at": 1790641815.3123584,
+  "klass": "protocol",
+  "name": "V3Utils",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb5810acfd45d85eaa938bf90a5857295513da7e9": {
+  "address": "0xb5810acfd45d85eaa938bf90a5857295513da7e9",
+  "fetched_at": 1790641815.8880312,
+  "klass": "protocol",
+  "name": "LimitOrderProtocol",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb5c4ac3088c90d72c67568302533873298d64e21": {
+  "address": "0xb5c4ac3088c90d72c67568302533873298d64e21",
+  "fetched_at": 1790641816.4239419,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb6783ac4a451e379af99067a02c41f1819123ec0": {
+  "address": "0xb6783ac4a451e379af99067a02c41f1819123ec0",
+  "fetched_at": 1790641819.2145133,
+  "klass": "protocol",
+  "name": "InitializableUpgradeabilityProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb7aa533e6de6ecf863fffe1863d82c5ed24bd3df": {
+  "address": "0xb7aa533e6de6ecf863fffe1863d82c5ed24bd3df",
+  "fetched_at": 1790641819.8651505,
+  "klass": "protocol",
+  "name": "HyperCoreBridger",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb7e9775f59c9ad89f35b4f538b83e101fc89949e": {
+  "address": "0xb7e9775f59c9ad89f35b4f538b83e101fc89949e",
+  "fetched_at": 1790641820.8630636,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb85573bb0d1403ed56ddf12540cc57662dfb3351": {
+  "address": "0xb85573bb0d1403ed56ddf12540cc57662dfb3351",
+  "fetched_at": 1790641821.3098752,
+  "klass": "protocol",
+  "name": "AllowTokensProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb85edbd54bec6830cb71f565b3d635bce5548b42": {
+  "address": "0xb85edbd54bec6830cb71f565b3d635bce5548b42",
+  "fetched_at": 1790641821.8629146,
+  "klass": "protocol",
+  "name": "DogProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb8a08df71504e2b553aea2dcf83666497bf8077c": {
+  "address": "0xb8a08df71504e2b553aea2dcf83666497bf8077c",
+  "fetched_at": 1790641822.865924,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xb8cf3cdbc390180257295bf08cfdeca80dca9e8a": {
+  "address": "0xb8cf3cdbc390180257295bf08cfdeca80dca9e8a",
+  "fetched_at": 1790641823.4144073,
+  "klass": "protocol",
+  "name": "RangoRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f": {
+  "address": "0xb92fe925dc43a0ecde6c8b1a2709c170ec4fff4f",
+  "fetched_at": 1790641828.8800802,
+  "klass": "protocol",
+  "name": "RelayRouterV3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xb94513b33a266fb7dfe8de0625a98edee51ccda4": {
+  "address": "0xb94513b33a266fb7dfe8de0625a98edee51ccda4",
+  "fetched_at": 1790641829.4082022,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xb998ac05448011f433eac528e28fe59240c9998f": {
+  "address": "0xb998ac05448011f433eac528e28fe59240c9998f",
+  "fetched_at": 1790641830.8880703,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xba12222222228d8ba445958a75a0704d566bf2c8": {
+  "address": "0xba12222222228d8ba445958a75a0704d566bf2c8",
+  "fetched_at": 1790641837.3451135,
+  "klass": "protocol",
+  "name": "Vault",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xba6fd18ab745f4fffa3d523169646a89dbb53ac0": {
+  "address": "0xba6fd18ab745f4fffa3d523169646a89dbb53ac0",
+  "fetched_at": 1790641838.126376,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xbbbbbbb520d69a9775e85b458c58c648259fad5f": {
+  "address": "0xbbbbbbb520d69a9775e85b458c58c648259fad5f",
+  "fetched_at": 1790641838.6465354,
+  "klass": "protocol",
+  "name": "BebopSettlement",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xbc1d9760bd6ca468ca9fb5ff2cfbeac35d86c973": {
+  "address": "0xbc1d9760bd6ca468ca9fb5ff2cfbeac35d86c973",
+  "fetched_at": 1790641839.8631015,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xbc1e1c6401cdf9e905420b0fd62782e449f5bff1": {
+  "address": "0xbc1e1c6401cdf9e905420b0fd62782e449f5bff1",
+  "fetched_at": 1790641840.4214358,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xbcf2cd12d1d37578fa7c69805fe77788e866be1a": {
+  "address": "0xbcf2cd12d1d37578fa7c69805fe77788e866be1a",
+  "fetched_at": 1790641841.2099705,
+  "klass": "protocol",
+  "name": "KryvoraMintKey",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xbd3fec0246f1a9a248a5a7c213d853865fdf3556": {
+  "address": "0xbd3fec0246f1a9a248a5a7c213d853865fdf3556",
+  "fetched_at": 1790641842.6660595,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xbda4176fd98b47018af673805d069b9dbd49373d": {
+  "address": "0xbda4176fd98b47018af673805d069b9dbd49373d",
+  "fetched_at": 1790641843.3172555,
+  "klass": "protocol",
+  "name": "SushiSwapV3Router",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xbdfdf5f32f5b9bb000cc6a42713ccc7a1fce5b02": {
+  "address": "0xbdfdf5f32f5b9bb000cc6a42713ccc7a1fce5b02",
+  "fetched_at": 1790641843.9329734,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xbe23b6f7afe0d521cbf0b4fc8245280b0282483f": {
+  "address": "0xbe23b6f7afe0d521cbf0b4fc8245280b0282483f",
+  "fetched_at": 1790641845.8622203,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xbeb0009aca35087ce7ccf11637e24dd1aad3bf2a": {
+  "address": "0xbeb0009aca35087ce7ccf11637e24dd1aad3bf2a",
+  "fetched_at": 1790641846.8627062,
+  "klass": "protocol",
+  "name": "BebopRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xbffc8dc133a47a7436c4d6c6964ea302d7e4086c": {
+  "address": "0xbffc8dc133a47a7436c4d6c6964ea302d7e4086c",
+  "fetched_at": 1790641851.3112707,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc01487d7b33a3fd8c8d9683c09c0880cd9585e38": {
+  "address": "0xc01487d7b33a3fd8c8d9683c09c0880cd9585e38",
+  "fetched_at": 1790641851.6116664,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xc0d0aedc888bb60bcd13c5e4df1e2f948e436dca": {
+  "address": "0xc0d0aedc888bb60bcd13c5e4df1e2f948e436dca",
+  "fetched_at": 1790641852.4117532,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc0e0bc2f7db737d42d7f4a283021a98068f6df06": {
+  "address": "0xc0e0bc2f7db737d42d7f4a283021a98068f6df06",
+  "fetched_at": 1790641853.3856466,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc1437b2f019fbb5919ef41d5efc2bc337ef71bcc": {
+  "address": "0xc1437b2f019fbb5919ef41d5efc2bc337ef71bcc",
+  "fetched_at": 1790641854.209476,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc1d13492285eb664951e201bf7c80c7c6318a1b5": {
+  "address": "0xc1d13492285eb664951e201bf7c80c7c6318a1b5",
+  "fetched_at": 1790641855.0396605,
+  "klass": "protocol",
+  "name": "BridgersSwap",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc201a5b7b8c1b5a562deeebb6c1ea88aeceaef06": {
+  "address": "0xc201a5b7b8c1b5a562deeebb6c1ea88aeceaef06",
+  "fetched_at": 1790641855.862718,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc36442b4a4522e871399cd717abdd847ab11fe88": {
+  "address": "0xc36442b4a4522e871399cd717abdd847ab11fe88",
+  "fetched_at": 1790641855.8670073,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0xc4bfb207a078686e25ef2307578202644414a876": {
+  "address": "0xc4bfb207a078686e25ef2307578202644414a876",
+  "fetched_at": 1790641856.4007847,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc52e28614222550995f69c1e2b9cad22be0b3a52": {
+  "address": "0xc52e28614222550995f69c1e2b9cad22be0b3a52",
+  "fetched_at": 1790641857.546045,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc5a1873bb6f83c677eb255194562500ccb7ee67f": {
+  "address": "0xc5a1873bb6f83c677eb255194562500ccb7ee67f",
+  "fetched_at": 1790641858.316666,
+  "klass": "protocol",
+  "name": "RewardForwarder",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc5a350853e4e36b73eb0c24aaa4b8816c9a3579a": {
+  "address": "0xc5a350853e4e36b73eb0c24aaa4b8816c9a3579a",
+  "fetched_at": 1790641859.440224,
+  "klass": "protocol",
+  "name": "JamBalanceManager",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc678e0a1e9700e497b209bc17ad4dd910a572d55": {
+  "address": "0xc678e0a1e9700e497b209bc17ad4dd910a572d55",
+  "fetched_at": 1790641860.5461888,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xc6868edf1d2a7a8b759856cb8afa333210dfeda6": {
+  "address": "0xc6868edf1d2a7a8b759856cb8afa333210dfeda6",
+  "fetched_at": 1790641861.8623874,
+  "klass": "protocol",
+  "name": "Aori",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc6962004f452be9203591991d15f6b388e09e8d0": {
+  "address": "0xc6962004f452be9203591991d15f6b388e09e8d0",
+  "fetched_at": 1790641865.4989173,
+  "klass": "protocol",
+  "name": "UniswapV3Pool",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc6bc781e20f9323012f6e422bdf552ff06ba6cd1": {
+  "address": "0xc6bc781e20f9323012f6e422bdf552ff06ba6cd1",
+  "fetched_at": 1790641866.8640332,
+  "klass": "protocol",
+  "name": "OptimizedTransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc7136bb28edf6e562207f20341b4bd3926f2274e": {
+  "address": "0xc7136bb28edf6e562207f20341b4bd3926f2274e",
+  "fetched_at": 1790641868.022079,
+  "klass": "protocol",
+  "name": "BeaconProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc8291c0603c8d06ae3c56be036dedc57c3b57169": {
+  "address": "0xc8291c0603c8d06ae3c56be036dedc57c3b57169",
+  "fetched_at": 1790641871.864463,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc873fecbd354f5a56e00e710b90ef4201db2448d": {
+  "address": "0xc873fecbd354f5a56e00e710b90ef4201db2448d",
+  "fetched_at": 1790641873.8770285,
+  "klass": "protocol",
+  "name": "CamelotRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc88fd3c032406f64c70a6c1aac9831602362ee04": {
+  "address": "0xc88fd3c032406f64c70a6c1aac9831602362ee04",
+  "fetched_at": 1790641874.8627467,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xc9064fa73f23ae08d083fab741fcfbbe83944f70": {
+  "address": "0xc9064fa73f23ae08d083fab741fcfbbe83944f70",
+  "fetched_at": 1790641875.9500089,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xc92e8bdf79f0507f65a392b0ab4667716bfe0110": {
+  "address": "0xc92e8bdf79f0507f65a392b0ab4667716bfe0110",
+  "fetched_at": 1790641875.9548252,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0xc9c54d789ebc18169d942e781c75bb4e3d19a27b": {
+  "address": "0xc9c54d789ebc18169d942e781c75bb4e3d19a27b",
+  "fetched_at": 1790641876.880006,
+  "klass": "protocol",
+  "name": "SponsoredCCTPSrcPeriphery",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc9ca31685533b9f1eb409f1dfb519e388b3d106b": {
+  "address": "0xc9ca31685533b9f1eb409f1dfb519e388b3d106b",
+  "fetched_at": 1790641877.4112458,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc9d0b733adaa1f851639ca47a9a2d8a6c8572bdb": {
+  "address": "0xc9d0b733adaa1f851639ca47a9a2d8a6c8572bdb",
+  "fetched_at": 1790641878.3142452,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xc9df7fe74ff692d3c4d8259b9ad42f17a93e022b": {
+  "address": "0xc9df7fe74ff692d3c4d8259b9ad42f17a93e022b",
+  "fetched_at": 1790641879.2128487,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcab2fa2eeab7065b45cbcf6e3936dde2506b4f6c": {
+  "address": "0xcab2fa2eeab7065b45cbcf6e3936dde2506b4f6c",
+  "fetched_at": 1790641879.8627195,
+  "klass": "protocol",
+  "name": "DSLOProtocol",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcb3d2a42022741b06f9b38459e3dd1ee9a64d129": {
+  "address": "0xcb3d2a42022741b06f9b38459e3dd1ee9a64d129",
+  "fetched_at": 1790641880.8741632,
+  "klass": "protocol",
+  "name": "V4UtilsRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcb4728a1789b87e05c813b68dbc5e6a98a4856ba": {
+  "address": "0xcb4728a1789b87e05c813b68dbc5e6a98a4856ba",
+  "fetched_at": 1790641881.4086535,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcb7704c1d2f6563d2aa46c0d62913d99e94c7fd3": {
+  "address": "0xcb7704c1d2f6563d2aa46c0d62913d99e94c7fd3",
+  "fetched_at": 1790641882.0286896,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xccc88a9d1b4ed6b0eaba998850414b24f1c315be": {
+  "address": "0xccc88a9d1b4ed6b0eaba998850414b24f1c315be",
+  "fetched_at": 1790641884.2891114,
+  "klass": "protocol",
+  "name": "RelayApprovalProxyV3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xccd5891083a8acd2074690f65d3024e7d13d66e7": {
+  "address": "0xccd5891083a8acd2074690f65d3024e7d13d66e7",
+  "fetched_at": 1790641885.9270244,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcd02f10342505682869d1db2ef6d54755a0886ae": {
+  "address": "0xcd02f10342505682869d1db2ef6d54755a0886ae",
+  "fetched_at": 1790641886.222112,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xcd4fedabf63f636520d7193b49e8c883409da647": {
+  "address": "0xcd4fedabf63f636520d7193b49e8c883409da647",
+  "fetched_at": 1790641897.9283814,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xcd6e10d72a9e18511e40881ddb38a3dbc0681693": {
+  "address": "0xcd6e10d72a9e18511e40881ddb38a3dbc0681693",
+  "fetched_at": 1790641900.6246254,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcdc09a6b5211bb51f18a1af7691b6725bb024434": {
+  "address": "0xcdc09a6b5211bb51f18a1af7691b6725bb024434",
+  "fetched_at": 1790641901.3103695,
+  "klass": "protocol",
+  "name": "PMMProtocol",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcde3f99bcb4c91e19124e41730489eaefec24565": {
+  "address": "0xcde3f99bcb4c91e19124e41730489eaefec24565",
+  "fetched_at": 1790641902.7406456,
+  "klass": "protocol",
+  "name": "Bridge2",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xce16f69375520ab01377ce7b88f5ba8c48f8d666": {
+  "address": "0xce16f69375520ab01377ce7b88f5ba8c48f8d666",
+  "fetched_at": 1790641903.400656,
+  "klass": "protocol",
+  "name": "SquidRouterProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xce40449b773a3e6e5e769adb4e567179d4828cbd": {
+  "address": "0xce40449b773a3e6e5e769adb4e567179d4828cbd",
+  "fetched_at": 1790641906.9213114,
+  "klass": "protocol",
+  "name": "FeeForwarder",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcee843cd04e3758ddc5bcff08647dddb117151d0": {
+  "address": "0xcee843cd04e3758ddc5bcff08647dddb117151d0",
+  "fetched_at": 1790641907.8625607,
+  "klass": "protocol",
+  "name": "BeefySwapper",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xceeed84620e5eb9ab1d6dfc316867d2cda332e41": {
+  "address": "0xceeed84620e5eb9ab1d6dfc316867d2cda332e41",
+  "fetched_at": 1790641908.2134273,
+  "klass": "protocol",
+  "name": "MultiSigPoolV5WithPermit",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xcfc3c0d2b41e5b4ab3728e5ee35defa71749f188": {
+  "address": "0xcfc3c0d2b41e5b4ab3728e5ee35defa71749f188",
+  "fetched_at": 1790641911.8627453,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd0840325aaf8f6b294843619979beb15b711f3c2": {
+  "address": "0xd0840325aaf8f6b294843619979beb15b711f3c2",
+  "fetched_at": 1790641912.8629663,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xd089b4cb88dacf4e27be869a00e9f7e2e3c18193": {
+  "address": "0xd089b4cb88dacf4e27be869a00e9f7e2e3c18193",
+  "fetched_at": 1790641914.1093485,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd14108452f4ec96e2b5b3a7ca1a1b4a75b7a42be": {
+  "address": "0xd14108452f4ec96e2b5b3a7ca1a1b4a75b7a42be",
+  "fetched_at": 1790641916.1222136,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd1ca432b477d08c82f27b7a25bbd2d46c26ad3ba": {
+  "address": "0xd1ca432b477d08c82f27b7a25bbd2d46c26ad3ba",
+  "fetched_at": 1790641917.8624094,
+  "klass": "protocol",
+  "name": "BeaconProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd40373cc943f32bad15bf42d1580363f4d52739d": {
+  "address": "0xd40373cc943f32bad15bf42d1580363f4d52739d",
+  "fetched_at": 1790641919.8629208,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd78d199f8c402e7b5cc2abe278df0412400a3bae": {
+  "address": "0xd78d199f8c402e7b5cc2abe278df0412400a3bae",
+  "fetched_at": 1790641921.0257988,
+  "klass": "protocol",
+  "name": "SwiftDest",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd7b44cb976fae38b6660db84de184cb1370d19d7": {
+  "address": "0xd7b44cb976fae38b6660db84de184cb1370d19d7",
+  "fetched_at": 1790641923.862475,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xd7feb0b1eb4b447df6999738d65804a5534810e2": {
+  "address": "0xd7feb0b1eb4b447df6999738d65804a5534810e2",
+  "fetched_at": 1790641924.862734,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xd83680dddbef0e3409652f3fa54d0af12af8c1f2": {
+  "address": "0xd83680dddbef0e3409652f3fa54d0af12af8c1f2",
+  "fetched_at": 1790641925.8625786,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd88f38f930b7952f2db2432cb002e7abbf3dd869": {
+  "address": "0xd88f38f930b7952f2db2432cb002e7abbf3dd869",
+  "fetched_at": 1790641926.9009051,
+  "klass": "protocol",
+  "name": "PositionManager",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd8de323675de620fe5dd1707ce6cf0b414f066d3": {
+  "address": "0xd8de323675de620fe5dd1707ce6cf0b414f066d3",
+  "fetched_at": 1790641930.4117908,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xd8ec8c3fddb73eba77b9e3952a5eb0fcbc184784": {
+  "address": "0xd8ec8c3fddb73eba77b9e3952a5eb0fcbc184784",
+  "fetched_at": 1790641931.8629594,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd943e81f2ec57a87e83d9a1a6376fb8162de8b6c": {
+  "address": "0xd943e81f2ec57a87e83d9a1a6376fb8162de8b6c",
+  "fetched_at": 1790641932.3169582,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xd9954934aed0b2d18c3df3a000d5936458362f52": {
+  "address": "0xd9954934aed0b2d18c3df3a000d5936458362f52",
+  "fetched_at": 1790641932.8626592,
+  "klass": "eoa",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xda4a059cb0faedb2773a83674590f58833044889": {
+  "address": "0xda4a059cb0faedb2773a83674590f58833044889",
+  "fetched_at": 1790641933.8627229,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xda629884ecb2525dc2326cfcbfbea9d2a34a41d3": {
+  "address": "0xda629884ecb2525dc2326cfcbfbea9d2a34a41d3",
+  "fetched_at": 1790641934.8631725,
+  "klass": "protocol",
+  "name": "USDBankroll",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xda864364f7d1ebcc7c89e9610ebdef45ddf5f81b": {
+  "address": "0xda864364f7d1ebcc7c89e9610ebdef45ddf5f81b",
+  "fetched_at": 1790641935.8628595,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xdac4d156764a133543607a17514197a8106d798e": {
+  "address": "0xdac4d156764a133543607a17514197a8106d798e",
+  "fetched_at": 1790641936.8799958,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xdb2454dd82307592414872912567d13075d34d31": {
+  "address": "0xdb2454dd82307592414872912567d13075d34d31",
+  "fetched_at": 1790641938.1518295,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xdd4a42603e6d8e515c3468789375a98c376821b3": {
+  "address": "0xdd4a42603e6d8e515c3468789375a98c376821b3",
+  "fetched_at": 1790641938.8618538,
+  "klass": "protocol",
+  "name": "Provisioner",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xdd985e7313d2cc3740ef2f15d4876ff63196cee5": {
+  "address": "0xdd985e7313d2cc3740ef2f15d4876ff63196cee5",
+  "fetched_at": 1790641939.4265842,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xde433ff3cac13ef06637c0d2f0d7d05596b67109": {
+  "address": "0xde433ff3cac13ef06637c0d2f0d7d05596b67109",
+  "fetched_at": 1790641940.1097848,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xde632c3a214d5f14c1d8ddf0b92f8bcd188fee45": {
+  "address": "0xde632c3a214d5f14c1d8ddf0b92f8bcd188fee45",
+  "fetched_at": 1790641940.8627658,
+  "klass": "protocol",
+  "name": "FluidDexT1",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xdecc46a4b09162f5369c5c80383aaa9159bcf192": {
+  "address": "0xdecc46a4b09162f5369c5c80383aaa9159bcf192",
+  "fetched_at": 1790641941.2125506,
+  "klass": "protocol",
+  "name": "AaveV3AdapterFactory",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xdef1c0ded9bec7f1a1670819833240f027b25eff": {
+  "address": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
+  "fetched_at": 1790641941.5320268,
+  "klass": "protocol",
+  "name": "ZeroEx",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xdefbbac44f2088a70b648e1231b2ca9683774c48": {
+  "address": "0xdefbbac44f2088a70b648e1231b2ca9683774c48",
+  "fetched_at": 1790641942.2290332,
+  "klass": "protocol",
+  "name": "ERC20Router",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xdfbce7e4d22799c9ce20d802f1e5cf323e173d00": {
+  "address": "0xdfbce7e4d22799c9ce20d802f1e5cf323e173d00",
+  "fetched_at": 1790641942.8627198,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xe12b1e2a10effbd00e3daaeb614df42ffeecb158": {
+  "address": "0xe12b1e2a10effbd00e3daaeb614df42ffeecb158",
+  "fetched_at": 1790641944.8901396,
+  "klass": "protocol",
+  "name": "DepositAddressBridger",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe188f0081865ddd772cd86e90098817c10615825": {
+  "address": "0xe188f0081865ddd772cd86e90098817c10615825",
+  "fetched_at": 1790641945.863022,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe226e4825cb215abafad98fdd400583eab6a594f": {
+  "address": "0xe226e4825cb215abafad98fdd400583eab6a594f",
+  "fetched_at": 1790641946.8630354,
+  "klass": "protocol",
+  "name": "LayerswapDepository",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe22db6b9cc05309a75eef8e20d8374e1925ef4c8": {
+  "address": "0xe22db6b9cc05309a75eef8e20d8374e1925ef4c8",
+  "fetched_at": 1790641947.8889868,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe28e2c8d240dd5ebd0adcab86fbd79df7a052034": {
+  "address": "0xe28e2c8d240dd5ebd0adcab86fbd79df7a052034",
+  "fetched_at": 1790641948.1261,
+  "klass": "protocol",
+  "name": "ParaSwapRepayAdapter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe2ba1390f5adec874058c41339b395fb94489e3c": {
+  "address": "0xe2ba1390f5adec874058c41339b395fb94489e3c",
+  "fetched_at": 1790641948.8643942,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe2e22353752491de9dacb6078de8e3bac5737ab5": {
+  "address": "0xe2e22353752491de9dacb6078de8e3bac5737ab5",
+  "fetched_at": 1790641949.862776,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe2e3b88b9893e18d0867c08f9ca93f8ab5935b14": {
+  "address": "0xe2e3b88b9893e18d0867c08f9ca93f8ab5935b14",
+  "fetched_at": 1790641953.14061,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe35e9842fceaca96570b734083f4a58e8f7c5f2a": {
+  "address": "0xe35e9842fceaca96570b734083f4a58e8f7c5f2a",
+  "fetched_at": 1790641953.1454272,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0xe4b2dfc82977dd2dce7e8d37895a6a8f50cbb4fb": {
+  "address": "0xe4b2dfc82977dd2dce7e8d37895a6a8f50cbb4fb",
+  "fetched_at": 1790641955.2082238,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe575f5dd354dc79a8114071992a2ac379a75daa4": {
+  "address": "0xe575f5dd354dc79a8114071992a2ac379a75daa4",
+  "fetched_at": 1790641955.845216,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe592427a0aece92de3edee1f18e0157c05861564": {
+  "address": "0xe592427a0aece92de3edee1f18e0157c05861564",
+  "fetched_at": 1790641955.8670168,
+  "klass": "protocol",
+  "name": "",
+  "proxy": false,
+  "source": "whitelist",
+  "verified": false
+ },
+ "0xe5e6268977575ccfcb50055c17a4563b8b0ce24e": {
+  "address": "0xe5e6268977575ccfcb50055c17a4563b8b0ce24e",
+  "fetched_at": 1790641957.0390215,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe5ec006540be4f7cbb2cbc7be79708a6d96f90dc": {
+  "address": "0xe5ec006540be4f7cbb2cbc7be79708a6d96f90dc",
+  "fetched_at": 1790641958.4411113,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xe705d1c3f5f7adca2191ff3bd62a64d0d9258427": {
+  "address": "0xe705d1c3f5f7adca2191ff3bd62a64d0d9258427",
+  "fetched_at": 1790641959.4359915,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe77e9642c0953f804f5051e12b36b4adf86fd0ef": {
+  "address": "0xe77e9642c0953f804f5051e12b36b4adf86fd0ef",
+  "fetched_at": 1790641960.1387563,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe7b3cdf3eccabbf791fde12c5593299a4e28f504": {
+  "address": "0xe7b3cdf3eccabbf791fde12c5593299a4e28f504",
+  "fetched_at": 1790641961.2251139,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xe8cdf27acd73a434d661c84887215f7598e7d0d3": {
+  "address": "0xe8cdf27acd73a434d661c84887215f7598e7d0d3",
+  "fetched_at": 1790641962.4409056,
+  "klass": "protocol",
+  "name": "StargatePoolUSDC",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xea9961280b48fe521ece83f6cd8a7e9b2c4ffc2e": {
+  "address": "0xea9961280b48fe521ece83f6cd8a7e9b2c4ffc2e",
+  "fetched_at": 1790641963.310174,
+  "klass": "protocol",
+  "name": "Silo",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xeab71344cc3d1bf0803bbfcb36bab6ee07650b74": {
+  "address": "0xeab71344cc3d1bf0803bbfcb36bab6ee07650b74",
+  "fetched_at": 1790641965.2143064,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xeb53311384b5be6b059b52dd32e85fd927d6e1eb": {
+  "address": "0xeb53311384b5be6b059b52dd32e85fd927d6e1eb",
+  "fetched_at": 1790641967.879996,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xec000064576f9c95a8623bc0eff3db6d296ea6df": {
+  "address": "0xec000064576f9c95a8623bc0eff3db6d296ea6df",
+  "fetched_at": 1790641968.414702,
+  "klass": "protocol",
+  "name": "Portal",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xec0377a6bc71c4a28288a5cfd307b80c53a7e1e1": {
+  "address": "0xec0377a6bc71c4a28288a5cfd307b80c53a7e1e1",
+  "fetched_at": 1790641969.8626552,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xec090cf6dd891d2d014bea6edada6e05e025d93d": {
+  "address": "0xec090cf6dd891d2d014bea6edada6e05e025d93d",
+  "fetched_at": 1790641971.8628352,
+  "klass": "protocol",
+  "name": "CurveStableSwapNG",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xec60b1a7610b8b32ace5ec785578b13c637302c6": {
+  "address": "0xec60b1a7610b8b32ace5ec785578b13c637302c6",
+  "fetched_at": 1790641972.814019,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xec9a7fb6cbc2e41926127929c2dce6e9c5d33bec": {
+  "address": "0xec9a7fb6cbc2e41926127929c2dce6e9c5d33bec",
+  "fetched_at": 1790641978.8627248,
+  "klass": "protocol",
+  "name": "GraphProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xed7138c3b9c4afbf0a3b8cbad1734a89f33472eb": {
+  "address": "0xed7138c3b9c4afbf0a3b8cbad1734a89f33472eb",
+  "fetched_at": 1790641979.4377427,
+  "klass": "protocol",
+  "name": "AmpleEarn",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xee030ec6f4307411607e55acd08e628ae6655b86": {
+  "address": "0xee030ec6f4307411607e55acd08e628ae6655b86",
+  "fetched_at": 1790641980.4109757,
+  "klass": "protocol",
+  "name": "ButterRouterV3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xee0319cf0bca5d09333f9f6277743e8de31bd69a": {
+  "address": "0xee0319cf0bca5d09333f9f6277743e8de31bd69a",
+  "fetched_at": 1790641981.1142135,
+  "klass": "protocol",
+  "name": "ButterRouterV31",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xee39678386f5bfc68df2c65656ec8e23f60063b5": {
+  "address": "0xee39678386f5bfc68df2c65656ec8e23f60063b5",
+  "fetched_at": 1790641982.3210123,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xef1ce4489962e6d6d6be8066e160b2799610cb85": {
+  "address": "0xef1ce4489962e6d6d6be8066e160b2799610cb85",
+  "fetched_at": 1790641982.9339917,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xef32b98c3ddb0a1c09174a45a28fe378b89d0da0": {
+  "address": "0xef32b98c3ddb0a1c09174a45a28fe378b89d0da0",
+  "fetched_at": 1790641984.1256666,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xef4fb24ad0916217251f553c0596f8edc630eb66": {
+  "address": "0xef4fb24ad0916217251f553c0596f8edc630eb66",
+  "fetched_at": 1790641985.0329728,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf00240e5256e72771b46d095666594e0f40d085c": {
+  "address": "0xf00240e5256e72771b46d095666594e0f40d085c",
+  "fetched_at": 1790641985.8636181,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf06c5767581e7cc4cd069c32ea5fac56801580b9": {
+  "address": "0xf06c5767581e7cc4cd069c32ea5fac56801580b9",
+  "fetched_at": 1790641986.4148393,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf0d4c12a5768d806021f80a262b4d39d26c58b8d": {
+  "address": "0xf0d4c12a5768d806021f80a262b4d39d26c58b8d",
+  "fetched_at": 1790641987.22067,
+  "klass": "protocol",
+  "name": "CurveRouterSidechainv1.0",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf17215c5f0f89e57e02ac7111b7f37b99d75b1da": {
+  "address": "0xf17215c5f0f89e57e02ac7111b7f37b99d75b1da",
+  "fetched_at": 1790641988.2036421,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf20d10e306e34f9d830715eeef577ac16b5ea72e": {
+  "address": "0xf20d10e306e34f9d830715eeef577ac16b5ea72e",
+  "fetched_at": 1790641988.8626468,
+  "klass": "protocol",
+  "name": "DXswapRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf2839e0b30b5e96083085f498b14bbc12530b734": {
+  "address": "0xf2839e0b30b5e96083085f498b14bbc12530b734",
+  "fetched_at": 1790641989.8623633,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf38d68f6ab0af2c1912c72ae3b576bfc7a6c5e0f": {
+  "address": "0xf38d68f6ab0af2c1912c72ae3b576bfc7a6c5e0f",
+  "fetched_at": 1790641991.1146212,
+  "klass": "protocol",
+  "name": "RainPoolDiamond",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf38e90b5aa7ed798a92803c5ff4cef5ca0ddd16b": {
+  "address": "0xf38e90b5aa7ed798a92803c5ff4cef5ca0ddd16b",
+  "fetched_at": 1790641991.8630078,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf4b1486dd74d07706052a33d31d7c0aafd0659e1": {
+  "address": "0xf4b1486dd74d07706052a33d31d7c0aafd0659e1",
+  "fetched_at": 1790641992.4129524,
+  "klass": "protocol",
+  "name": "InitializableImmutableAdminUpgradeabilityProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf51a58b02be8b6817a0d0dc8b166f88a9701b648": {
+  "address": "0xf51a58b02be8b6817a0d0dc8b166f88a9701b648",
+  "fetched_at": 1790641993.8963115,
+  "klass": "protocol",
+  "name": "ApeXPool3",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf60f689ec22fc2d485b3c734efe58538ccc28766": {
+  "address": "0xf60f689ec22fc2d485b3c734efe58538ccc28766",
+  "fetched_at": 1790641995.8627656,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": false
+ },
+ "0xf6d2a8e7f960ae7792e5a58bf7db71dcc93af416": {
+  "address": "0xf6d2a8e7f960ae7792e5a58bf7db71dcc93af416",
+  "fetched_at": 1790641997.0340424,
+  "klass": "protocol",
+  "name": "BeaconProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf6fcc27aaf1fcd8b254498c9794451d82afc673e": {
+  "address": "0xf6fcc27aaf1fcd8b254498c9794451d82afc673e",
+  "fetched_at": 1790641998.028029,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf75584ef6673ad213a685a1b58cc0330b8ea22cf": {
+  "address": "0xf75584ef6673ad213a685a1b58cc0330b8ea22cf",
+  "fetched_at": 1790641998.863381,
+  "klass": "protocol",
+  "name": "EnsoRouter",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xf992efcb5fa2ed7cb48310d9dd8cb4ce5fb7ddc9": {
+  "address": "0xf992efcb5fa2ed7cb48310d9dd8cb4ce5fb7ddc9",
+  "fetched_at": 1790641999.8622212,
+  "klass": "protocol",
+  "name": "ERC1967Proxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfa7093cdd9ee6932b4eb2c9e1cde7ce00b1fa4b9": {
+  "address": "0xfa7093cdd9ee6932b4eb2c9e1cde7ce00b1fa4b9",
+  "fetched_at": 1790642001.130163,
+  "klass": "protocol",
+  "name": "PausableUpgradableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfaa9283015f265c6606a1953aecde3d749e8ad38": {
+  "address": "0xfaa9283015f265c6606a1953aecde3d749e8ad38",
+  "fetched_at": 1790642001.8630466,
+  "klass": "protocol",
+  "name": "BeaconProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfab5891ed867a1195303251912013b92c4fc3a1d": {
+  "address": "0xfab5891ed867a1195303251912013b92c4fc3a1d",
+  "fetched_at": 1790642002.4202428,
+  "klass": "protocol",
+  "name": "OFTWrapper",
+  "proxy": false,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfb23ae54da8d7881031f909f081031c31a3ab181": {
+  "address": "0xfb23ae54da8d7881031f909f081031c31a3ab181",
+  "fetched_at": 1790642003.4079792,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfb64e79a562f7250131cf528242ceb10fdc82395": {
+  "address": "0xfb64e79a562f7250131cf528242ceb10fdc82395",
+  "fetched_at": 1790642015.862359,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfbbff6782821547d838b0f50a92f1048f5d9b265": {
+  "address": "0xfbbff6782821547d838b0f50a92f1048f5d9b265",
+  "fetched_at": 1790642016.8632762,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfc55f2854e74b4f42d01a6d3daac4c52d9dfdcff": {
+  "address": "0xfc55f2854e74b4f42d01a6d3daac4c52d9dfdcff",
+  "fetched_at": 1790642017.5510588,
+  "klass": "protocol",
+  "name": "UUPSProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfc8e973c804d46ed1adebfb5f065f63c3331883c": {
+  "address": "0xfc8e973c804d46ed1adebfb5f065f63c3331883c",
+  "fetched_at": 1790642018.8631327,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9": {
+  "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+  "fetched_at": 1790642022.86221,
+  "klass": "protocol",
+  "name": "USDT0",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xfe176a2b1e1f67250d2903b8d25f56c0dabcd6b2": {
+  "address": "0xfe176a2b1e1f67250d2903b8d25f56c0dabcd6b2",
+  "fetched_at": 1790642023.8620145,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xff162c694eaa571f685030649814282ea457f169": {
+  "address": "0xff162c694eaa571f685030649814282ea457f169",
+  "fetched_at": 1790642035.2364488,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xff1968ae4f91efccf4d5cef823eecd46fbe114c3": {
+  "address": "0xff1968ae4f91efccf4d5cef823eecd46fbe114c3",
+  "fetched_at": 1790642036.8739781,
+  "klass": "protocol",
+  "name": "TransparentUpgradeableProxy",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xff304ab88e52917d372aef2419cba6742be9722f": {
+  "address": "0xff304ab88e52917d372aef2419cba6742be9722f",
+  "fetched_at": 1790642038.8620079,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ },
+ "0xffb48672fb8d66782a7b1b22bfabcb9c47bec4ce": {
+  "address": "0xffb48672fb8d66782a7b1b22bfabcb9c47bec4ce",
+  "fetched_at": 1790642039.8622246,
+  "klass": "contract_unverified",
+  "name": "",
+  "proxy": true,
+  "source": "blockscout-arbitrum",
+  "verified": true
+ }
+}

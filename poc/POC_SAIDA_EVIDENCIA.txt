@@ -1,0 +1,31 @@
+========================================================================
+PoC SEGURA — Receiver-Phishing via LI.FI API | nada é assinado/transmitido
+========================================================================
+
+[1] API aceitou os dois cenários sem restrição (HTTP 200)
+    rota escolhida: polymerStandard | taxa real | cotação real
+
+[2] Comparação das transações não-assinadas:
+    mesmo contrato executor: True (0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE)
+    mesmo tamanho de calldata: True (1316 bytes)
+    bytes que diferem: 32 de 1316 (compromisso com sal do receiver)
+
+[3] Duplo engano na resposta (cenário do golpe):
+    action.toAddress exibido: 0xd8da611269cbcbbe37eb56af4dd5ac1e260b90a3
+    receiver real do request: 0xDeaDBeef00000000000000000000000000000000
+    → a UI mostraria a CARTEIRA DA VÍTIMA como destino
+
+[4] Verificação on-chain do executor:
+    to: 0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE = LI.FI Diamond oficial (rotulado, auditado)
+
+[5] ZEUS GUARD / INV9:
+    cenário legítimo:  [LIBERAR] — receiver == carteira conectada
+    cenário do golpe:  [BLOQUEAR]
+      receiver do request (0xDeaDBeef00..) != carteira conectada (0xd8da611269..) | resposta exibe toAddress=0xd8da611269.. (display enganoso — destino real é outro)
+
+========================================================================
+CONCLUSÃO: o golpe inteiro é 1 parâmetro HTTP + infraestrutura oficial.
+Ponto de interceptação: o REQUEST à API (receiver em texto puro).
+No calldata, o receiver só existe como compromisso salgado (rotas intent);
+em rotas clássicas ele vai em texto puro e o INV9 lê direto do calldata.
+(Nenhuma transação foi assinada ou enviada. Sem chaves. Sem vítimas.)

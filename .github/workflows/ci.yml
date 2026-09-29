@@ -23,6 +23,14 @@ jobs:
         run: python3 engine/realdata_benchmark.py
       - name: Engine invariant tests (5/5 pass)
         run: python3 engine/test_engine_invariants.py
+      - name: INV9 receiver-match tests (33/33 pass)
+        run: python3 engine/test_inv9.py
+      - name: Label resolver tests (17/17 pass)
+        run: python3 engine/test_label_resolver.py
+      - name: Temporal split benchmark (recall 100% both halves)
+        run: python3 engine/realdata_benchmark_temporal.py
+      - name: Ground-truth corrected benchmark (54 true attacks, recall 100%)
+        run: python3 engine/realdata_benchmark_gt_corrected.py
 
   extension-qa-tests:
     runs-on: ubuntu-latest

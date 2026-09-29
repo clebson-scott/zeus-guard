@@ -1,0 +1,85 @@
+{
+  "early": {
+    "FN": 0,
+    "FP": 1330,
+    "TN": 6054,
+    "TP": 25,
+    "acc": 82.0489,
+    "fp_rate": 18.0119,
+    "n_att": 25,
+    "n_ben": 7384,
+    "name": "metade inicial",
+    "recall": 100.0,
+    "verdicts": {
+      "ALERTAR": 1305,
+      "BLOQUEAR": 50,
+      "LIBERAR": 6054
+    },
+    "wilson_acc": [
+      0.8115842561661627,
+      0.8290607564022967
+    ],
+    "wilson_fp": [
+      0.17152093654535258,
+      0.1890500859844212
+    ]
+  },
+  "early_wilson": {
+    "wilson_acc": [
+      0.8116,
+      0.8291
+    ],
+    "wilson_fp": [
+      0.1715,
+      0.1891
+    ],
+    "wilson_recall": [
+      0.8668,
+      1.0
+    ]
+  },
+  "fp_stable": false,
+  "labels_mode": "published-default",
+  "late": {
+    "FN": 0,
+    "FP": 793,
+    "TN": 6587,
+    "TP": 29,
+    "acc": 89.2968,
+    "fp_rate": 10.7453,
+    "n_att": 29,
+    "n_ben": 7380,
+    "name": "metade final",
+    "recall": 100.0,
+    "verdicts": {
+      "ALERTAR": 800,
+      "BLOQUEAR": 22,
+      "LIBERAR": 6587
+    },
+    "wilson_acc": [
+      0.8857235910184367,
+      0.8998051325415002
+    ],
+    "wilson_fp": [
+      0.10059004483495823,
+      0.11472356644294356
+    ]
+  },
+  "late_wilson": {
+    "wilson_acc": [
+      0.8857,
+      0.8998
+    ],
+    "wilson_fp": [
+      0.1006,
+      0.1147
+    ],
+    "wilson_recall": [
+      0.883,
+      1.0
+    ]
+  },
+  "median_block": 509812072,
+  "recall_stable": true,
+  "version": "temporal_split_v1"
+}

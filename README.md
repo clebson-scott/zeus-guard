@@ -1,6 +1,6 @@
 # ⚡ ZEUS GUARD — Pre-Transaction Firewall for Everyday Traders & Agentic Payments
 
-> **The On-Chain Antivirus for Retail Web3 & Autonomous Agents:** A pre-transaction firewall operating at the EIP-1193 provider layer that intercepts drainers **before signature creation**, paired with a public revocation registry (`approval_status_pub`), a USDG escrow vault with a configurable challenge window (≥120s), and an emergency circuit-breaker — powered by a **sub-millisecond deterministic risk engine** (whose quantum Continuous Spin Network research origin is validated on IBM Quantum hardware).
+> **The On-Chain Antivirus for Retail Web3 & Autonomous Agents:** A pre-transaction firewall operating at the EIP-1193 provider layer that intercepts drainers **before signature creation**, paired with a public revocation registry (`approval_status_pub`), a USDG escrow vault with a configurable challenge window (≥120s), and an emergency circuit-breaker — powered by a **sub-millisecond deterministic risk engine** — a fully deterministic argmin classifier in production, with no probabilistic or quantum-executed components (research origin in quantum spin networks is documented, not invoked at runtime).
 >
 > **Zero mystery math, zero quantum washing:** Production runs a deterministic, open-benchmark argmin classifier (<0.1 ms/tx) proven 100% equivalent (0 divergences across 1,848 test cases) to the dissipative quantum quench model.
 
@@ -20,6 +20,9 @@
 | **Real Mainnet Data Benchmark** | **81 real Arbitrum events**: **100.0% Recall** (14/14 drainer attacks caught), **11.9% FP Rate** (down from 89.6% baseline), **90.1% Global Accuracy** | `python3 engine/realdata_benchmark.py` |
 | **On-Chain Smoke Tests (v4)** | **13/13 PASS** on Arbitrum Sepolia | `python3 proof/smoke_v4.py` |
 | **Live Attack & Defense Proof** | **4/4 PASS** on-chain against live contract | `python3 proof/live_attack_defense.py` |
+| **INV9 Receiver-Match (phishing por intents)** | **33/33 PASS** — PASS/ALERT/INDETERMINADO honesto; camada request autoritativa + decoders calldata verificados (Across V3); calldata de intents é cego (receiver = keccak256(receiver‖sal)) | `python3 engine/test_inv9.py` |
+| **Identity Layer & Ground Truth Correction (v4.5)** | 473/527 v2 "attacks" were verified protocol spends (Curve, Uniswap, 1inch...) — GT corrected by exclusion: **54 true attacks, recall 100% [93.4%, 100%] preserved**, FP **14.4% → 12.6%** with identity ON; label cache = 567 spenders (Blockscout, no API key) | `python3 engine/realdata_benchmark_gt_corrected.py` |
+| **Temporal Split Validation** | Recall **100% in both halves** (25/25, 29/29); FP 18.0% → 10.7% across halves = causal token-freq warm-up artifact, documented | `python3 engine/realdata_benchmark_temporal.py` |
 | **CI Automation** | Automated pipeline covering Stylus Rust (15/15), Python engine, and Node extension QA | `.github/workflows/ci.yml` |
 | **Audit Package** | Complete audit package ready for external review | [`JUDGE_SUBMISSION.md`](JUDGE_SUBMISSION.md) · [`docs/AUDIT_CHECKLIST.md`](docs/AUDIT_CHECKLIST.md) · [`SECURITY.md`](SECURITY.md) · [`REAL_DATA.md`](REAL_DATA.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/MATH.md`](docs/MATH.md) |
 

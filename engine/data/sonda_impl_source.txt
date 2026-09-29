@@ -1,0 +1,984 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.23;
+
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
+import {ISP1Verifier} from "@sp1-contracts/ISP1Verifier.sol";
+
+import {IHibachi, Verifier} from "./interfaces/IHibachi.sol";
+import {IHibachiEscape} from "./interfaces/IHibachiEscape.sol";
+import {IWormhole} from "./interfaces/IWormhole.sol";
+import {WormholeStructs} from "./interfaces/WormholeStructs.sol";
+
+import {WormholeBase} from "./WormholeBase.sol";
+
+import "./Errors.sol";
+
+import {ImageID} from "./ImageID.sol"; // auto-generated contract after running `cargo build`.
+
+enum StateUpdateOperationType {
+    DEPOSIT,
+    WITHDRAW
+}
+
+enum XChainOperationType {
+    UPDATE_MAIN_CHAIN,
+    ACTIVATE_CHAIN,
+    UPDATE_STATE,
+    FREEZE
+}
+
+struct XChainSyncMessage {
+    uint256 version;
+    XChainOperationType operationType;
+    uint256[] payload;
+}
+
+struct NativeAssetInfo {
+    uint256 assetId;
+    address assetAddress;
+    uint256 quantum;
+}
+
+struct DepositState {
+    uint64 pendingDeposits;
+    uint64 pendingDepositFees;
+    uint64 pendingDepositReclaims;
+    uint64 reclaimTriggeredTimestamp;
+}
+
+contract Hibachi is WormholeBase, IHibachi {
+    using SafeERC20 for IERC20;
+    using Address for address payable;
+
+    // Role-Based Access Control roles.
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    bytes32 public constant PROVER_ROLE = keccak256("PROVER_ROLE");
+    bytes32 public constant KILLSWITCH_ROLE = keccak256("KILLSWITCH_ROLE");
+
+    // Risc Zero Guest Program Image IDs.
+    bytes32 public stateUpdateProgramImageId;
+
+    bool public killswitch;
+
+    IRiscZeroVerifier public risc0Verifier;
+    IHibachiEscape public hibachiEscape;
+
+    address public exchangeVerificationAddress;
+
+    uint256 public oracleQuorum;
+    mapping(address => bool) public oracleRegistration;
+
+    uint256 public depositReclaimTimeout;
+
+    uint256 public systemTimestamp;
+
+    bool public isActive;
+    bool public isFrozen;
+
+    uint256 public stateVersion;
+    uint16 public mainHibachiChainId;
+    uint16 public hibachiChainId;
+
+    uint16[] public activeHibachiChainIds;
+
+    /// @inheritdoc IHibachi
+    mapping(uint16 => uint16) public wormholeChainIdToHibachiChainId;
+
+    /// @inheritdoc IHibachi
+    bytes32 public accountsRoot;
+
+    /// @inheritdoc IHibachi
+    bytes32 public ordersRoot;
+
+    /// @inheritdoc IHibachi
+    bytes32 public contractsRoot;
+
+    mapping(uint256 => NativeAssetInfo) public nativeAssetInfo;
+
+    mapping(address => mapping(uint256 => DepositState)) public pendingDeposits;
+    mapping(address => mapping(uint256 => uint256)) public pendingWithdrawals;
+
+    mapping(address => address) public recoveryWallets;
+
+    // Succinct Program V key.
+    bytes32 public stateUpdateProgramVKey;
+    ISP1Verifier public succinctVerifier;
+
+    uint256[48] private __gap;
+
+    modifier accountOwner(address accountAddress) {
+        if (_msgSender() != accountAddress && _msgSender() != recoveryWallets[accountAddress]) {
+            revert Unauthorized();
+        }
+        _;
+    }
+
+    modifier mainChain() {
+        if (hibachiChainId != mainHibachiChainId) {
+            revert XChainRemoteNotMainChain();
+        }
+        _;
+    }
+
+    modifier activeChain() {
+        if (!isActive) {
+            revert NotActive();
+        }
+        _;
+    }
+
+    modifier killswitchOn() {
+        if (!killswitch) {
+            revert Killswitch();
+        }
+        _;
+    }
+
+    modifier frozen() {
+        if (!isFrozen) {
+            revert NotFrozen();
+        }
+        _;
+    }
+
+    modifier notFrozen() {
+        if (isFrozen) {
+            revert Frozen();
+        }
+        _;
+    }
+
+    /// @inheritdoc IHibachi
+    function initialize(
+        IRiscZeroVerifier _risc0Verifier,
+        ISP1Verifier _succinctVerifier,
+        IHibachiEscape _hibachiEscape,
+        IWormhole _wormhole,
+        uint256 _depositReclaimTimeout,
+        uint16 _mainHibachiChainId,
+        uint16 _hibachiChainId
+    ) public override initializer {
+        if (
+            address(_risc0Verifier) == address(0) || address(_succinctVerifier) == address(0)
+                || address(_hibachiEscape) == address(0) || address(_wormhole) == address(0)
+                || _depositReclaimTimeout == 0 || _mainHibachiChainId == 0 || _hibachiChainId == 0
+        ) {
+            revert ZeroInput();
+        }
+
+        __Context_init();
+        __ERC165_init();
+        __AccessControl_init();
+        __WormholeBase_init(_wormhole);
+
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setRoleAdmin(PROVER_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(X_CHAIN_ADMIN_ROLE, ADMIN_ROLE);
+        _setRoleAdmin(KILLSWITCH_ROLE, ADMIN_ROLE);
+
+        risc0Verifier = _risc0Verifier;
+        succinctVerifier = _succinctVerifier;
+        hibachiEscape = _hibachiEscape;
+
+        depositReclaimTimeout = _depositReclaimTimeout;
+        mainHibachiChainId = _mainHibachiChainId;
+        hibachiChainId = _hibachiChainId;
+
+        if (_hibachiChainId == _mainHibachiChainId) {
+            isActive = true;
+            activeHibachiChainIds.push(_hibachiChainId);
+        }
+
+        killswitch = true;
+    }
+
+    /// @inheritdoc IHibachi
+    function updateGuestImageId(bytes32 newGuestImageId) external override onlyRole(ADMIN_ROLE) {
+        if (newGuestImageId == bytes32(0)) {
+            revert ZeroInput();
+        }
+        stateUpdateProgramImageId = newGuestImageId;
+
+        emit UpdateGuestImageId(newGuestImageId);
+    }
+
+    /// @inheritdoc IHibachi
+    function updateGuestVKey(bytes32 newGuestVKey) external override onlyRole(ADMIN_ROLE) {
+        if (newGuestVKey == bytes32(0)) {
+            revert ZeroInput();
+        }
+        stateUpdateProgramVKey = newGuestVKey;
+
+        emit UpdateGuestVKey(newGuestVKey);
+    }
+
+    /// @inheritdoc IHibachi
+    function updateVerifier(Verifier verifier, address newVerifier) external override onlyRole(ADMIN_ROLE) {
+        if (newVerifier == address(0)) {
+            revert ZeroInput();
+        }
+
+        if (verifier == Verifier.RISC0) {
+            risc0Verifier = IRiscZeroVerifier(newVerifier);
+        } else if (verifier == Verifier.SUCCINCT) {
+            succinctVerifier = ISP1Verifier(newVerifier);
+        } else {
+            revert InvalidVerifier();
+        }
+
+        emit UpdateVerifier(verifier, newVerifier);
+    }
+
+    /// @inheritdoc IHibachi
+    function updateContractRoot(bytes32 newContractsRoot) external override onlyRole(ADMIN_ROLE) {
+        contractsRoot = newContractsRoot;
+    }
+
+    /// @inheritdoc IHibachi
+    function updateAccountRoot(bytes32 newAccountsRoot) external override onlyRole(ADMIN_ROLE) {
+        accountsRoot = newAccountsRoot;
+    }
+
+    /// @inheritdoc IHibachi
+    function updateOrderRoot(bytes32 newOrderRoot) external override onlyRole(ADMIN_ROLE) {
+        ordersRoot = newOrderRoot;
+    }
+
+    /// @inheritdoc IHibachi
+    function updateStateVersion(uint256 newStateVersion) external override onlyRole(ADMIN_ROLE) {
+        stateVersion = newStateVersion;
+    }
+
+    /// @inheritdoc IHibachi
+    function updateSystemTimestamp(uint256 newSystemTimestamp) external override onlyRole(ADMIN_ROLE) {
+        systemTimestamp = newSystemTimestamp;
+    }
+
+    function resetPendingDeposits(address accountAddress, uint256 assetId) external override onlyRole(ADMIN_ROLE) {
+        DepositState memory defaultDepositState = DepositState({
+            pendingDeposits: 0, pendingDepositFees: 0, pendingDepositReclaims: 0, reclaimTriggeredTimestamp: 0
+        });
+
+        pendingDeposits[accountAddress][assetId] = defaultDepositState;
+    }
+
+    /// @inheritdoc IHibachi
+    function resetPendingWithdrawals(address accountAddress, uint256 assetId, uint256 amount)
+        external
+        override
+        onlyRole(ADMIN_ROLE)
+    {
+        pendingWithdrawals[accountAddress][assetId] = amount;
+    }
+
+    /// @inheritdoc IHibachi
+    function updateExchangeVerificationAddress(address _exchangeVerificationAddress)
+        external
+        override
+        onlyRole(ADMIN_ROLE)
+    {
+        if (_exchangeVerificationAddress == address(0)) {
+            revert ZeroInput();
+        }
+
+        exchangeVerificationAddress = _exchangeVerificationAddress;
+
+        emit UpdateVerificationAddress(_exchangeVerificationAddress);
+    }
+
+    /// @inheritdoc IHibachi
+    function updateOracleQuorum(uint256 _oracleQuorum) external override onlyRole(ADMIN_ROLE) {
+        if (_oracleQuorum <= 0) {
+            revert ZeroInput();
+        }
+
+        oracleQuorum = _oracleQuorum;
+
+        emit UpdateOracleQuorum(_oracleQuorum);
+    }
+
+    /// @inheritdoc IHibachi
+    function updateOracleRegistration(address oracleAddress, bool enabled) external override onlyRole(ADMIN_ROLE) {
+        if (oracleAddress == address(0)) {
+            revert ZeroInput();
+        }
+
+        oracleRegistration[oracleAddress] = enabled;
+        emit UpdateOracleRegistration(oracleAddress, enabled);
+    }
+
+    /// @inheritdoc IHibachi
+    function updateKillswitch(bool _killswitch) external override onlyRole(KILLSWITCH_ROLE) {
+        killswitch = _killswitch;
+
+        emit UpdateKillswitch(_killswitch);
+    }
+
+    /// @inheritdoc IHibachi
+    function freeze() external payable override mainChain notFrozen onlyRole(ADMIN_ROLE) {
+        isFrozen = true;
+
+        stateVersion += 1;
+
+        if (activeHibachiChainIds.length > 1) {
+            uint256[] memory payload = new uint256[](0);
+
+            XChainSyncMessage memory message;
+            message.version = stateVersion;
+            message.operationType = XChainOperationType.FREEZE;
+            message.payload = payload;
+
+            uint64 sequence = _wormholeSend(abi.encode(message), msg.value);
+
+            emit WormholeFreeze(message.version, sequence);
+            emit UpdateStateVersion(stateVersion);
+        }
+    }
+
+    /// @inheritdoc IHibachi
+    function updateMainChain(uint16 _hibachiChainId)
+        external
+        payable
+        override
+        killswitchOn
+        notFrozen
+        onlyRole(X_CHAIN_ADMIN_ROLE)
+        mainChain
+    {
+        if (_hibachiChainId == 0) {
+            revert ZeroInput();
+        }
+
+        if (_hibachiChainId == hibachiChainId) {
+            revert XChainSameChainId();
+        }
+
+        bool newChainIsActive = false;
+        for (uint256 i = 0; i < activeHibachiChainIds.length; i += 1) {
+            if (activeHibachiChainIds[i] == _hibachiChainId) {
+                newChainIsActive = true;
+            }
+        }
+
+        if (!newChainIsActive) {
+            revert XChainNotActive();
+        }
+
+        stateVersion += 1;
+        mainHibachiChainId = _hibachiChainId;
+
+        uint256[] memory payload = new uint256[](1);
+        payload[0] = uint256(_hibachiChainId);
+
+        XChainSyncMessage memory message;
+        message.version = stateVersion;
+        message.operationType = XChainOperationType.UPDATE_MAIN_CHAIN;
+        message.payload = payload;
+
+        uint64 sequence = _wormholeSend(abi.encode(message), msg.value);
+
+        emit WormholeMainChainUpdate(_hibachiChainId, message.version, sequence);
+        emit UpdateStateVersion(stateVersion);
+    }
+
+    /// @inheritdoc IHibachi
+    function activateChain(uint16 _hibachiChainId)
+        external
+        payable
+        override
+        killswitchOn
+        onlyRole(X_CHAIN_ADMIN_ROLE)
+        mainChain
+    {
+        if (_hibachiChainId == 0) {
+            revert ZeroInput();
+        }
+
+        for (uint256 i = 0; i < activeHibachiChainIds.length; i += 1) {
+            if (activeHibachiChainIds[i] == _hibachiChainId) {
+                revert XChainAlreadyActive();
+            }
+        }
+
+        stateVersion += 1;
+        activeHibachiChainIds.push(_hibachiChainId);
+
+        uint256[] memory payload = new uint256[](5 + activeHibachiChainIds.length);
+        payload[0] = _hibachiChainId;
+        payload[1] = uint256(accountsRoot);
+        payload[2] = uint256(ordersRoot);
+        payload[3] = uint256(contractsRoot);
+        payload[4] = systemTimestamp;
+        {
+            for (uint256 i = 0; i < activeHibachiChainIds.length; i += 1) {
+                payload[i + 5] = activeHibachiChainIds[i];
+            }
+        }
+
+        XChainSyncMessage memory message;
+        message.version = stateVersion;
+        message.operationType = XChainOperationType.ACTIVATE_CHAIN;
+        message.payload = payload;
+
+        uint64 sequence = _wormholeSend(abi.encode(message), msg.value);
+
+        emit WormholeChainActivation(_hibachiChainId, message.version, sequence);
+        emit UpdateStateVersion(stateVersion);
+    }
+
+    /// @inheritdoc IHibachi
+    function isChainActive(uint16 _hibachiChainId) public view override returns (bool) {
+        return _isChainActive(_hibachiChainId);
+    }
+
+    function _isChainActive(uint16 _hibachiChainId) internal view returns (bool chainIsActive) {
+        chainIsActive = false;
+
+        for (uint256 i = 0; i < activeHibachiChainIds.length; i += 1) {
+            if (activeHibachiChainIds[i] == _hibachiChainId) {
+                chainIsActive = true;
+                break;
+            }
+        }
+    }
+
+    /// @inheritdoc IHibachi
+    function updateWormholeChainId(uint16 _hibachiChainId, uint16 _wormholeChainId)
+        external
+        override
+        onlyRole(X_CHAIN_ADMIN_ROLE)
+    {
+        if (_hibachiChainId == 0 || _wormholeChainId == 0) {
+            revert ZeroInput();
+        }
+
+        wormholeChainIdToHibachiChainId[_wormholeChainId] = _hibachiChainId;
+    }
+
+    /// @inheritdoc IHibachi
+    function receiveWormholeMessage(bytes memory encodedVM) external override notFrozen {
+        (WormholeStructs.VM memory vm, bool valid, string memory reason) =
+            IWormhole(wormhole).parseAndVerifyVM(encodedVM);
+
+        // We make sure the message is valid and has been signed by
+        // Guardians.
+        require(valid, reason);
+
+        uint16 srcHibachiChainId = wormholeChainIdToHibachiChainId[vm.emitterChainId];
+        if (srcHibachiChainId == 0) {
+            revert XChainRemoteChainNotMapped();
+        }
+
+        // We only receive messages from the "current" main chain.
+        if (srcHibachiChainId != mainHibachiChainId) {
+            revert XChainRemoteNotMainChain();
+        }
+
+        if (vm.emitterAddress != authorizedRemotes[srcHibachiChainId]) {
+            revert XChainNotAuthorized();
+        }
+
+        XChainSyncMessage memory message = abi.decode(vm.payload, (XChainSyncMessage));
+
+        _receiveXChainMessage(message);
+    }
+
+    /// @inheritdoc IHibachi
+    function registerNativeAsset(uint256 assetId, address assetAddress, uint8 quantumDecimals)
+        external
+        override
+        killswitchOn
+        onlyRole(ADMIN_ROLE)
+    {
+        if (assetId <= 0) {
+            revert InvalidAsset(assetId);
+        }
+
+        if (nativeAssetInfo[assetId].assetId > 0) {
+            revert AssetAlreadyRegistered(assetId);
+        }
+
+        uint256 quantum = 10 ** quantumDecimals;
+
+        NativeAssetInfo memory assetInfo;
+        assetInfo.assetId = assetId;
+        assetInfo.assetAddress = assetAddress;
+        assetInfo.quantum = quantum;
+
+        nativeAssetInfo[assetId] = assetInfo;
+
+        emit RegisterNativeAsset(assetId, assetAddress, quantum);
+    }
+
+    /// @inheritdoc IHibachi
+    function registerRecoveryWallet(address recoveryWallet) external override activeChain {
+        if (recoveryWallet == address(0)) {
+            revert ZeroInput();
+        }
+        if (recoveryWallet == _msgSender()) {
+            revert InvalidWallet();
+        }
+
+        recoveryWallets[_msgSender()] = recoveryWallet;
+
+        emit RegisterRecoveryWallet(_msgSender(), recoveryWallet);
+    }
+
+    /// @inheritdoc IHibachi
+    function deposit(address accountAddress, uint256 assetId, uint256 amount, uint256 amountFees)
+        external
+        payable
+        override
+        activeChain
+        killswitchOn
+    {
+        if (accountAddress == address(0)) {
+            revert ZeroInput();
+        }
+
+        NativeAssetInfo memory assetInfo = nativeAssetInfo[assetId];
+        if (assetInfo.assetId == 0) {
+            revert InvalidAsset(assetId);
+        }
+
+        uint256 transferredAmount;
+
+        if (assetInfo.assetAddress == address(0)) {
+            require(msg.value == amount, "msg.value must == amount.");
+            transferredAmount = amount;
+        } else {
+            require(msg.value == 0, "msg.value must == 0.");
+            uint256 startingBalance = IERC20(assetInfo.assetAddress).balanceOf(address(this));
+
+            _transferERC20FromTrader(_msgSender(), assetInfo, amount);
+
+            transferredAmount = IERC20(assetInfo.assetAddress).balanceOf(address(this)) - startingBalance;
+        }
+
+        if ((transferredAmount == amount && amount % assetInfo.quantum != 0) || amountFees % assetInfo.quantum != 0) {
+            revert AmountNotRound();
+        }
+
+        uint256 quantizedAmount = transferredAmount / assetInfo.quantum;
+
+        // Fees need to be predictable, so they do not get pro-rated for rebasing tokens.
+        uint256 quantizedAmountFees = amountFees / assetInfo.quantum;
+
+        if (quantizedAmount > type(uint64).max) {
+            revert AmountTooHigh();
+        }
+
+        if (quantizedAmount <= 0) {
+            revert AmountTooLow();
+        }
+
+        if (quantizedAmount <= quantizedAmountFees) {
+            revert FeeAmountTooHigh();
+        }
+
+        DepositState memory depositState = pendingDeposits[accountAddress][assetId];
+
+        if (
+            depositState.pendingDepositReclaims > 0 && _msgSender() != accountAddress
+                && _msgSender() != recoveryWallets[accountAddress]
+        ) {
+            revert ReclaimInProgress();
+        }
+        depositState.pendingDeposits += uint64(quantizedAmount) - uint64(quantizedAmountFees);
+        depositState.pendingDepositFees += uint64(quantizedAmountFees);
+        depositState.pendingDepositReclaims = 0;
+
+        pendingDeposits[accountAddress][assetId] = depositState;
+
+        emit LogDeposit(accountAddress, assetId, quantizedAmount, quantizedAmountFees, _msgSender());
+    }
+
+    /// @inheritdoc IHibachi
+    function startDepositReclaim(address accountAddress, uint256 assetId)
+        external
+        override
+        accountOwner(accountAddress)
+    {
+        DepositState memory depositState = pendingDeposits[accountAddress][assetId];
+
+        if (depositState.pendingDepositReclaims > 0) {
+            revert ReclaimInProgress();
+        }
+        if (depositState.pendingDeposits == 0 && depositState.pendingDepositFees == 0) {
+            revert NothingToReclaim();
+        }
+
+        depositState.reclaimTriggeredTimestamp = uint64(block.timestamp);
+        depositState.pendingDepositReclaims = depositState.pendingDeposits + depositState.pendingDepositFees;
+
+        pendingDeposits[accountAddress][assetId] = depositState;
+
+        emit LogDepositReclaimRequest(accountAddress, assetId, depositState.pendingDepositReclaims);
+    }
+
+    /// @inheritdoc IHibachi
+    function reclaimDeposit(address accountAddress, uint256 assetId) external override accountOwner(accountAddress) {
+        DepositState memory depositState = pendingDeposits[accountAddress][assetId];
+
+        uint64 amountToReclaim = depositState.pendingDepositReclaims;
+
+        if (amountToReclaim == 0) {
+            revert NothingToReclaim();
+        }
+
+        if (block.timestamp - depositState.reclaimTriggeredTimestamp <= depositReclaimTimeout) {
+            revert ReclaimTimeout();
+        }
+
+        depositState.pendingDeposits = 0;
+        depositState.pendingDepositFees = 0;
+        depositState.pendingDepositReclaims = 0;
+
+        pendingDeposits[accountAddress][assetId] = depositState;
+
+        NativeAssetInfo memory assetInfo = nativeAssetInfo[assetId];
+        if (assetInfo.assetId == 0) {
+            revert InvalidAsset(assetId);
+        }
+
+        pendingWithdrawals[_msgSender()][assetId] += uint256(amountToReclaim);
+
+        emit LogDepositReclaim(accountAddress, assetId, amountToReclaim);
+    }
+
+    /// @inheritdoc IHibachi
+    function withdraw(uint256 assetId, address targetAddress) external override {
+        NativeAssetInfo memory assetInfo = nativeAssetInfo[assetId];
+
+        if (assetInfo.assetId <= 0) {
+            revert InvalidAsset(assetId);
+        }
+
+        uint256 amount = pendingWithdrawals[targetAddress][assetId];
+
+        if (amount <= 0) {
+            revert NothingToWithdraw();
+        }
+
+        pendingWithdrawals[targetAddress][assetId] = 0;
+
+        emit LogWithdraw(targetAddress, assetId, amount * assetInfo.quantum);
+
+        _transferToTrader(targetAddress, assetInfo.assetAddress, amount * assetInfo.quantum);
+    }
+
+    /// @inheritdoc IHibachi
+    function withdrawToRedemptionTokens(uint256 assetId) external override frozen {
+        uint256 amount = pendingWithdrawals[_msgSender()][assetId];
+        if (amount <= 0) {
+            revert NothingToWithdraw();
+        }
+
+        pendingWithdrawals[_msgSender()][assetId] = 0;
+
+        hibachiEscape.mintRedemptionTokens(assetId, _msgSender(), amount);
+    }
+
+    /// @inheritdoc IHibachi
+    function redeemTokens(uint256 assetId, uint256 amount) external override frozen {
+        NativeAssetInfo memory assetInfo = nativeAssetInfo[assetId];
+        if (assetInfo.assetId <= 0) {
+            revert InvalidAsset(assetId);
+        }
+
+        hibachiEscape.burnRedemptionTokens(assetId, _msgSender(), amount);
+
+        _transferToTrader(_msgSender(), assetInfo.assetAddress, amount * assetInfo.quantum);
+    }
+
+    /// @inheritdoc IHibachi
+    function updateStateWithProof(
+        Verifier verifier,
+        uint256[] calldata stateUpdate,
+        bytes calldata seal,
+        uint256 wormholeFees
+    ) external payable override killswitchOn onlyRole(PROVER_ROLE) mainChain notFrozen {
+        {
+            bytes memory journal = abi.encode(stateUpdate);
+
+            if (verifier == Verifier.RISC0) {
+                risc0Verifier.verify(seal, stateUpdateProgramImageId, sha256(journal));
+            } else if (verifier == Verifier.SUCCINCT) {
+                succinctVerifier.verifyProof(stateUpdateProgramVKey, journal, seal);
+            } else {
+                revert InvalidVerifier();
+            }
+        }
+
+        uint256 numStaticFields = 11;
+
+        if (stateUpdate.length < numStaticFields) {
+            revert StateUpdateInvalid();
+        }
+
+        {
+            uint256 numOracles = stateUpdate[10];
+
+            if (stateUpdate.length < (numStaticFields + numOracles)) {
+                revert StateUpdateInvalid();
+            }
+
+            for (uint256 i = 0; i < numOracles; i += 1) {
+                address oracleAddress = address(uint160(stateUpdate[numStaticFields + i] >> 96));
+
+                if (!oracleRegistration[oracleAddress]) {
+                    revert StateUpdateOracleNotRegistered();
+                }
+            }
+
+            numStaticFields += numOracles;
+        }
+
+        {
+            uint256 prevSystemTimestamp = stateUpdate[0];
+            if (prevSystemTimestamp != systemTimestamp) {
+                revert StateUpdateInvalidSystemTime();
+            }
+
+            bytes32 prevAccountsRoot = bytes32(stateUpdate[4]);
+            if (prevAccountsRoot != accountsRoot) {
+                revert StateUpdateInvalidPreviousRoot();
+            }
+
+            bytes32 prevOrdersRoot = bytes32(stateUpdate[6]);
+            if (prevOrdersRoot != ordersRoot) {
+                revert StateUpdateInvalidPreviousRoot();
+            }
+
+            bytes32 prevContractsRoot = bytes32(stateUpdate[8]);
+            if (prevContractsRoot != contractsRoot) {
+                revert StateUpdateInvalidPreviousRoot();
+            }
+        }
+
+        if (address(uint160(stateUpdate[2] >> 96)) != exchangeVerificationAddress) {
+            revert StateUpdateInvalidHibachiAddress();
+        }
+
+        if (stateUpdate[3] <= 0 || stateUpdate[3] < oracleQuorum) {
+            revert StateUpdateOracleQuorumTooLow();
+        }
+
+        if ((stateUpdate.length - numStaticFields) % 2 != 0) {
+            revert StateUpdateInvalid();
+        }
+
+        stateVersion += 1;
+
+        uint256 numTotalOps;
+
+        for (uint256 chainIdx = 0; chainIdx < activeHibachiChainIds.length; chainIdx += 1) {
+            uint256 numOps;
+
+            for (uint256 i = 0; i < (stateUpdate.length - numStaticFields) / 2; i++) {
+                uint16 opHibachiChainId = uint16(stateUpdate[numStaticFields + i * 2] >> 136);
+                if (opHibachiChainId == activeHibachiChainIds[chainIdx]) {
+                    numOps += 1;
+                }
+            }
+
+            numTotalOps += numOps;
+
+            uint256[] memory stateUpdateForCurrentChain = new uint256[](5 + 2 * numOps);
+            stateUpdateForCurrentChain[0] = stateUpdate[1];
+            stateUpdateForCurrentChain[1] = stateUpdate[5];
+            stateUpdateForCurrentChain[2] = stateUpdate[7];
+            stateUpdateForCurrentChain[3] = stateUpdate[9];
+            stateUpdateForCurrentChain[4] = activeHibachiChainIds[chainIdx];
+
+            uint256 j = 5;
+
+            for (uint256 i = 0; i < (stateUpdate.length - numStaticFields) / 2; i++) {
+                uint16 opHibachiChainId = uint16(stateUpdate[numStaticFields + i * 2] >> 136);
+                if (opHibachiChainId == activeHibachiChainIds[chainIdx]) {
+                    stateUpdateForCurrentChain[j] = stateUpdate[numStaticFields + i * 2];
+                    stateUpdateForCurrentChain[j + 1] = stateUpdate[numStaticFields + i * 2 + 1];
+
+                    j += 2;
+                }
+            }
+
+            if (activeHibachiChainIds[chainIdx] == hibachiChainId) {
+                _updateState(stateUpdateForCurrentChain);
+            } else {
+                XChainSyncMessage memory message;
+                message.version = stateVersion;
+                message.operationType = XChainOperationType.UPDATE_STATE;
+                message.payload = stateUpdateForCurrentChain;
+
+                uint64 sequence = _wormholeSend(abi.encode(message), wormholeFees);
+
+                emit WormholeStateUpdate(activeHibachiChainIds[chainIdx], message.version, sequence);
+            }
+        }
+
+        if (numTotalOps != ((stateUpdate.length - numStaticFields) / 2)) {
+            revert StateUpdateInvalidHibachiChainId();
+        }
+
+        emit UpdateStateVersion(stateVersion);
+    }
+
+    /// @notice Handles the receipt of an x-chain message.
+    function _receiveXChainMessage(XChainSyncMessage memory message) internal {
+        if (!isActive) {
+            if (message.operationType == XChainOperationType.ACTIVATE_CHAIN) {
+                if (message.payload.length < 5) {
+                    revert XChainInvalidPayload();
+                }
+
+                if (message.payload[0] == hibachiChainId) {
+                    isActive = true;
+                    accountsRoot = bytes32(message.payload[1]);
+                    ordersRoot = bytes32(message.payload[2]);
+                    contractsRoot = bytes32(message.payload[3]);
+                    systemTimestamp = message.payload[4];
+                    stateVersion = message.version;
+
+                    for (uint256 i = 5; i < message.payload.length; i += 1) {
+                        activeHibachiChainIds.push(uint16(message.payload[i]));
+                    }
+
+                    emit UpdateStateVersion(stateVersion);
+                }
+            }
+        } else {
+            if (message.version != stateVersion + 1) {
+                revert XChainInvalidVersion();
+            }
+
+            stateVersion = message.version;
+
+            if (message.operationType == XChainOperationType.UPDATE_MAIN_CHAIN) {
+                if (message.payload.length != 1) {
+                    revert XChainInvalidPayload();
+                }
+
+                mainHibachiChainId = uint16(message.payload[0]);
+            } else if (message.operationType == XChainOperationType.UPDATE_STATE) {
+                _updateState(message.payload);
+            } else if (message.operationType == XChainOperationType.ACTIVATE_CHAIN) {
+                activeHibachiChainIds.push(uint16(message.payload[0]));
+            } else if (message.operationType == XChainOperationType.FREEZE) {
+                isFrozen = true;
+            }
+
+            emit UpdateStateVersion(stateVersion);
+        }
+    }
+
+    /// @notice Updates contract state as part of state transition proof.
+    function _updateState(uint256[] memory stateUpdate) internal {
+        if (stateUpdate.length < 5) {
+            revert StateUpdateInvalid();
+        }
+
+        if (stateUpdate[4] != hibachiChainId) {
+            revert StateUpdateIncorrectChain();
+        }
+
+        uint256 numOps = (stateUpdate.length - 5) / 2;
+
+        for (uint256 i = 0; i < numOps; i++) {
+            // The second half of the update contains an address.
+            uint256 accountAddressRaw = stateUpdate[5 + i * 2 + 1];
+            address accountAddress = address(uint160(accountAddressRaw >> (256 - 160)));
+
+            uint256 operationDescription = stateUpdate[5 + i * 2];
+
+            // The first byte of the first half contains the operation type.
+            uint8 operationType = uint8(operationDescription >> 248);
+
+            if (operationType == uint8(StateUpdateOperationType.DEPOSIT)) {
+                // Deposits.
+                uint32 assetId = uint32(operationDescription >> 216);
+                NativeAssetInfo memory assetInfo = nativeAssetInfo[assetId];
+                if (assetInfo.assetId <= 0) {
+                    revert InvalidAsset(assetId);
+                }
+
+                uint256 assetAmount = uint256(uint64(operationDescription >> 152));
+                uint16 depositHibachiChainId = uint16(operationDescription >> 136);
+                uint256 feeAmount = uint256(uint64(operationDescription >> 72));
+
+                if (hibachiChainId == depositHibachiChainId) {
+                    _acceptDeposit(accountAddress, assetId, assetAmount, feeAmount);
+                }
+            } else if (operationType == uint8(StateUpdateOperationType.WITHDRAW)) {
+                // Withdrawals.
+                uint32 assetId = uint32(operationDescription >> 216);
+                NativeAssetInfo memory assetInfo = nativeAssetInfo[assetId];
+                if (assetInfo.assetId <= 0) {
+                    revert InvalidAsset(assetId);
+                }
+
+                uint256 assetAmount = uint256(uint64(operationDescription >> 152));
+
+                uint16 withdrawalHibachiChainId = uint16(operationDescription >> 136);
+
+                if (hibachiChainId == withdrawalHibachiChainId) {
+                    _acceptWithdrawal(accountAddress, assetId, assetAmount);
+                }
+            } else {
+                revert StateUpdateInvalidOperationType(operationType);
+            }
+        }
+
+        systemTimestamp = stateUpdate[0];
+        accountsRoot = bytes32(stateUpdate[1]);
+        ordersRoot = bytes32(stateUpdate[2]);
+        contractsRoot = bytes32(stateUpdate[3]);
+
+        emit UpdateExchangeState(stateVersion, accountsRoot, ordersRoot, contractsRoot, systemTimestamp);
+    }
+
+    function _acceptDeposit(
+        address accountAddress,
+        uint256 assetId,
+        uint256 quantizedAmount,
+        uint256 quantizedAmountFees
+    ) internal {
+        DepositState memory depositState = pendingDeposits[accountAddress][assetId];
+        require(quantizedAmount < type(uint64).max, "Amount too large.");
+        require(quantizedAmountFees < type(uint64).max, "Fee Amount too large.");
+        require(uint64(quantizedAmount) <= depositState.pendingDeposits, "Amount exceeds pending deposits.");
+        require(uint64(quantizedAmountFees) <= depositState.pendingDepositFees, "Fees exceed pending amount.");
+
+        depositState.pendingDeposits -= uint64(quantizedAmount);
+        depositState.pendingDepositFees -= uint64(quantizedAmountFees);
+
+        uint64 reclaimAmountRevoked =
+            uint64(Math.min(uint256(depositState.pendingDepositReclaims), quantizedAmount + quantizedAmountFees));
+        if (reclaimAmountRevoked > 0) {
+            depositState.pendingDepositReclaims -= reclaimAmountRevoked;
+        }
+
+        pendingDeposits[accountAddress][assetId] = depositState;
+    }
+
+    function _acceptWithdrawal(address accountAddress, uint256 assetId, uint256 amount) internal {
+        pendingWithdrawals[accountAddress][assetId] += amount;
+    }
+
+    function _transferERC20FromTrader(address trader, NativeAssetInfo memory assetInfo, uint256 amount) internal {
+        IERC20(assetInfo.assetAddress).safeTransferFrom(trader, address(this), amount);
+    }
+
+    function _transferToTrader(address trader, address assetAddress, uint256 amount) internal {
+        if (assetAddress == address(0)) {
+            payable(trader).sendValue(amount);
+        } else {
+            IERC20(assetAddress).safeTransfer(trader, amount);
+        }
+    }
+}

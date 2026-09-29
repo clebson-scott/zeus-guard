@@ -1,6 +1,6 @@
 # ⚡ ZEUS GUARD — Firewall Pré-Transação para Traders Varejo e Pagamentos Agênticos
 
-> **O Antivírus On-Chain do Trader Varejo e Agentes Autônomos:** Um firewall pré-transação operando na camada do provedor EIP-1193 que intercepta drainers **antes da criação da assinatura**, combinado com um registro público de revogação (`approval_status_pub`), um cofre de custódia USDG com janela de desafio configurável (≥120s) e um disjuntor de emergência — movido por um **motor de risco determinístico de sub-milissegundo** (cuja origem de pesquisa em Rede Quântica de Spins Contínuos é validada em hardware quântico da IBM).
+> **O Antivírus On-Chain do Trader Varejo e Agentes Autônomos:** Um firewall pré-transação operando na camada do provedor EIP-1193 que intercepta drainers **antes da criação da assinatura**, combinado com um registro público de revogação (`approval_status_pub`), um cofre de custódia USDG com janela de desafio configurável (≥120s) e um disjuntor de emergência — movido por um **motor de risco determinístico de sub-milissegundo** — classificador argmin 100% determinístico em produção, sem componentes probabilísticos ou executados em hardware quântico (a origem de pesquisa em redes de spins é documentada, não invocada em runtime).
 >
 > **Zero matemática misteriosa, zero quântico enganoso:** O motor de produção utiliza um classificador argmin determinístico e auditável (<0,1 ms/tx) comprovado 100% equivalente (0 divergências em 1.848 casos de teste) ao modelo de quench quântico dissipativo.
 
