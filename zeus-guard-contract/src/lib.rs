@@ -924,7 +924,7 @@ mod tests {
     fn oraculo_hash_bate_com_o_servidor_python() {
         // vetor gerado por engine/oracle_service.py (oracle_message_hash):
         // user=0x00000000000000000000000000000000000000AA, amount=1e18, risk=1500, nonce=1
-        let user = Address::from_slice(&[0xAA; 20]);
+        let user = Address::from_slice(&[0u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xAA]);
         let h = oracle_message_hash(user, U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64));
         assert_eq!(
             hex::encode(h.as_slice()),
@@ -934,7 +934,7 @@ mod tests {
 
     #[test]
     fn oraculo_nonce_key_e_anti_replay_deterministico() {
-        let user = Address::from_slice(&[0xAA; 20]);
+        let user = Address::from_slice(&[0u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xAA]);
         let k1 = oracle_nonce_key(user, U256::from(1u64));
         let k2 = oracle_nonce_key(user, U256::from(1u64));
         let k3 = oracle_nonce_key(user, U256::from(2u64));
