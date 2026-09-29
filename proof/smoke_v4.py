@@ -3,7 +3,7 @@ from web3 import Web3
 from eth_utils import to_hex
 
 w3 = Web3(Web3.HTTPProvider("https://sepolia-rollup.arbitrum.io/rpc"))
-abi = json.load(open("/tmp/zeus-guard/zeus-guard-contract/zeus-guard-abi.json"))
+abi = json.load(open(__import__("os").path.join(__import__("os").path.dirname(__import__("os").path.abspath(__file__)), "..", "zeus-guard-contract", "zeus-guard-abi.json")))
 err_sels = {}
 for f in abi:
     if f.get("type") == "error":

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """
 ZEUS GUARD — ROTEIRO INTEGRADO DE DEMONSTRAÇÃO PARA JUÍZES
 
@@ -11,6 +12,9 @@ Este script executa e valida as 4 evidências fundamentais do ZEUS GUARD:
 Uso:
   python3 proof/demo_judges.py
 """
+
+import os, sys
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 import json, subprocess, sys
 from web3 import Web3
@@ -35,7 +39,7 @@ def main():
     # 1. Executa benchmark do motor QCSN
     print_header("PASSO 1: Classificação Off-Chain (Motor QCSN / Argmin + Gibbs)")
     try:
-        res = subprocess.run([sys.executable, "/tmp/zeus-guard/engine/demo.py"], capture_output=True, text=True)
+        res = subprocess.run([sys.executable, os.path.join(REPO_ROOT, "engine", "demo.py")], capture_output=True, text=True)
         print(res.stdout.strip())
         print("  ✓ Motor QCSN executado com sucesso: <0,1 ms/tx, 100% acurácia sintética.")
     except Exception as e:
@@ -45,7 +49,7 @@ def main():
     print_header("PASSO 2: Firewall On-Chain — Transação Legítima vs Ataque Bloqueado")
     try:
         res = subprocess.run([
-            sys.executable, "/tmp/zeus-guard/proof/live_attack_defense.py",
+            sys.executable, os.path.join(REPO_ROOT, "proof", "live_attack_defense.py"),
             "--rpc", RPC_URL,
             "--contract", CONTRACT_ADDR,
             "--victim", DEMO_USER
@@ -57,7 +61,7 @@ def main():
     # 3. Consulta revogação on-chain & validação da extensão
     print_header("PASSO 3: Permit Revogado Bloqueado ANTES da Carteira (Hook EIP-1193)")
     w3 = Web3(Web3.HTTPProvider(RPC_URL))
-    abi = json.load(open("/tmp/zeus-guard/zeus-guard-contract/zeus-guard-abi.json"))
+    abi = json.load(open(__import__("os").path.join(__import__("os").path.dirname(__import__("os").path.abspath(__file__)), "..", "zeus-guard-contract", "zeus-guard-abi.json")))
     contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDR), abi=abi)
 
     status = contract.functions.approvalStatusPub(
@@ -83,7 +87,7 @@ def main():
     # Executa testes da extensão Node
     print("\n  • Executando Test Harness da Extensão MV3 (node ext/test_extension.js):")
     try:
-        res = subprocess.run(["node", "/tmp/zeus-guard/ext/test_extension.js"], capture_output=True, text=True)
+        res = subprocess.run(["node", os.path.join(REPO_ROOT, "ext", "test_extension.js")], capture_output=True, text=True)
         lines = [line for line in res.stdout.split("\n") if "PASS" in line or "Resultado" in line]
         for line in lines:
             print("   ", line)
