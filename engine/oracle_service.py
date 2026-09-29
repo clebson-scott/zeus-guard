@@ -1,67 +1,89 @@
 #!/usr/bin/env python3
 """
-ZEUS GUARD — Servidor do Oráculo Analítico (v5)
+ZEUS GUARD — Servidor do Oráculo Analítico (v6 — Enforcamento Absoluto)
 
-Assina criptograficamente o score de risco ANTES da transação chegar à carteira.
-A assinatura é verificada on-chain por check_tx_signed (zeus-guard-contract/src/lib.rs)
-via precompile ecrecover — nenhum atacante consegue forjar um score "liberado".
+Assina criptograficamente o score de risco ANTES da transacao chegar ao cofre.
+A partir da v6, vault_send EXIGE o bundle assinado (threshold 2-de-3): sem
+assinaturas validas, o cofre nao move dinheiro.
 
-ALINHAMENTO DE BYTES (CRÍTICO):
-    hash = keccak256( user(20 bytes, SEM padding) || amount(32 BE) || risk(32 BE) || nonce(32 BE) )
-Esta é a concatenação crua da função `oracle_message_hash` do contrato Rust.
-Codificações eth_abi (que fazem padding do address para 32 bytes) NÃO batem com o
-contrato — o teste engine/test_oracle_service.py trava o vetor contra regressão.
+NOVIDADES v6:
+  * DOMAIN SEPARATION — o hash assinado inclui chain_id e o endereco do contrato
+    (espelho exato do eth_abi.encode de 192 bytes que o Rust reconstrui on-chain):
+        keccak256(abi.encode([user, chain_id, amount, risk, nonce, contract]))
+    Assinatura capturada NAO vale em outra chain nem em outro deploy.
+  * MULTISIG — o servidor assina com 2 chaves distintas (threshold on-chain = 2).
+  * MOTOR REAL — sem stub: o score vem do argmin deterministico do
+    honesty_experiment.py sobre as 8 features lidas do estado REAL da chain
+    via real_features.extract_features (RPC).
 
-Configuração:
-    1. python3 generate_keys.py            # gera o par de chaves do oráculo
-    2. coloque ORACLE_PRIVATE_KEY=0x... no .env desta pasta (NUNCA comite o .env)
-    3. python3 engine/oracle_service.py    # sobe em :8080
-    4. init_oracle(endereco_publico) no contrato
+Configuracao (.env, NUNCA commitado):
+    ORACLE_PRIVATE_KEY_1=0x...        # chave do oraculo 1 (generate_keys.py)
+    ORACLE_PRIVATE_KEY_2=0x...        # chave do oraculo 2 (generate_keys.py)
+    ORACLE_PRIVATE_KEY_3=0x...        # opcional (3o oraculo)
+    ZEUS_RPC=https://sepolia-rollup.arbitrum.io/rpc
+    ZEUS_CHAIN_ID=421614
+    ZEUS_CONTRACT_ADDRESS=0x...       # endereco do contrato v6 DEPLOYADO
+
+Rodar: python3 engine/oracle_service.py   (porta 8080, sem debug)
 """
 
 import os
 
+import numpy as np
 from dotenv import load_dotenv
+from eth_abi import encode
 from eth_account import Account
 from flask import Flask, jsonify, request
 from web3 import Web3
+
+from honesty_experiment import argmin_classify
+from qcsn_risk_engine import ARCHETYPES, RISK_OF, QCSNRiskEngine
+from real_features import extract_features, verdict_to_risk_x100
 
 load_dotenv()
 
 app = Flask(__name__)
 
-PRIVATE_KEY = os.environ.get("ORACLE_PRIVATE_KEY")
-if not PRIVATE_KEY:
-    raise ValueError(
-        "ERRO CRÍTICO: defina ORACLE_PRIVATE_KEY no .env "
-        "(gere com python3 generate_keys.py; nunca comite este arquivo)"
-    )
-oracle_account = Account.from_key(PRIVATE_KEY)
-
 LIMITE_RISCO = 6000  # 60% em x100 — espelha RISK_BLOCK_X100 do contrato
+THRESHOLD = 2        # espelha ORACLE_THRESHOLD_MIN do contrato v6
 
-
-def sign_hash_compat(message_hash, private_key):
-    """Assina um hash cru (keccak) — API de acordo com a versão do eth-account."""
-    fn = (
-        getattr(Account, "unsafe_sign_hash", None)
-        or getattr(Account, "_sign_hash", None)
-        or getattr(Account, "signHash")
+# ---- chaves do multisig (2..3) ----
+_ORACLE_KEYS = []
+for _i in (1, 2, 3):
+    _k = os.environ.get(f"ORACLE_PRIVATE_KEY_{_i}")
+    if _k:
+        _ORACLE_KEYS.append(Account.from_key(_k))
+if len(_ORACLE_KEYS) < THRESHOLD:
+    raise ValueError(
+        "ERRO CRITICO: defina ORACLE_PRIVATE_KEY_1 e ORACLE_PRIVATE_KEY_2 no .env "
+        f"(o contrato v6 exige threshold {THRESHOLD}; gere as chaves com generate_keys.py)"
     )
-    return fn(message_hash, private_key)
+
+RPC_URL = os.environ.get("ZEUS_RPC", "https://sepolia-rollup.arbitrum.io/rpc")
+CHAIN_ID = int(os.environ.get("ZEUS_CHAIN_ID", "421614"))
+CONTRACT_ADDRESS = os.environ.get("ZEUS_CONTRACT_ADDRESS", "")
+
+_PROFILES = np.array([ARCHETYPES[k] for k in ARCHETYPES])
+_NAMES = list(ARCHETYPES)
+
+# ---- integridade: o classificador barato tem que concordar com o motor completo ----
+_ENGINE = QCSNRiskEngine()
 
 
-def oracle_message_hash(user_address: str, amount: int, risk_score: int, nonce: int) -> bytes:
-    """Espelha byte a byte a função oracle_message_hash do contrato Rust (v5).
+def oracle_message_hash(user_address: str, chain_id: int, contract: str,
+                        amount: int, risk_score: int, nonce: int) -> bytes:
+    """Espelha byte a byte a oracle_message_hash do Rust v6 — 192 bytes.
 
-    user entra com 20 bytes crus — exatamente como user.as_slice() no Rust.
+    eth_abi.encode(['address','uint256','uint256','uint256','uint256','address'],
+                   [user, chain_id, amount, risk, nonce, contract])
+    O Rust concatena pad32(user) || chain_id || amount || risk || nonce || pad32(contract)
+    — resultado identico (provado no teste cross-language).
     """
-    user20 = bytes.fromhex(Web3.to_checksum_address(user_address)[2:])
     return Web3.keccak(
-        user20
-        + amount.to_bytes(32, "big")
-        + risk_score.to_bytes(32, "big")
-        + nonce.to_bytes(32, "big")
+        encode(
+            ["address", "uint256", "uint256", "uint256", "uint256", "address"],
+            [user_address, chain_id, amount, risk_score, nonce, contract],
+        )
     )
 
 
@@ -71,47 +93,109 @@ def oracle_nonce_key(user_address: str, nonce: int) -> bytes:
     return Web3.keccak(user20 + nonce.to_bytes(32, "big"))
 
 
-def calculate_argmin_risk(tx_data: dict) -> int:
-    """Motor analítico argmin real (troque a saída de exemplo pela chamada do
-    qcsn_risk_engine / honesty_experiment em produção).
+def sign_hash_compat(message_hash, private_key):
+    """Assina um hash cru (keccak) — API de acordo com a versao do eth-account."""
+    fn = (
+        getattr(Account, "unsafe_sign_hash", None)
+        or getattr(Account, "_sign_hash", None)
+        or getattr(Account, "signHash")
+    )
+    return fn(message_hash, private_key)
 
-    [DEFESA ADVERSÁRIA]: se o invasor mimetizar o limite para raspar em 59.x%,
-    a penalidade empurra a transação para a zona de bloqueio seguro.
+
+def calculate_risk(feats: np.ndarray) -> dict:
+    """Motor REAL v6 — argmin deterministico sobre as 8 features lidas da chain.
+
+    O argmin_classify do honesty_experiment.py e o classificador de producao;
+    o QCSNRiskEngine.classify (Gibbs exata, equivalente ao quench) serve de
+    INTEGRIDADE: se os dois divergirem, o servico recusa assinar (fail-closed).
+
+    [DEFESA ADVERSARIA]: score na faixa 59.x% (mimetizando o limite) e empurrado
+    para a zona de bloqueio — o invasor nao pode raspar em 59,99%.
     """
-    base_score = 1500  # saída do modelo real (exemplo)
+    name = argmin_classify(feats, _PROFILES, _NAMES)
+    name2, _verdict, p_star, _E = _ENGINE.classify(feats)
+    if name != name2:
+        raise RuntimeError(  # fail-closed: assinatura de estado inconsistente nao sai
+            f"INTEGRIDADE VIOLADA: argmin={name} != gibbs={name2} — recusando assinar"
+        )
 
-    if 5900 <= base_score < LIMITE_RISCO:
-        base_score += 150  # vai para 6050+ => veredito BLOQUEAR
+    risk = verdict_to_risk_x100(name, p_star)
+    if 5900 <= risk < LIMITE_RISCO:
+        risk += 150  # zona de raspagem de limite -> bloqueio seguro
 
-    return base_score
+    return {
+        "name": name,
+        "qcsn_verdict": RISK_OF[name],
+        "risk_x100": risk,
+        "p_star": float(p_star),
+    }
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify(
+        {
+            "status": "ok",
+            "threshold": THRESHOLD,
+            "oracles": [a.address for a in _ORACLE_KEYS],
+            "chain_id": CHAIN_ID,
+            "contract": CONTRACT_ADDRESS,
+            "rpc": RPC_URL,
+            "motor": "argmin deterministico (honesty_experiment) sobre features reais (RPC)",
+        }
+    )
 
 
 @app.route("/score", methods=["POST"])
 def get_score():
     data = request.get_json(silent=True) or {}
 
-    user_address = data.get("user", "0x0000000000000000000000000000000000000000")
+    user_address = Web3.to_checksum_address(
+        data.get("user", "0x0000000000000000000000000000000000000000")
+    )
     amount = int(data.get("amount", 0))
     nonce = int(data.get("nonce", 0))
+    to = data.get("to", user_address)
+    calldata = data.get("data", "0x")
+    value = int(data.get("value", amount or 0))
+    token = data.get("token") or None
 
-    risk_score = calculate_argmin_risk(data)
+    if not CONTRACT_ADDRESS:
+        return jsonify({"error": "ZEUS_CONTRACT_ADDRESS nao configurado no .env"}), 503
 
-    # hash reconstruído nos MESMOS bytes que o contrato vai reconstruir
-    msg_hash = oracle_message_hash(user_address, amount, risk_score, nonce)
+    # 1) features lidas do estado REAL da chain (sem stub, sem vetor inventado)
+    feats, _origins = extract_features(RPC_URL, user_address, to, calldata, value, token, verbose=False)
 
-    # assinatura ECDSA da identidade confiável do oráculo (r || s || v, 65 bytes)
-    signed = sign_hash_compat(msg_hash, PRIVATE_KEY)
+    # 2) argmin deterministico do honesty_experiment + checagem de integridade Gibbs
+    result = calculate_risk(feats)
+    risk_score = result["risk_x100"]
+
+    # 3) domain separation v6: chain_id + contrato entram no hash assinado
+    msg_hash = oracle_message_hash(user_address, CHAIN_ID, CONTRACT_ADDRESS, amount, risk_score, nonce)
+
+    # 4) MULTISIG: assina com 2+ chaves distintas — o contrato exige threshold 2
+    signatures = [
+        bytes(sign_hash_compat(msg_hash, k.key).signature).hex() for k in _ORACLE_KEYS[:3]
+    ]
 
     return jsonify(
         {
             "score": risk_score,
+            "name": result["name"],
+            "qcsn_verdict": result["qcsn_verdict"],
+            "p_star": result["p_star"],
             "verdict": "BLOQUEAR" if risk_score >= LIMITE_RISCO else "LIBERAR",
-            "signature": signed.signature.hex(),
-            "oracle": oracle_account.address,
+            "signatures": signatures,
+            "signature": signatures[0],  # compatibilidade com a extensao (v5)
+            "oracles": [a.address for a in _ORACLE_KEYS[:3]],
+            "oracle": _ORACLE_KEYS[0].address,
+            "chain_id": CHAIN_ID,
+            "contract": CONTRACT_ADDRESS,
         }
     )
 
 
 if __name__ == "__main__":
-    # produção: sem debug (evita vazamento de logs/stack com dados sensíveis)
+    # producao: sem debug (evita vazamento de logs/stack com dados sensíveis)
     app.run(port=8080, debug=False)

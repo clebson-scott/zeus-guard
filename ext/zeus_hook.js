@@ -321,10 +321,13 @@
       );
       throw e;
     }
-    // metadados para o contrato validar on-chain em check_tx_signed
+    // metadados para o contrato validar on-chain em vault_send/check_tx_signed (v6: multisig)
     if (validation.signature) {
       tx.zeus_score = validation.score;
-      tx.zeus_sig = validation.signature;
+      tx.zeus_sig = validation.signature;      // compat
+      if (validation.signatures && validation.signatures.length >= 2) {
+        tx.zeus_sigs = validation.signatures;   // bundle 2-de-3 exigido pelo cofre
+      }
     }
     return validation;
   }

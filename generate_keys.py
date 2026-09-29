@@ -1,38 +1,39 @@
 #!/usr/bin/env python3
 """
-ZEUS GUARD — Gerador de credenciais do Oráculo Analítico (v5)
+ZEUS GUARD — Gerador de Credenciais do Oraculo Multisig (v6)
 
-Gera um par de chaves exclusivo para o servidor do oráculo:
-  * Endereço público  -> init_oracle() do contrato Stylus (lib.rs)
-  * Chave privada     -> ORACLE_PRIVATE_KEY no .env do servidor (engine/oracle_service.py)
+O contrato v6 exige threshold 2-de-3: gere as chaves do conjunto e cadastre
+os enderecos publicos no init_oracle([o1, o2, (o3)]). As chaves privadas viram
+ORACLE_PRIVATE_KEY_1/2/3 no .env do servidor (engine/oracle_service.py).
 
-Nunca comite a chave privada. O .gitignore já bloqueia .env e oracle_key.txt.
+Nunca comite as chaves privadas. O .gitignore ja bloqueia .env e oracle_key.txt.
 
 Uso:
-    python3 generate_keys.py
+    python3 generate_keys.py            # conjunto de 3 (threshold on-chain = 2)
 """
-
-import os
 
 from eth_account import Account
 
 
 def generate_oracle_credentials() -> None:
-    # Gera uma nova conta criptográfica segura (entropia do OS)
-    acc = Account.create()
-
-    print("=" * 62)
-    print("⚡ CREDENCIAIS OFICIAIS DO ORÁCULO ZEUS GUARD ⚡")
-    print("=" * 62)
-    print("Endereço Público (use no init_oracle do contrato Rust):")
-    print(f"👉 {acc.address}")
-    print("-" * 62)
-    print("Chave Privada (guarde em .env — NUNCA compartilhe ou comite):")
-    print(f"👉 0x{acc.key.hex()}")
-    print("=" * 62)
-    print()
-    print("[AVISO] Se esta chave vazar, todo o sistema de validação on-chain")
-    print("poderá ser comprometido. Use ambiente seguro para o servidor.")
+    print("=" * 66)
+    print("CREDENCIAIS DO ORACULO MULTISIG ZEUS GUARD (v6, threshold 2-de-3)")
+    print("=" * 66)
+    accounts = []
+    for i in range(3):
+        acc = Account.create()
+        accounts.append(acc)
+        print(f"\nORACULO {i+1}")
+        print(f"  Endereco publico (init_oracle / update_oracle_key): {acc.address}")
+        print(f"  Chave privada (.env: ORACLE_PRIVATE_KEY_{i+1}): 0x{acc.key.hex()}")
+    print("\n" + "-" * 66)
+    print("init_oracle:   ["%s"," % accounts[0].address)
+    print("                "%s"," % accounts[1].address)
+    print("                "%s"]" % accounts[2].address)
+    print("-" * 66)
+    print("[AVISO] Chave comprometida? update_oracle_key(antiga, nova) gira sem redeploy.")
+    print("[AVISO] Se esta chave vazar, todo o sistema de validacao on-chain")
+    print("podera ser comprometido. Use ambiente seguro para o servidor.")
 
 
 if __name__ == "__main__":

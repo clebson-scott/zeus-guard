@@ -30,6 +30,20 @@
 //!   * Trava de reentrancia explicita (ReentrancyGuard) nos pontos de entrada financeiros
 //!   * Bloqueio estrito de operacoes de sessao e approval quando a sessao esta congelada
 //!   * Testes nativos atualizados e verificados para cada achado critico
+//!
+//! v5 (28/09/2026 - Oraculo Analitico):
+//!   * check_tx_signed: score so vale assinado (ecrecover via precompile 0x01)
+//!   * Alinhamento de bytes cross-language travado em teste (Rust + Python)
+//!
+//! v6 (29/09/2026 - Enforcamento Absoluto / Nota 10):
+//!   * ENFORCEMENT: vault_send agora EXIGE a assinatura do oraculo (nonce + 2 sigs)
+//!     — o oraculo esta NO CAMINHO DO DINHEIRO, sem bypass
+//!   * DOMAIN SEPARATION: o hash assinado inclui chain_id() e address(this)
+//!     (espelho exato do eth_abi.encode de 192 bytes — replay cross-chain/implementacao morto)
+//!   * ROTACAO DE CHAVE: papel contract_owner + update_oracle_key sem redeploy
+//!   * MULTISIG: conjunto de ate 3 oraculos confiaveis, threshold MINIMO de 2
+//!     assinaturas distintas por transacao
+//!   * S-malleability: assinaturas com s fora da forma canonica sao rejeitadas
 
 // Allow `cargo stylus export-abi` to generate a main function.
 #![cfg_attr(not(any(test, feature = "export-abi")), no_main)]
@@ -40,11 +54,23 @@ use stylus_sdk::call::RawCall;
 use stylus_sdk::alloy_sol_types::SolCall;
 use stylus_sdk::alloy_sol_types::sol;
 use stylus_sdk::alloy_primitives::{Address, B256, U64, U128, U256};
+use stylus_sdk::stylus_core::{AccountAccess, ChainAccess};
 
 pub const MIN_CHALLENGE_WINDOW: u64 = 120; // 2 min de protecao minima
 pub const RISK_BLOCK_X100: u64 = 6000; // score >= 60% => drainer (saida QCSN)
 pub const DAILY_CAP_DEFAULT: u128 = 1000 * 10_u128.pow(18); // 1.000 USDG/dia
 pub const DISPUTE_GRACE_DEFAULT: u64 = 3 * 86400; // 3 dias para o guardiao resolver a disputa
+
+/// v6: multisig do oraculo — ate 3 chaves confiaveis, MINIMO de 2 assinaturas distintas.
+pub const ORACLE_MAX_KEYS: u64 = 3;
+pub const ORACLE_THRESHOLD_MIN: u64 = 2;
+/// v6: limite duro de assinaturas por chamada (anti-DoS de gas por bundle gigante).
+pub const ORACLE_MAX_SIGNATURES: u64 = 5;
+/// v6: metade da ordem n da secp256k1 — assinatura com s acima disso e malleable.
+pub const SECP256K1N_HALF: B256 = B256::new([
+    0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0x5d, 0x57, 0x6e, 0x73, 0x57, 0xa4, 0x50, 0x1d, 0xdf, 0xe9, 0x2f, 0x46, 0x68, 0x1b, 0x20, 0xa0,
+]);
 
 /// v5: precompile EVM 0x01 — ecrecover nativo (o stylus-sdk 0.10 nao exporta crypto::ecrecover).
 pub const ECRECOVER_PRECOMPILE: Address = stylus_sdk::alloy_primitives::address!("0000000000000000000000000000000000000001");
@@ -61,7 +87,8 @@ sol! {
     event UsdgTokenSet(address indexed user, address usdg);
     event PaymentRefunded(bytes32 indexed payment_id, address indexed payer, uint256 amount);
     event VaultSent(address indexed user, address indexed token, address payee, uint256 amount, uint64 risk_x100);
-    event OracleInitialized(address indexed oracle);
+    event OracleInitialized(address indexed owner, address oracle0, address oracle1, address oracle2);
+    event OracleKeyRotated(address indexed old_oracle, address indexed new_oracle);
     event OracleSignedCheck(address indexed user, uint256 amount, uint64 risk_x100, uint256 nonce);
 
     error NoSession();
@@ -83,12 +110,19 @@ sol! {
     error NotVaultAuthorized();
     error ReentrancyGuard();
     // v5: oraculo analitico — score so vale assinado criptograficamente
+    // v6: oraculo multisig com rotacao de chave e enforcement no cofre
     error OracleNotInitialized();
     error OracleAlreadyInitialized();
     error OracleZeroAddress();
     error InvalidSignatureLength(uint256 got);
-    error InvalidOracleSignature();
     error OracleNonceReplayed(uint256 nonce);
+    error NotContractOwner();
+    error OracleKeyNotFound();
+    error OracleKeyDuplicate();
+    error OracleCountInvalid(uint256 got);
+    error OracleThresholdNotMet(uint256 got, uint256 needed);
+    error SignatureListTooLong(uint256 got);
+    error SignatureMalleable();
     error EcrecoverFailed();
 }
 
@@ -117,8 +151,14 @@ pub enum ZeusError {
     OracleAlreadyInitialized(OracleAlreadyInitialized),
     OracleZeroAddress(OracleZeroAddress),
     InvalidSignatureLength(InvalidSignatureLength),
-    InvalidOracleSignature(InvalidOracleSignature),
     OracleNonceReplayed(OracleNonceReplayed),
+    NotContractOwner(NotContractOwner),
+    OracleKeyNotFound(OracleKeyNotFound),
+    OracleKeyDuplicate(OracleKeyDuplicate),
+    OracleCountInvalid(OracleCountInvalid),
+    OracleThresholdNotMet(OracleThresholdNotMet),
+    SignatureListTooLong(SignatureListTooLong),
+    SignatureMalleable(SignatureMalleable),
     EcrecoverFailed(EcrecoverFailed),
 }
 
@@ -158,9 +198,12 @@ sol_storage! {
         // ---- teto diario (janela rolante de 24h) ----
         mapping(address => uint128) daily_spent;
         mapping(address => uint64) daily_window_start;
-        // ---- oraculo analitico (v5): score on-chain so vale assinado pelo oraculo ----
-        address trusted_oracle;                      // address(0) = ainda nao inicializado
-        mapping(bytes32 => bool) oracle_nonce_used;  // anti-replay: hash(user, nonce)
+        // ---- oraculo analitico (v6): multisig 2-de-3 com rotacao de chave ----
+        address contract_owner;                      // papel que gira a chave (deployer)
+        address oracle_slot0;                        // address(0) = slot vazio
+        address oracle_slot1;
+        address oracle_slot2;
+        mapping(bytes32 => bool) oracle_nonce_used;   // anti-replay: hash(user, nonce)
         // ---- reentrancy lock ----
         bool reentrancy_locked;
     }
@@ -224,23 +267,62 @@ fn restore_daily_spent(current_spent: U128, amount: U256) -> U128 {
     }
 }
 
-/// v5: hash canonico do oraculo — bytes exatos do payload assinado.
-/// keccak256(user(20 bytes, SEM padding) || amount(32 BE) || risk(32 BE) || nonce(32 BE)).
-/// O servidor Python (engine/oracle_service.py) espelha esta ordem byte a byte;
-/// codificacoes eth_abi (que fazem padding do address) NAO batem com o contrato.
-fn oracle_message_hash(user: Address, amount: U256, risk_x100: U256, nonce: U256) -> B256 {
+/// v6: hash canonico do oraculo com DOMAIN SEPARATION.
+/// Espelha EXATAMENTE o eth_abi.encode(['address','uint256','uint256','uint256','uint256','address'],
+///   [user, chain_id, amount, risk_x100, nonce, contract]) — 192 bytes:
+///   keccak256( pad32(user) || chain_id(32 BE) || amount(32 BE) || risk(32 BE) || nonce(32 BE) || pad32(contract) )
+/// O servidor Python (engine/oracle_service.py) produz o byte-a-byte identico via eth_abi.encode;
+/// chain_id e address(this) dentro do hash matam replay cross-chain e cross-deploy.
+fn oracle_message_hash(
+    user: Address,
+    chain_id: U256,
+    contract: Address,
+    amount: U256,
+    risk_x100: U256,
+    nonce: U256,
+) -> B256 {
     stylus_sdk::crypto::keccak(
         [
+            &[0u8; 12],
             user.as_slice(),
+            &chain_id.to_be_bytes::<32>(),
             &amount.to_be_bytes::<32>(),
             &risk_x100.to_be_bytes::<32>(),
             &nonce.to_be_bytes::<32>(),
+            &[0u8; 12],
+            contract.as_slice(),
         ]
         .concat(),
     )
 }
 
-/// v5: chave de anti-replay do nonce — keccak256(user || nonce).
+/// v6: parse estrito da assinatura ECDSA (r || s || v, 65 bytes).
+/// Normaliza v (0/1 -> 27/28) e REJEITA s malleable (s > n/2) — puro, testavel nativamente.
+fn parse_signature(sig: &[u8]) -> Result<(B256, B256, u8), ZeusError> {
+    if sig.len() != 65 {
+        return Err(ZeusError::InvalidSignatureLength(InvalidSignatureLength {
+            got: U256::from(sig.len() as u64),
+        }));
+    }
+    let r = B256::from_slice(&sig[0..32]);
+    let s = B256::from_slice(&sig[32..64]);
+    let mut v = sig[64];
+    if v < 27 {
+        v += 27; // normalizacao EVM
+    }
+    if v != 27 && v != 28 {
+        return Err(ZeusError::InvalidSignatureLength(InvalidSignatureLength {
+            got: U256::from(v as u64),
+        }));
+    }
+    if s > SECP256K1N_HALF {
+        return Err(ZeusError::SignatureMalleable(SignatureMalleable {}));
+    }
+    Ok((r, s, v))
+}
+
+/// v6: chave de anti-replay do nonce — keccak256(user(20 bytes) || nonce(32 BE)).
+/// O mapeamento vive no storage POR DEPLOY, entao o replay cross-chain morre no proprio layout.
 fn oracle_nonce_key(user: Address, nonce: U256) -> B256 {
     stylus_sdk::crypto::keccak([user.as_slice(), &nonce.to_be_bytes::<32>()].concat())
 }
@@ -282,6 +364,80 @@ impl ZeusGuard {
             return Err(ZeusError::EcrecoverFailed(EcrecoverFailed {}));
         }
         Ok(recovered)
+    }
+
+    /// v6: o endereco pertence ao conjunto confiavel (slots preenchidos sequencialmente no init)?
+    fn is_trusted_oracle(&self, a: Address) -> bool {
+        a != Address::ZERO
+            && (a == self.oracle_slot0.get() || a == self.oracle_slot1.get() || a == self.oracle_slot2.get())
+    }
+
+    /// v6: conjunto inicializado? (slot0 reservado ao primeiro oraculo do init)
+    fn oracle_is_initialized(&self) -> bool {
+        self.oracle_slot0.get() != Address::ZERO
+    }
+
+    /// v6: coracao do multisig — valida o bundle de assinaturas contra o conjunto confiavel.
+    /// Barreiras: init | sessao congelada | tam do bundle | hash com domain separation |
+    /// ecrecover slot a slot (contagem de distinct) | threshold MINIMO de 2.
+    /// NAO consome nonce (o consumo e explicito em quem executa o dinheiro).
+    fn oracle_verify_signatures(
+        &self,
+        user: Address,
+        amount: U256,
+        risk_x100: U256,
+        nonce: U256,
+        signatures: &[Vec<u8>],
+    ) -> Result<(), ZeusError> {
+        if !self.oracle_is_initialized() {
+            return Err(ZeusError::OracleNotInitialized(OracleNotInitialized {}));
+        }
+        if self.session_frozen.getter(user).get() {
+            return Err(ZeusError::SessionFrozen(SessionFrozenError {}));
+        }
+        let n = signatures.len() as u64;
+        if n > ORACLE_MAX_SIGNATURES {
+            return Err(ZeusError::SignatureListTooLong(SignatureListTooLong { got: U256::from(n) }));
+        }
+        // domain separation v6: chain_id + address(this) entram no hash assinado
+        let msg_hash = oracle_message_hash(
+            user,
+            U256::from(self.vm().chain_id()),
+            self.vm().contract_address(),
+            amount,
+            risk_x100,
+            nonce,
+        );
+        // contagem distinct por slot — mesma chave assinando 2x conta 1x so
+        let (mut hit0, mut hit1, mut hit2) = (false, false, false);
+        for sig in signatures {
+            let (r, s, v) = parse_signature(sig)?;
+            let signer = self.recover_signer(msg_hash, v, r, s)?;
+            if !hit0 && signer == self.oracle_slot0.get() { hit0 = true; }
+            if !hit1 && signer == self.oracle_slot1.get() { hit1 = true; }
+            if !hit2 && signer == self.oracle_slot2.get() { hit2 = true; }
+            if (hit0 as u64) + (hit1 as u64) + (hit2 as u64) >= ORACLE_THRESHOLD_MIN {
+                break; // early exit: threshold alcancado, gas economizado
+            }
+        }
+        let got = (hit0 as u64) + (hit1 as u64) + (hit2 as u64);
+        if got < ORACLE_THRESHOLD_MIN {
+            return Err(ZeusError::OracleThresholdNotMet(OracleThresholdNotMet {
+                got: U256::from(got),
+                needed: U256::from(ORACLE_THRESHOLD_MIN),
+            }));
+        }
+        Ok(())
+    }
+
+    /// v6: consumo do nonce (anti-replay) — chamado apenas no caminho que move dinheiro.
+    fn oracle_consume_nonce(&mut self, user: Address, nonce: U256) -> Result<(), ZeusError> {
+        let key = oracle_nonce_key(user, nonce);
+        if self.oracle_nonce_used.getter(key).get() {
+            return Err(ZeusError::OracleNonceReplayed(OracleNonceReplayed { nonce }));
+        }
+        self.oracle_nonce_used.setter(key).set(true);
+        Ok(())
     }
 
     /// v3: politica completa no caminho do dinheiro (sessao, freeze, valor, risco, teto).
@@ -736,7 +892,21 @@ impl ZeusGuard {
     /// agentic (x402/MPP) passa por aqui: sessao, freeze, valor, risco e teto diario.
     /// O guardiao (ou o proprio dono) so consegue mover valor DENTRO da politica.
     /// v4: exige autorizacao explicita da sessao e restringe ao token configurado na sessao.
-    pub fn vault_send(&mut self, user: Address, token: Address, payee: Address, amount: U256, risk_x100: U256) -> Result<(), ZeusError> {
+    /// v6: ENFORCEMENT ABSOLUTO — o cofre so move dinheiro com o bundle assinado
+    /// pelo multisig do oraculo (2-de-3). Sem assinatura valida, sem transferencia:
+    /// o oraculo esta NO CAMINHO DO DINHEIRO.
+    /// Fluxo: reentrancia -> autorizacao v4 -> token -> MULTISIG ORACULO (hash com
+    /// domain separation + threshold 2 + consumo do nonce) -> politica -> teto -> transfer.
+    pub fn vault_send(
+        &mut self,
+        user: Address,
+        token: Address,
+        payee: Address,
+        amount: U256,
+        risk_x100: U256,
+        nonce: U256,
+        signatures: Vec<Vec<u8>>,
+    ) -> Result<(), ZeusError> {
         if self.reentrancy_locked.get() {
             return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
         }
@@ -757,6 +927,15 @@ impl ZeusGuard {
         if !is_token_allowed(configured, token) {
             self.reentrancy_locked.set(false);
             return Err(ZeusError::NotVaultAuthorized(NotVaultAuthorized {}));
+        }
+        // v6: o oraculo assina OBRIGATORIAMENTE antes do dinheiro se mover
+        if let Err(e) = self.oracle_verify_signatures(user, amount, risk_x100, nonce, &signatures) {
+            self.reentrancy_locked.set(false);
+            return Err(e);
+        }
+        if let Err(e) = self.oracle_consume_nonce(user, nonce) {
+            self.reentrancy_locked.set(false);
+            return Err(e);
         }
         let risk = match self.policy_gate(user, amount, risk_x100) {
             Ok(r) => r,
@@ -795,36 +974,131 @@ impl ZeusGuard {
         self.reentrancy_locked.set(false);
         Ok(())
     }
-    /// v5: registra o oraculo analitico oficial (uma unica vez, pelo deployer).
-    /// O endereco publico vem de generate_keys.py — a chave privada fica no .env do servidor.
-    pub fn init_oracle(&mut self, oracle: Address) -> Result<(), ZeusError> {
-        if self.trusted_oracle.get() != Address::ZERO {
+    /// v6: registra o conjunto multisig do oraculo (uma unica vez, pelo deployer).
+    /// Exige 2..=3 enderecos distintos e nao-nulos; msg::sender vira contract_owner.
+    /// Os enderecos publicos vem de generate_keys.py — as chaves privadas ficam no .env do servidor.
+    pub fn init_oracle(&mut self, oracles: Vec<Address>) -> Result<(), ZeusError> {
+        if self.oracle_is_initialized() {
             return Err(ZeusError::OracleAlreadyInitialized(OracleAlreadyInitialized {}));
         }
-        if oracle == Address::ZERO {
-            return Err(ZeusError::OracleZeroAddress(OracleZeroAddress {}));
+        let n = oracles.len() as u64;
+        if n < ORACLE_THRESHOLD_MIN || n > ORACLE_MAX_KEYS {
+            return Err(ZeusError::OracleCountInvalid(OracleCountInvalid { got: U256::from(n) }));
         }
-        self.trusted_oracle.set(oracle);
-        self.vm().log(OracleInitialized { oracle });
+        for o in &oracles {
+            if *o == Address::ZERO {
+                return Err(ZeusError::OracleZeroAddress(OracleZeroAddress {}));
+            }
+        }
+        // sem duplicatas dentro do conjunto
+        for i in 0..oracles.len() {
+            for j in (i + 1)..oracles.len() {
+                if oracles[i] == oracles[j] {
+                    return Err(ZeusError::OracleKeyDuplicate(OracleKeyDuplicate {}));
+                }
+            }
+        }
+        if self.contract_owner.get() == Address::ZERO {
+            self.contract_owner.set(self.vm().msg_sender());
+        }
+        self.oracle_slot0.set(oracles[0]);
+        self.oracle_slot1.set(oracles[1]);
+        if n > ORACLE_THRESHOLD_MIN {
+            self.oracle_slot2.set(oracles[2]);
+        }
+        self.vm().log(OracleInitialized {
+            owner: self.contract_owner.get(),
+            oracle0: oracles[0],
+            oracle1: oracles[1],
+            oracle2: if n > ORACLE_THRESHOLD_MIN { oracles[2] } else { Address::ZERO },
+        });
         Ok(())
     }
 
-    /// v5: consulta publica — endereco do oraculo confiavel (address(0) = nao inicializado).
-    pub fn trusted_oracle_pub(&self) -> Result<Address, ZeusError> {
-        Ok(self.trusted_oracle.get())
+    /// v6: consulta publica — o dono do contrato (quem pode girar a chave).
+    pub fn contract_owner_pub(&self) -> Result<Address, ZeusError> {
+        Ok(self.contract_owner.get())
     }
 
-    /// v5: firewall de transacao com score ASSINADO pelo oraculo.
-    /// Barreira 1: reentrancia | Barreira 2: sessao congelada (disjuntor)
-    /// Barreira 3: hash reconstruido nos bytes exatos | Barreira 4: ecrecover + oraculo
-    /// Barreira 5: anti-replay do nonce | Barreira 6: politica da v4 (sessao, risco, teto)
+    /// v6: consulta publica — conjunto ativo de oraculos confiaveis.
+    pub fn oracles_pub(&self) -> Result<Vec<Address>, ZeusError> {
+        let mut out = Vec::new();
+        if self.oracle_slot0.get() != Address::ZERO { out.push(self.oracle_slot0.get()); }
+        if self.oracle_slot1.get() != Address::ZERO { out.push(self.oracle_slot1.get()); }
+        if self.oracle_slot2.get() != Address::ZERO { out.push(self.oracle_slot2.get()); }
+        Ok(out)
+    }
+
+    /// v6: consulta publica — threshold vigente (fixado em 2 pelo design).
+    pub fn oracle_threshold_pub(&self) -> Result<U256, ZeusError> {
+        Ok(U256::from(ORACLE_THRESHOLD_MIN))
+    }
+
+    /// v6: ROTACAO DE CHAVE — troca um oraculo do conjunto SEM redeploy.
+    /// Apenas o contract_owner; a nova chave precisa ser valida e nao duplicada.
+    /// O threshold continua valendo: a troca so publica se o conjunto continuar com >= 2.
+    pub fn update_oracle_key(&mut self, old_oracle: Address, new_oracle: Address) -> Result<(), ZeusError> {
+        if self.vm().msg_sender() != self.contract_owner.get() {
+            return Err(ZeusError::NotContractOwner(NotContractOwner {}));
+        }
+        if new_oracle == Address::ZERO {
+            return Err(ZeusError::OracleZeroAddress(OracleZeroAddress {}));
+        }
+        let mut found = false;
+        let mut slots = [self.oracle_slot0.get(), self.oracle_slot1.get(), self.oracle_slot2.get()];
+        for s in slots.iter_mut() {
+            if *s == old_oracle {
+                *s = new_oracle;
+                found = true;
+                break; // uma chave por slot
+            }
+        }
+        if !found {
+            return Err(ZeusError::OracleKeyNotFound(OracleKeyNotFound {}));
+        }
+        // duplicata no conjunto apos a troca?
+        for i in 0..slots.len() {
+            for j in (i + 1)..slots.len() {
+                if slots[i] != Address::ZERO && slots[i] == slots[j] {
+                    return Err(ZeusError::OracleKeyDuplicate(OracleKeyDuplicate {}));
+                }
+            }
+        }
+        self.oracle_slot0.set(slots[0]);
+        self.oracle_slot1.set(slots[1]);
+        self.oracle_slot2.set(slots[2]);
+        self.vm().log(OracleKeyRotated { old_oracle, new_oracle });
+        Ok(())
+    }
+
+    /// v6: preflight de leitura — valida o bundle SEM consumir nonce e SEM mover dinheiro.
+    /// Para dApps que querem checar antes de submeter o vault_send com o MESMO nonce.
+    pub fn preflight_signed(
+        &self,
+        user: Address,
+        amount: U256,
+        risk_x100: U256,
+        nonce: U256,
+        signatures: Vec<Vec<u8>>,
+    ) -> Result<(), ZeusError> {
+        self.oracle_verify_signatures(user, amount, risk_x100, nonce, &signatures)?;
+        self.policy_gate(user, amount, risk_x100)?;
+        Ok(())
+    }
+
+    /// v6: firewall de transacao com score ASSINADO pelo multisig (2-de-3).
+    /// Barreira 1: reentrancia | Barreira 2: conjunto inicializado + sessao congelada
+    /// Barreira 3: hash com domain separation (chain_id + address(this))
+    /// Barreira 4: ecrecover por assinatura + contagem distinct
+    /// Barreira 5: threshold MINIMO de 2 | Barreira 6: anti-replay do nonce
+    /// Barreira 7: politica da v4 (sessao, risco, teto)
     pub fn check_tx_signed(
         &mut self,
         user: Address,
         amount: U256,
         risk_x100: U256,
         nonce: U256,
-        signature: Vec<u8>,
+        signatures: Vec<Vec<u8>>,
     ) -> Result<(), ZeusError> {
         if self.reentrancy_locked.get() {
             return Err(ZeusError::ReentrancyGuard(ReentrancyGuard {}));
@@ -837,35 +1111,12 @@ impl ZeusGuard {
             }};
         }
 
-        if self.trusted_oracle.get() == Address::ZERO {
-            bail!(ZeusError::OracleNotInitialized(OracleNotInitialized {}));
+        if let Err(e) = self.oracle_verify_signatures(user, amount, risk_x100, nonce, &signatures) {
+            bail!(e);
         }
-        if self.session_frozen.getter(user).get() {
-            bail!(ZeusError::SessionFrozen(SessionFrozenError {}));
+        if let Err(e) = self.oracle_consume_nonce(user, nonce) {
+            bail!(e);
         }
-        if signature.len() != 65 {
-            bail!(ZeusError::InvalidSignatureLength(InvalidSignatureLength { got: U256::from(signature.len() as u64) }));
-        }
-        let r = B256::from_slice(&signature[0..32]);
-        let s = B256::from_slice(&signature[32..64]);
-        let mut v = signature[64];
-        if v < 27 { v += 27; } // normalizacao EVM: v 0/1 vira 27/28
-
-        let msg_hash = oracle_message_hash(user, amount, risk_x100, nonce);
-        let signer = match self.recover_signer(msg_hash, v, r, s) {
-            Ok(a) => a,
-            Err(e) => bail!(e),
-        };
-        if signer != self.trusted_oracle.get() {
-            bail!(ZeusError::InvalidOracleSignature(InvalidOracleSignature {}));
-        }
-
-        let nonce_key = oracle_nonce_key(user, nonce);
-        if self.oracle_nonce_used.getter(nonce_key).get() {
-            bail!(ZeusError::OracleNonceReplayed(OracleNonceReplayed { nonce }));
-        }
-        self.oracle_nonce_used.setter(nonce_key).set(true);
-
         if let Err(e) = self.policy_gate(user, amount, risk_x100) {
             bail!(e);
         }
@@ -920,40 +1171,94 @@ mod tests {
         assert_eq!(spent_in_window(500, 100, spent), spent);
     }
 
+    // ======== v6: oraculo multisig com domain separation (vetores travados com o Python) ========
+
+    fn addr(b: u8) -> Address {
+        Address::from_slice(&[0u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, b])
+    }
+
     #[test]
-    fn oraculo_hash_bate_com_o_servidor_python() {
-        // vetor gerado por engine/oracle_service.py (oracle_message_hash):
-        // user=0x00000000000000000000000000000000000000AA, amount=1e18, risk=1500, nonce=1
-        let user = Address::from_slice(&[0u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xAA]);
-        let h = oracle_message_hash(user, U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64));
-        assert_eq!(
-            hex::encode(h.as_slice()),
-            "e3c3f91c260860b2bbd0f16560f0adf995b0f920de87a4c139d609eb1a146805"
+    fn oraculo_hash_v6_bate_com_o_servidor_python() {
+        // vetor gerado por engine/oracle_service.py: user=0x..00AA, chain=421614,
+        // contract=0x..00C0, amount=1e18, risk=1500, nonce=1 — espelho eth_abi de 192 bytes
+        let h = oracle_message_hash(
+            addr(0xAA),
+            U256::from(421614u64),
+            addr(0xC0),
+            U256::from(10u128.pow(18)),
+            U256::from(1500u64),
+            U256::from(1u64),
         );
+        assert_eq!(hex::encode(h.as_slice()), "df5ced9a1d6496784e47f1ac967cef16159ba74992638f31379cb533bf62e0b3");
+    }
+
+    #[test]
+    fn domain_separation_muda_o_hash_por_chain_e_por_deploy() {
+        let base = oracle_message_hash(
+            addr(0xAA), U256::from(421614u64), addr(0xC0),
+            U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
+        );
+        // mesma assinatura capturada NAO vale em outra chain
+        let outra_chain = oracle_message_hash(
+            addr(0xAA), U256::from(421615u64), addr(0xC0),
+            U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
+        );
+        // nem em outro deploy da mesma chain
+        let outro_deploy = oracle_message_hash(
+            addr(0xAA), U256::from(421614u64), addr(0xC1),
+            U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
+        );
+        // nem para outro usuario
+        let outro_user = oracle_message_hash(
+            addr(0xAB), U256::from(421614u64), addr(0xC0),
+            U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
+        );
+        assert_eq!(hex::encode(outra_chain.as_slice()), "1328a8a4c7ca7d99d54d8e6cedd9c3a82fbf03fc3ee03abbf20ce0d71cf6bd8a");
+        assert_eq!(hex::encode(outro_deploy.as_slice()), "fe3201f693c308c1fa343507c21833a18c0094c5a34e9109d796216f450ae7b6");
+        assert_eq!(hex::encode(outro_user.as_slice()), "ec039d6cf3f7e1f63cfc08ab8b04a2ea980a2a9291080dfa8c4e53bb16b6100a");
+        assert_ne!(base, outra_chain);
+        assert_ne!(base, outro_deploy);
+        assert_ne!(base, outro_user);
     }
 
     #[test]
     fn oraculo_nonce_key_e_anti_replay_deterministico() {
-        let user = Address::from_slice(&[0u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xAA]);
-        let k1 = oracle_nonce_key(user, U256::from(1u64));
-        let k2 = oracle_nonce_key(user, U256::from(1u64));
-        let k3 = oracle_nonce_key(user, U256::from(2u64));
-        assert_eq!(k1, k2);       // mesmo nonce => mesma chave
+        let k1 = oracle_nonce_key(addr(0xAA), U256::from(1u64));
+        let k2 = oracle_nonce_key(addr(0xAA), U256::from(1u64));
+        let k3 = oracle_nonce_key(addr(0xAA), U256::from(2u64));
+        let k4 = oracle_nonce_key(addr(0xAB), U256::from(1u64));
+        assert_eq!(k1, k2);       // mesmo (user, nonce) => mesma chave
         assert_ne!(k1, k3);       // nonce novo => chave nova
-        assert_eq!(
-            hex::encode(k1.as_slice()),
-            "1d9cc831d43cebd5f9a4d865649395054531ac35ae2d9f2b4833375d7e5a53f5"
-        );
+        assert_ne!(k1, k4);       // outro user => chave nova
+        assert_eq!(hex::encode(k1.as_slice()), "1d9cc831d43cebd5f9a4d865649395054531ac35ae2d9f2b4833375d7e5a53f5");
     }
 
     #[test]
-    fn hash_do_oraculo_nao_e_o_mesmo_com_outro_usuario() {
-        // 1 byte de diferenca no usuario muda o hash (sem padding, sem colisao de prefixo)
-        let a = Address::from_slice(&[0xAA; 20]);
-        let b = Address::from_slice(&[0xAB; 20]);
-        let ha = oracle_message_hash(a, U256::from(1u64), U256::from(1u64), U256::from(1u64));
-        let hb = oracle_message_hash(b, U256::from(1u64), U256::from(1u64), U256::from(1u64));
-        assert_ne!(ha, hb);
+    fn parse_de_assinatura_rejeita_formatos_invalidos() {
+        // 64 bytes => erro tipado
+        assert!(matches!(
+            parse_signature(&[0u8; 64]),
+            Err(ZeusError::InvalidSignatureLength(_))
+        ));
+        // v invalido (ex.: 30) => erro tipado
+        let mut sig = [0x11u8; 65];
+        sig[64] = 30;
+        assert!(matches!(parse_signature(&sig), Err(ZeusError::InvalidSignatureLength(_))));
+        // s malleable (s > n/2) => rejeitado: n/2 + 1
+        let mut mal = [0u8; 65];
+        mal[32..64].copy_from_slice(&[0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x5d, 0x57, 0x6e, 0x73, 0x57, 0xa4, 0x50, 0x1d, 0xdf, 0xe9, 0x2f, 0x46, 0x68, 0x1b, 0x20, 0xa1]);
+        mal[64] = 27;
+        assert!(matches!(parse_signature(&mal), Err(ZeusError::SignatureMalleable(_))));
+        // forma canonica: v cru 0 normaliza para 27
+        let mut ok = [0u8; 65];
+        ok[64] = 0;
+        let (_, s, v) = parse_signature(&ok).ok().unwrap();
+        assert_eq!(v, 27);
+        assert_eq!(s, B256::ZERO);
+        // v cru 1 normaliza para 28
+        ok[64] = 1;
+        let (_, _, v28) = parse_signature(&ok).ok().unwrap();
+        assert_eq!(v28, 28);
     }
 
     #[test]
