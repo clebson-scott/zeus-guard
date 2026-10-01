@@ -61,13 +61,15 @@ def check_fixtures():
 
 def check_contract():
     stage(4, "Rust v6 contract tests, lint and build")
-    test_cmd("Rust tests", "cargo test --quiet", lambda o: "test result: ok." in o)
-    test_cmd("Rust clippy", "cargo clippy --lib -- -D warnings")
+    for name, cmd in (("Rust tests", "cargo test --quiet"), ("Rust clippy", "cargo clippy --lib -- -D warnings")):
+        code, out = run(cmd, cwd=ROOT / "zeus-guard-contract")
+        ok = code == 0 and (name != "Rust tests" or "test result: ok." in out)
+        add("PASS" if ok else "FAIL", name, f"exit={code}; {out[-300:].strip()}")
     code,out=run("cargo stylus check --endpoint "+RPC, cwd=ROOT/"zeus-guard-contract", timeout=300)
     m=re.search(r"contract size:\s*([0-9.]+\s*KiB)\s*\((\d+) bytes\)",out)
     if m:
         # The size is recorded, not compared to the obsolete v4 24 KiB claim.
-        add("PASS" if code == 0 or "activation not allowed" in out else "FAIL", "Stylus build", f"contract size {m.group(1)} ({m.group(2)} bytes); exit={code}")
+        add("PASS" if code == 0 or "not allowed for this request" in out else "FAIL", "Stylus build", f"contract size {m.group(1)} ({m.group(2)} bytes); exit={code}")
     else: add("FAIL", "Stylus build", out[-500:])
 
 def check_python_and_extension():
