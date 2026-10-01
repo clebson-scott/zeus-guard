@@ -22,7 +22,7 @@ dApp/agente ──vault_send(user, token, payee, amount, risk, nonce, sigs[])─
 | # | Déficit v5 | Solução v6 |
 |---|-----------|------------|
 | 1 | Oráculo consultivo (bypass em `vault_send`) | **Enforcement**: `vault_send` exige `nonce` + `signatures[]`; verifica internamente e reverte se o threshold não for atingido |
-| 2 | Replay cross-chain/cross-deploy | **Domain separation**: `keccak256(abi.encode([user, chain_id, amount, risk, nonce, contract]))` — 192 bytes espelhados nos dois lados |
+| 2 | Replay cross-chain/cross-deploy | **Domain separation**: `keccak256(abi.encode([user, token, payee, chain_id, contract, amount, risk, nonce]))` — 256 bytes espelhados nos dois lados |
 | 3 | Chave one-shot (vazou = redeploy) | **Rotação**: papel `contract_owner` + `update_oracle_key(antiga, nova)` |
 | 4 | Motor stub (base_score fixo) | **Motor real**: `extract_features` lê o estado REAL via RPC; `argmin_classify` do `honesty_experiment.py` decide; Gibbs do QCSN atesta (fail-closed se divergir) |
 | 5 | Oráculo único (ponto central de confiança) | **Multisig 2-de-3**: 3 slots de oráculos, threshold mínimo de 2 assinaturas distintas |
@@ -32,7 +32,7 @@ dApp/agente ──vault_send(user, token, payee, amount, risk, nonce, sigs[])─
 1. **Reentrância** (`reentrancy_locked`)
 2. **Autorização v4** (sessão, owner/guardian, token configurado)
 3. **Conjunto de oráculos inicializado** + **sessão congelada** (disjuntor)
-4. **Hash com domain separation** — reconstruído nos mesmos 192 bytes assinados
+4. **Hash com domain separation** — reconstruído nos mesmos 256 bytes assinados
 5. **ecrecover por assinatura** (precompile EVM 0x01) + contagem **distinct** por slot
 6. **Threshold 2** + parse estrito (65 bytes, v normalizado, **s-malleability rejeitada**)
 7. **Anti-replay**: `keccak(user‖nonce)` consumido exatamente uma vez
