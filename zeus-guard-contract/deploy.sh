@@ -62,7 +62,7 @@ echo "oraculos multisig (threshold 2-de-3): $O1, $O2, $O3"
 step "1/6 Testes nativos (cargo test)"
 cargo test
 
-# ---- 2. validacao WASM (binario otimizado, hoje ~23.4 KiB) ----
+# ---- 2. validacao WASM (binário otimizado; o gate registra o tamanho real do v6) ----
 step "2/6 cargo stylus check (binario WASM otimizado)"
 cargo stylus check --endpoint "$RPC"
 
@@ -110,7 +110,7 @@ cat > ../deploy/DEPLOYADO_V6_ARBITRUM_SEPOLIA.md <<EOF
 - **Enforcement absoluto:** \`vault_send\` exige nonce + bundle de assinaturas do
   oraculo (multisig 2-de-3) — o oraculo esta NO CAMINHO DO DINHEIRO.
 - **Domain separation:** hash assinado inclui chain_id + address(this)
-  (espelho eth_abi de 192 bytes — replay cross-chain/cross-deploy morto).
+  (espelho eth_abi de 256 bytes — replay cross-chain/cross-deploy morto).
 - **Rotacao de chave:** \`update_oracle_key(antiga, nova)\` pelo \`contract_owner\`.
 - **Motor real:** score via /score do oraculo (features reais RPC + argmin).
 
