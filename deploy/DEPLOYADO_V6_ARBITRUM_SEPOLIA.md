@@ -10,7 +10,7 @@
 - **Enforcement absoluto:** `vault_send` exige nonce + bundle de assinaturas do
   oraculo (multisig 2-de-3) — o oraculo esta NO CAMINHO DO DINHEIRO.
 - **Domain separation:** hash assinado inclui chain_id + address(this)
-  (espelho eth_abi de 192 bytes — replay cross-chain/cross-deploy morto).
+  (espelho eth_abi de 256 bytes — replay cross-chain/cross-deploy morto).
 - **Rotacao de chave:** `updateOracleKey(antiga, nova)` pelo `contract_owner`.
 - **Motor real:** score via /score do oraculo (features reais RPC + argmin).
 
