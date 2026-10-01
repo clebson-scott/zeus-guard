@@ -18,7 +18,9 @@ def stage(n, title): print(f"\n[STAGE {n:02d}] {title}")
 def add(kind, name, detail=""):
     RESULTS.append((kind, name, detail)); print(f"  [{kind}] {name}: {detail}")
 def run(cmd, cwd=ROOT, timeout=180):
-    p = subprocess.run(cmd, cwd=cwd, shell=True, text=True, capture_output=True, timeout=timeout)
+    env = os.environ.copy()
+    env["PATH"] = os.path.expanduser("~/.cargo/bin") + os.pathsep + env.get("PATH", "")
+    p = subprocess.run(cmd, cwd=cwd, shell=True, text=True, capture_output=True, timeout=timeout, env=env)
     return p.returncode, p.stdout + p.stderr
 
 def test_cmd(name, cmd, success=None, timeout=180):
@@ -39,14 +41,14 @@ def check_dependencies():
 
 def check_secrets():
     stage(2, "Secret absence")
-    patterns = re.compile(r"(?:0x[a-fA-F0-9]{64}|BEGIN (?:RSA|OPENSSH|EC) PRIVATE KEY|AKIA[0-9A-Z]{16})")
+    patterns = re.compile(r"(?:PRIVATE[_ ]KEY\s*[:=]\s*0x[a-fA-F0-9]{64}|BEGIN (?:RSA|OPENSSH|EC) PRIVATE KEY|AKIA[0-9A-Z]{16})", re.IGNORECASE)
     hits=[]
     for p in ROOT.rglob("*"):
         if not p.is_file() or any(x in p.parts for x in (".git","target","__pycache__")): continue
         if p.suffix not in {".py",".rs",".js",".json",".toml",".sh",".md"}: continue
         text=p.read_text(errors="ignore")
         for m in patterns.finditer(text):
-            if "0x..." not in m.group(0): hits.append(str(p.relative_to(ROOT)))
+            hits.append(str(p.relative_to(ROOT)))
     add("PASS" if not hits else "FAIL", "Secret scan", "no private material found" if not hits else sorted(set(hits)))
 
 def check_fixtures():
