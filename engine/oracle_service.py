@@ -8,7 +8,7 @@ assinaturas validas, o cofre nao move dinheiro.
 
 NOVIDADES v6:
   * DOMAIN SEPARATION — o hash assinado inclui chain_id e o endereco do contrato
-    (espelho exato do eth_abi.encode de 192 bytes que o Rust reconstrui on-chain):
+    (espelho exato do eth_abi.encode de 256 bytes que o Rust reconstrui on-chain):
         keccak256(abi.encode([user, chain_id, amount, risk, nonce, contract]))
     Assinatura capturada NAO vale em outra chain nem em outro deploy.
   * MULTISIG — o servidor assina com 2 chaves distintas (threshold on-chain = 2).
@@ -70,19 +70,18 @@ _NAMES = list(ARCHETYPES)
 _ENGINE = QCSNRiskEngine()
 
 
-def oracle_message_hash(user_address: str, chain_id: int, contract: str,
+def oracle_message_hash(user_address: str, token: str, payee: str,
+                        chain_id: int, contract: str,
                         amount: int, risk_score: int, nonce: int) -> bytes:
-    """Espelha byte a byte a oracle_message_hash do Rust v6 — 192 bytes.
+    """Hash canônico do vault v6, vinculando todos os efeitos financeiros.
 
-    eth_abi.encode(['address','uint256','uint256','uint256','uint256','address'],
-                   [user, chain_id, amount, risk, nonce, contract])
-    O Rust concatena pad32(user) || chain_id || amount || risk || nonce || pad32(contract)
-    — resultado identico (provado no teste cross-language).
+    O token e o payee são obrigatórios para impedir redirecionamento de um bundle
+    válido para outro destinatário. A ordem deve permanecer idêntica ao Rust.
     """
     return Web3.keccak(
         encode(
-            ["address", "uint256", "uint256", "uint256", "uint256", "address"],
-            [user_address, chain_id, amount, risk_score, nonce, contract],
+            ["address", "address", "address", "uint256", "address", "uint256", "uint256", "uint256"],
+            [user_address, token, payee, chain_id, contract, amount, risk_score, nonce],
         )
     )
 
@@ -141,6 +140,8 @@ def health():
             "oracles": [a.address for a in _ORACLE_KEYS],
             "chain_id": CHAIN_ID,
             "contract": CONTRACT_ADDRESS,
+            "token": token or "0x0000000000000000000000000000000000000000",
+            "to": to,
             "rpc": RPC_URL,
             "motor": "argmin deterministico (honesty_experiment) sobre features reais (RPC)",
         }
@@ -172,7 +173,7 @@ def get_score():
     risk_score = result["risk_x100"]
 
     # 3) domain separation v6: chain_id + contrato entram no hash assinado
-    msg_hash = oracle_message_hash(user_address, CHAIN_ID, CONTRACT_ADDRESS, amount, risk_score, nonce)
+    msg_hash = oracle_message_hash(user_address, token or "0x0000000000000000000000000000000000000000", to, CHAIN_ID, CONTRACT_ADDRESS, amount, risk_score, nonce)
 
     # 4) MULTISIG: assina com 2+ chaves distintas — o contrato exige threshold 2
     signatures = [
@@ -192,6 +193,8 @@ def get_score():
             "oracle": _ORACLE_KEYS[0].address,
             "chain_id": CHAIN_ID,
             "contract": CONTRACT_ADDRESS,
+            "token": token or "0x0000000000000000000000000000000000000000",
+            "to": to,
         }
     )
 

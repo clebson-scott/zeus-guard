@@ -51,21 +51,27 @@ def check(name, cond):
 
 # ---- vetores fixos: mesmos valores dos testes Rust v6 ----
 V_USER = "0x00000000000000000000000000000000000000AA"
+V_TOKEN = "0x00000000000000000000000000000000000000D0"
+V_PAYEE = "0x00000000000000000000000000000000000000EE"
 V_CONTRACT = "0x00000000000000000000000000000000000000C0"
 V_AMOUNT = 10**18
 V_RISK = 1500
 V_NONCE = 1
-V_HASH = "0xdf5ced9a1d6496784e47f1ac967cef16159ba74992638f31379cb533bf62e0b3"
+V_HASH = "0x0569bd23eb4abed6c5ca842d14360222d04cc20fc523026d17931c9939791015"
 V_NONCE_KEY = "0x1d9cc831d43cebd5f9a4d865649395054531ac35ae2d9f2b4833375d7e5a53f5"
 
 print("[1] domain separation — alinhamento de bytes com o Rust v6")
-h = oracle_message_hash(V_USER, 421614, V_CONTRACT, V_AMOUNT, V_RISK, V_NONCE)
+h = oracle_message_hash(V_USER, V_TOKEN, V_PAYEE, 421614, V_CONTRACT, V_AMOUNT, V_RISK, V_NONCE)
 check("hash v6 bate com o vetor do teste Rust", h.hex() == V_HASH[2:])
-h_chain = oracle_message_hash(V_USER, 421615, V_CONTRACT, V_AMOUNT, V_RISK, V_NONCE)
-h_deploy = oracle_message_hash(V_USER, 421614, "0x00000000000000000000000000000000000000C1", V_AMOUNT, V_RISK, V_NONCE)
-h_user = oracle_message_hash("0x00000000000000000000000000000000000000AB", 421614, V_CONTRACT, V_AMOUNT, V_RISK, V_NONCE)
+h_chain = oracle_message_hash(V_USER, V_TOKEN, V_PAYEE, 421615, V_CONTRACT, V_AMOUNT, V_RISK, V_NONCE)
+h_deploy = oracle_message_hash(V_USER, V_TOKEN, V_PAYEE, 421614, "0x00000000000000000000000000000000000000C1", V_AMOUNT, V_RISK, V_NONCE)
+h_token = oracle_message_hash(V_USER, "0x00000000000000000000000000000000000000D1", V_PAYEE, 421614, V_CONTRACT, V_AMOUNT, V_RISK, V_NONCE)
+h_payee = oracle_message_hash(V_USER, V_TOKEN, "0x00000000000000000000000000000000000000EF", 421614, V_CONTRACT, V_AMOUNT, V_RISK, V_NONCE)
+h_user = oracle_message_hash("0x00000000000000000000000000000000000000AB", V_TOKEN, V_PAYEE, 421614, V_CONTRACT, V_AMOUNT, V_RISK, V_NONCE)
 check("outra chain => outro hash (replay cross-chain morto)", h != h_chain)
 check("outro deploy => outro hash (replay cross-deploy morto)", h != h_deploy)
+check("outro token => outro hash", h != h_token)
+check("outro payee => outro hash", h != h_payee)
 check("outro user => outro hash", h != h_user)
 
 print("[2] nonce key — anti-replay deterministico")

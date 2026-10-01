@@ -39,7 +39,7 @@
 //!   * ENFORCEMENT: vault_send agora EXIGE a assinatura do oraculo (nonce + 2 sigs)
 //!     — o oraculo esta NO CAMINHO DO DINHEIRO, sem bypass
 //!   * DOMAIN SEPARATION: o hash assinado inclui chain_id() e address(this)
-//!     (espelho exato do eth_abi.encode de 192 bytes — replay cross-chain/implementacao morto)
+//!     (espelho exato do eth_abi.encode de 256 bytes — replay cross-chain/implementacao morto)
 //!   * ROTACAO DE CHAVE: papel contract_owner + update_oracle_key sem redeploy
 //!   * MULTISIG: conjunto de ate 3 oraculos confiaveis, threshold MINIMO de 2
 //!     assinaturas distintas por transacao
@@ -268,13 +268,17 @@ fn restore_daily_spent(current_spent: U128, amount: U256) -> U128 {
 }
 
 /// v6: hash canonico do oraculo com DOMAIN SEPARATION.
-/// Espelha EXATAMENTE o eth_abi.encode(['address','uint256','uint256','uint256','uint256','address'],
-///   [user, chain_id, amount, risk_x100, nonce, contract]) — 192 bytes:
-///   keccak256( pad32(user) || chain_id(32 BE) || amount(32 BE) || risk(32 BE) || nonce(32 BE) || pad32(contract) )
+/// Espelha EXATAMENTE o eth_abi.encode(['address','address','address','uint256','address','uint256','uint256','uint256'],
+///   [user, token, payee, chain_id, contract, amount, risk_x100, nonce]) — 256 bytes.
+///   O token e o payee fazem parte da autorização, evitando que um bundle válido
+///   seja redirecionado para outro destinatário.
 /// O servidor Python (engine/oracle_service.py) produz o byte-a-byte identico via eth_abi.encode;
 /// chain_id e address(this) dentro do hash matam replay cross-chain e cross-deploy.
+#[allow(clippy::too_many_arguments)]
 fn oracle_message_hash(
     user: Address,
+    token: Address,
+    payee: Address,
     chain_id: U256,
     contract: Address,
     amount: U256,
@@ -285,12 +289,16 @@ fn oracle_message_hash(
         [
             &[0u8; 12],
             user.as_slice(),
+            &[0u8; 12],
+            token.as_slice(),
+            &[0u8; 12],
+            payee.as_slice(),
             &chain_id.to_be_bytes::<32>(),
+            &[0u8; 12],
+            contract.as_slice(),
             &amount.to_be_bytes::<32>(),
             &risk_x100.to_be_bytes::<32>(),
             &nonce.to_be_bytes::<32>(),
-            &[0u8; 12],
-            contract.as_slice(),
         ]
         .concat(),
     )
@@ -367,6 +375,7 @@ impl ZeusGuard {
     }
 
     /// v6: o endereco pertence ao conjunto confiavel (slots preenchidos sequencialmente no init)?
+    #[allow(dead_code)]
     fn is_trusted_oracle(&self, a: Address) -> bool {
         a != Address::ZERO
             && (a == self.oracle_slot0.get() || a == self.oracle_slot1.get() || a == self.oracle_slot2.get())
@@ -381,9 +390,12 @@ impl ZeusGuard {
     /// Barreiras: init | sessao congelada | tam do bundle | hash com domain separation |
     /// ecrecover slot a slot (contagem de distinct) | threshold MINIMO de 2.
     /// NAO consome nonce (o consumo e explicito em quem executa o dinheiro).
+    #[allow(clippy::too_many_arguments)]
     fn oracle_verify_signatures(
         &self,
         user: Address,
+        token: Address,
+        payee: Address,
         amount: U256,
         risk_x100: U256,
         nonce: U256,
@@ -402,6 +414,8 @@ impl ZeusGuard {
         // domain separation v6: chain_id + address(this) entram no hash assinado
         let msg_hash = oracle_message_hash(
             user,
+            token,
+            payee,
             U256::from(self.vm().chain_id()),
             self.vm().contract_address(),
             amount,
@@ -897,6 +911,7 @@ impl ZeusGuard {
     /// o oraculo esta NO CAMINHO DO DINHEIRO.
     /// Fluxo: reentrancia -> autorizacao v4 -> token -> MULTISIG ORACULO (hash com
     /// domain separation + threshold 2 + consumo do nonce) -> politica -> teto -> transfer.
+    #[allow(clippy::too_many_arguments)]
     pub fn vault_send(
         &mut self,
         user: Address,
@@ -929,7 +944,7 @@ impl ZeusGuard {
             return Err(ZeusError::NotVaultAuthorized(NotVaultAuthorized {}));
         }
         // v6: o oraculo assina OBRIGATORIAMENTE antes do dinheiro se mover
-        if let Err(e) = self.oracle_verify_signatures(user, amount, risk_x100, nonce, &signatures) {
+        if let Err(e) = self.oracle_verify_signatures(user, token, payee, amount, risk_x100, nonce, &signatures) {
             self.reentrancy_locked.set(false);
             return Err(e);
         }
@@ -982,7 +997,7 @@ impl ZeusGuard {
             return Err(ZeusError::OracleAlreadyInitialized(OracleAlreadyInitialized {}));
         }
         let n = oracles.len() as u64;
-        if n < ORACLE_THRESHOLD_MIN || n > ORACLE_MAX_KEYS {
+        if !(ORACLE_THRESHOLD_MIN..=ORACLE_MAX_KEYS).contains(&n) {
             return Err(ZeusError::OracleCountInvalid(OracleCountInvalid { got: U256::from(n) }));
         }
         for o in &oracles {
@@ -1073,15 +1088,18 @@ impl ZeusGuard {
 
     /// v6: preflight de leitura — valida o bundle SEM consumir nonce e SEM mover dinheiro.
     /// Para dApps que querem checar antes de submeter o vault_send com o MESMO nonce.
+    #[allow(clippy::too_many_arguments)]
     pub fn preflight_signed(
         &self,
         user: Address,
+        token: Address,
+        payee: Address,
         amount: U256,
         risk_x100: U256,
         nonce: U256,
         signatures: Vec<Bytes>,
     ) -> Result<(), ZeusError> {
-        self.oracle_verify_signatures(user, amount, risk_x100, nonce, &signatures)?;
+        self.oracle_verify_signatures(user, token, payee, amount, risk_x100, nonce, &signatures)?;
         self.policy_gate(user, amount, risk_x100)?;
         Ok(())
     }
@@ -1092,9 +1110,12 @@ impl ZeusGuard {
     /// Barreira 4: ecrecover por assinatura + contagem distinct
     /// Barreira 5: threshold MINIMO de 2 | Barreira 6: anti-replay do nonce
     /// Barreira 7: politica da v4 (sessao, risco, teto)
+    #[allow(clippy::too_many_arguments)]
     pub fn check_tx_signed(
         &mut self,
         user: Address,
+        token: Address,
+        payee: Address,
         amount: U256,
         risk_x100: U256,
         nonce: U256,
@@ -1111,7 +1132,7 @@ impl ZeusGuard {
             }};
         }
 
-        if let Err(e) = self.oracle_verify_signatures(user, amount, risk_x100, nonce, &signatures) {
+        if let Err(e) = self.oracle_verify_signatures(user, token, payee, amount, risk_x100, nonce, &signatures) {
             bail!(e);
         }
         if let Err(e) = self.oracle_consume_nonce(user, nonce) {
@@ -1180,45 +1201,55 @@ mod tests {
     #[test]
     fn oraculo_hash_v6_bate_com_o_servidor_python() {
         // vetor gerado por engine/oracle_service.py: user=0x..00AA, chain=421614,
-        // contract=0x..00C0, amount=1e18, risk=1500, nonce=1 — espelho eth_abi de 192 bytes
+        // contract=0x..00C0, amount=1e18, risk=1500, nonce=1 — espelho eth_abi de 256 bytes
         let h = oracle_message_hash(
-            addr(0xAA),
+            addr(0xAA), addr(0xD0), addr(0xEE),
             U256::from(421614u64),
             addr(0xC0),
             U256::from(10u128.pow(18)),
             U256::from(1500u64),
             U256::from(1u64),
         );
-        assert_eq!(hex::encode(h.as_slice()), "df5ced9a1d6496784e47f1ac967cef16159ba74992638f31379cb533bf62e0b3");
+        assert_eq!(hex::encode(h.as_slice()), "0569bd23eb4abed6c5ca842d14360222d04cc20fc523026d17931c9939791015");
     }
 
     #[test]
     fn domain_separation_muda_o_hash_por_chain_e_por_deploy() {
         let base = oracle_message_hash(
-            addr(0xAA), U256::from(421614u64), addr(0xC0),
+            addr(0xAA), addr(0xD0), addr(0xEE), U256::from(421614u64), addr(0xC0),
             U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
         );
         // mesma assinatura capturada NAO vale em outra chain
         let outra_chain = oracle_message_hash(
-            addr(0xAA), U256::from(421615u64), addr(0xC0),
+            addr(0xAA), addr(0xD0), addr(0xEE), U256::from(421615u64), addr(0xC0),
             U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
         );
         // nem em outro deploy da mesma chain
         let outro_deploy = oracle_message_hash(
-            addr(0xAA), U256::from(421614u64), addr(0xC1),
+            addr(0xAA), addr(0xD0), addr(0xEE), U256::from(421614u64), addr(0xC1),
             U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
         );
         // nem para outro usuario
         let outro_user = oracle_message_hash(
-            addr(0xAB), U256::from(421614u64), addr(0xC0),
+            addr(0xAB), addr(0xD0), addr(0xEE), U256::from(421614u64), addr(0xC0),
             U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
         );
-        assert_eq!(hex::encode(outra_chain.as_slice()), "1328a8a4c7ca7d99d54d8e6cedd9c3a82fbf03fc3ee03abbf20ce0d71cf6bd8a");
-        assert_eq!(hex::encode(outro_deploy.as_slice()), "fe3201f693c308c1fa343507c21833a18c0094c5a34e9109d796216f450ae7b6");
-        assert_eq!(hex::encode(outro_user.as_slice()), "ec039d6cf3f7e1f63cfc08ab8b04a2ea980a2a9291080dfa8c4e53bb16b6100a");
+        assert_eq!(hex::encode(outra_chain.as_slice()), "5528b7759e78c5bc627aa25172c3a27ca446e1e3b43a63ca87792ddf187cbb9e");
+        assert_eq!(hex::encode(outro_deploy.as_slice()), "c66797fe0867db3c96115e7d207206058cce07e024208b51c4be186355dc8f7b");
+        assert_eq!(hex::encode(outro_user.as_slice()), "bb71f1ac9498d3478d83b0460b56bcaad7416cecba5579dda05b95b1f68f8c8d");
+        let outro_token = oracle_message_hash(
+            addr(0xAA), addr(0xD1), addr(0xEE), U256::from(421614u64), addr(0xC0),
+            U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
+        );
+        let outro_payee = oracle_message_hash(
+            addr(0xAA), addr(0xD0), addr(0xEF), U256::from(421614u64), addr(0xC0),
+            U256::from(10u128.pow(18)), U256::from(1500u64), U256::from(1u64),
+        );
         assert_ne!(base, outra_chain);
         assert_ne!(base, outro_deploy);
         assert_ne!(base, outro_user);
+        assert_ne!(base, outro_token);
+        assert_ne!(base, outro_payee);
     }
 
     #[test]

@@ -11,7 +11,7 @@ O que esta prova executa contra a rede Arbitrum Sepolia:
 
   ATAQUE 1 — Forged-Risk "perfeito": o invasor reconstrói o hash com o empacotamento
   EXATO do contrato (domain separation: chain_id 421614 + endereco do deploy,
-  espelho do eth_abi.encode de 192 bytes do lib.rs v6) e assina com as PROPRIAS
+  espelho do eth_abi.encode de 256 bytes do lib.rs v6) e assina com as PROPRIAS
   chaves dele. As assinaturas sao matematicamente validas... mas nao sao do
   conjunto multisig confiavel. A EVM do Stylus reverte.
 
@@ -78,26 +78,22 @@ def check(name, cond, detail=""):
 #                              'uint256','address'],
 #                             [user, chain_id, amount, risk, nonce, contract]))
 # ============================================================================
-def oracle_message_hash(user: str, amount: int, risk_x100: int, nonce: int, contract: str) -> bytes:
-    return Web3.keccak(
-        abi_encode(
-            ["address", "uint256", "uint256", "uint256", "uint256", "address"],
-            [Web3.to_checksum_address(user), CHAIN_ID, amount, risk_x100, nonce,
-             Web3.to_checksum_address(contract)],
-        )
-    )
+def oracle_message_hash(user: str, token: str, payee: str, amount: int, risk_x100: int, nonce: int, contract: str) -> bytes:
+    """Espelho do hash v6, vinculando token e payee ao bundle financeiro."""
+    return Web3.keccak(encode(
+        ["address", "address", "address", "uint256", "address", "uint256", "uint256", "uint256"],
+        [user, token, payee, CHAIN_ID, contract, amount, risk_x100, nonce],
+    ))
 
 
-SELECTOR = Web3.keccak(text="checkTxSigned(address,uint256,uint256,uint256,bytes[])")[:4]
-
-
-def forge_calldata(user: str, amount: int, risk_x100: int, nonce: int, signatures: list) -> str:
-    """Monta a calldata adulterada injetando o risk forjado."""
+def forge_calldata(user: str, token: str, payee: str, amount: int, risk_x100: int, nonce: int, signatures: list) -> str:
+    """Monta calldata checkTxSigned com domínio completo, incluindo token/payee."""
+    selector = Web3.keccak(text="checkTxSigned(address,address,address,uint256,uint256,uint256,bytes[])")[:4]
     args = abi_encode(
-        ["address", "uint256", "uint256", "uint256", "bytes[]"],
-        [Web3.to_checksum_address(user), amount, risk_x100, nonce, signatures],
+        ["address", "address", "address", "uint256", "uint256", "uint256", "bytes[]"],
+        [Web3.to_checksum_address(user), Web3.to_checksum_address(token), Web3.to_checksum_address(payee), amount, risk_x100, nonce, signatures],
     )
-    return "0x" + (SELECTOR + args).hex()
+    return "0x" + (selector + args).hex()
 
 
 # ============================================================================
@@ -219,15 +215,17 @@ def attack_1_forged_risk(w3, ca) -> None:
     print("\n[ATAQUE 1] Forged-Risk — risk_x100=0 na calldata, chaves do invasor")
     user = Web3.to_checksum_address("0x" + "00" * 19 + "AA")
     amount = 10**18
+    token = Web3.to_checksum_address("0x" + "00" * 19 + "D0")
+    payee = Web3.to_checksum_address("0x" + "00" * 19 + "EE")
     forged_risk = 0            # injetado: transacao "inofensiva"
     nonce = secrets.randbits(128)
 
     # o invasor domina o empacotamento EXATO (domain separation incluida)
-    forged_hash = oracle_message_hash(user, amount, forged_risk, nonce, ca)
+    forged_hash = oracle_message_hash(user, token, payee, amount, forged_risk, nonce, ca)
     attacker_keys = [Account.create(), Account.create()]
     bundle = [sign_hash(forged_hash, k.key) for k in attacker_keys]
 
-    data = forge_calldata(user, amount, forged_risk, nonce, bundle)
+    data = forge_calldata(user, token, payee, amount, forged_risk, nonce, bundle)
     print(f"    calldata adulterada ({len(data) // 2 - 4} bytes de args), risk=0, 2 assinaturas validas do invasor")
 
     try:
@@ -245,15 +243,17 @@ def attack_2_bundle_swap(w3, ca) -> None:
     print("\n[ATAQUE 2] Bundle-swap — bundle 'legitimo' (risk 9500) com risk trocado para 0")
     user = Web3.to_checksum_address("0x" + "00" * 19 + "AA")
     amount = 10**18
+    token = Web3.to_checksum_address("0x" + "00" * 19 + "D0")
+    payee = Web3.to_checksum_address("0x" + "00" * 19 + "EE")
     nonce = secrets.randbits(128)
 
     # bundle capturado de um suposto oracle legitimo, assinado sobre risk=9500
-    captured_hash = oracle_message_hash(user, amount, 9500, nonce, ca)
+    captured_hash = oracle_message_hash(user, token, payee, amount, 9500, nonce, ca)
     captured_keys = [Account.create(), Account.create()]
     captured_bundle = [sign_hash(captured_hash, k.key) for k in captured_keys]
 
     # o invasor troca o risk na calldata: o hash (e as assinaturas) deixam de bater
-    data = forge_calldata(user, amount, 0, nonce, captured_bundle)
+    data = forge_calldata(user, token, payee, amount, 0, nonce, captured_bundle)
     print("    calldata: risk=0 | bundle assinado sobre risk=9500 (troca detectavel)")
 
     try:
@@ -304,6 +304,8 @@ def attack_3_replay(w3, ca) -> None:
     else:
         print("    sessao ja existia (tx de matricula revertida) — seguindo")
     amount = int(bundle["amount"])
+    token = Web3.to_checksum_address(bundle.get("token") or "0x" + "00" * 20)
+    payee = Web3.to_checksum_address(bundle.get("to") or user)
     nonce = int(bundle["nonce"])
     risk = int(bundle["score"])
     sigs = [bytes.fromhex(s[2:] if s.startswith("0x") else s) for s in bundle["signatures"]]
@@ -311,13 +313,14 @@ def attack_3_replay(w3, ca) -> None:
     contract = w3.eth.contract(address=ca, abi=[{
         "name": "checkTxSigned", "type": "function", "stateMutability": "nonpayable",
         "inputs": [
-            {"name": "user", "type": "address"}, {"name": "amount", "type": "uint256"},
+            {"name": "user", "type": "address"}, {"name": "token", "type": "address"},
+            {"name": "payee", "type": "address"}, {"name": "amount", "type": "uint256"},
             {"name": "risk_x100", "type": "uint256"}, {"name": "nonce", "type": "uint256"},
             {"name": "signatures", "type": "bytes[]"},
         ],
         "outputs": [],
     }])
-    tx1 = contract.functions.checkTxSigned(user, amount, risk, nonce, sigs).build_transaction({
+    tx1 = contract.functions.checkTxSigned(user, token, payee, amount, risk, nonce, sigs).build_transaction({
         "from": attacker.address, "nonce": w3.eth.get_transaction_count(attacker.address, "pending"),
         "chainId": w3.eth.chain_id, "gas": 400000,
     })
@@ -329,7 +332,7 @@ def attack_3_replay(w3, ca) -> None:
           f"hash={h1.hex()}")
 
     # replay: MESMO bundle, MESMO nonce — o anti-replay tem que matar
-    tx2 = contract.functions.checkTxSigned(user, amount, risk, nonce, sigs).build_transaction({
+    tx2 = contract.functions.checkTxSigned(user, token, payee, amount, risk, nonce, sigs).build_transaction({
         "from": attacker.address, "nonce": w3.eth.get_transaction_count(attacker.address, "pending"),
         "chainId": w3.eth.chain_id, "gas": 400000,
     })

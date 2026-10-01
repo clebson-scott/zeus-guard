@@ -48,7 +48,28 @@
   },
   {
     "inputs": [],
+    "name": "EcrecoverFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidSignatureLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NoSession",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotContractOwner",
     "type": "error"
   },
   {
@@ -73,6 +94,69 @@
   },
   {
     "inputs": [],
+    "name": "OracleAlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "OracleCountInvalid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OracleKeyDuplicate",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OracleKeyNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "OracleNonceReplayed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OracleNotInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "OracleThresholdNotMet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OracleZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "PaymentDisputed",
     "type": "error"
   },
@@ -89,6 +173,22 @@
   {
     "inputs": [],
     "name": "SessionFrozenError",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "SignatureListTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SignatureMalleable",
     "type": "error"
   },
   {
@@ -183,6 +283,62 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "payee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "risk_x100",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "signatures",
+        "type": "bytes[]"
+      }
+    ],
+    "name": "checkTxSigned",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "contractOwnerPub",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "payment_id",
         "type": "bytes32"
@@ -255,6 +411,19 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "oracles",
+        "type": "address[]"
+      }
+    ],
+    "name": "initOracle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "guardian",
         "type": "address"
@@ -301,6 +470,75 @@
     "name": "logApproval",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "oracleThresholdPub",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "oraclesPub",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "payee",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "risk_x100",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "signatures",
+        "type": "bytes[]"
+      }
+    ],
+    "name": "preflightSigned",
+    "outputs": [],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -466,6 +704,24 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "old_oracle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "new_oracle",
+        "type": "address"
+      }
+    ],
+    "name": "updateOracleKey",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "challenge_window",
         "type": "uint256"
@@ -526,6 +782,16 @@
         "internalType": "uint256",
         "name": "risk_x100",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "signatures",
+        "type": "bytes[]"
       }
     ],
     "name": "vaultSend",

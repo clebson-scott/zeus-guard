@@ -6,7 +6,7 @@
   "use strict";
 
   // ======== configuracao ========
-  const ZEUS_V4 = "0xa9ef4e9be0e8f45e737f361380743faab72fe76a";
+  const ZEUS_V6 = "0x4a7cdfa8ca7a3969b3427c42948abbd988097dd9";
   const RPC = "https://sepolia-rollup.arbitrum.io/rpc";
   const CHAIN_ID_EXPECTED = "0x66eee"; // 421614
 
@@ -70,7 +70,7 @@
         return String(localStorage.getItem("ZEUS_FAIL_MODE")).toUpperCase();
       }
     } catch {}
-    return "FAIL_OPEN"; // Padrão declarado: fail-open
+    return "FAIL_CLOSED"; // Seguro por padrão; FAIL_OPEN exige opt-in explícito
   }
 
   // ======== RPC ========
@@ -94,7 +94,7 @@
     if (!user || !spender) return false;
     const data = SEL.approvalStatusPub + padAddr(user).slice(2) + padAddr(spender).slice(2);
     try {
-      const res = await rpc("eth_call", [{ to: ZEUS_V4, data }, "latest"]);
+      const res = await rpc("eth_call", [{ to: ZEUS_V6, data }, "latest"]);
       // retorno (uint256 amount, uint64 risk, bool revoked): revoked = ultimo byte != 0
       return res !== "0x" && parseInt(res.slice(-2), 16) === 1;
     } catch (e) {
@@ -300,6 +300,8 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user: tx.from || "0x0000000000000000000000000000000000000000",
+          to: tx.to || tx.from || "0x0000000000000000000000000000000000000000",
+          token: tx.token || null,
           amount: tx.value ? parseInt(tx.value, 16) : 0,
           nonce: tx.nonce ? parseInt(tx.nonce, 16) : 0,
           origin: (typeof window !== "undefined" && window.location) ? window.location.origin : "",
@@ -350,7 +352,7 @@
             if (r.verdict === "BLOQUEAR") {
               const why = r.revoked ? "spender REVOGADO no registro on-chain do ZEUS GUARD" : r.archetype;
               banner("BLOQUEAR", `Transação negada pelo guardião: ${why}`,
-                `${tx.to || "contract"} · consulte sepolia.arbiscan.io/address/${ZEUS_V4}`);
+                `${tx.to || "contract"} · consulte sepolia.arbiscan.io/address/${ZEUS_V6}`);
               throw buildRejectionError(`ZEUS GUARD: transação bloqueada (${why})`);
             }
             if (r.verdict === "ALERTAR") {
@@ -402,7 +404,7 @@
     };
 
     eth.__zeus = true;
-    console.log("[zeus-guard] EIP-1193 embrulhado: toda transação e permit passa pelo guardião (v4, " + ZEUS_V4 + ")");
+    console.log("[zeus-guard] EIP-1193 embrulhado: toda transação e permit passa pelo guardião (v4, " + ZEUS_V6 + ")");
   }
 
   // Instalação antecipada e robusta do hook
@@ -454,6 +456,6 @@
 
   // Export para ambiente Node / Harness de testes se disponível
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { wrapEthereum, getFailMode, ARCHETYPES, qcsn, ZEUS_V4, SEL };
+    module.exports = { wrapEthereum, getFailMode, ARCHETYPES, qcsn, ZEUS_V6, SEL };
   }
 })();
