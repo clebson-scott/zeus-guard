@@ -1,1 +1,1 @@
-0xa9ef4e9be0e8f45e737f361380743faab72fe76a
+0x9b7608536a9704e120f0fc2c6722e2abb0fef848  # v6 hardened (canonico, 01/10/2026) — ver deploy/DEPLOYADO_V6_ARBITRUM_SEPOLIA.md

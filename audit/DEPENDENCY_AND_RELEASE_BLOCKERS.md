@@ -10,11 +10,9 @@
 
 `stylus-sdk 0.10.9` currently constrains `ruint` to `>=1.16, <1.17`. A direct lockfile override to 1.20.0 is rejected by Cargo. No unreviewed fork or unsafe suppression was added. Mainnet remains blocked until the Stylus dependency chain is updated upstream or an independently reviewed patched fork is adopted.
 
-## Deployment alignment
+## Deployment alignment — RESOLVED (2026-10-01)
 
-The hardening branch changes the signed domain and ABI. The old v6 deployment at `0x4a7cdfa8ca7a3969b3427c42948abbd988097dd9` is not evidence for this build. A new Arbitrum Sepolia deployment and live red-team run are required.
-
-The repository has no deployer private key or oracle signer credentials in the configured secret store, so no deployment was attempted. The deployment script uses environment variables only and never writes keys to the repository.
+The hardening branch (signed domain + ABI changes) was deployed fresh on 2026-10-01: contract `0x9b7608536a9704e120f0fc2c6722e2abb0fef848`, activated, cached in ArbOS, with a fresh 2-of-3 oracle set registered on-chain and a live red-team run of 10 PASS / 0 FAIL. See `deploy/DEPLOYADO_V6_ARBITRUM_SEPOLIA.md`. The old pre-hardening v6 at `0x4a7cdfa8ca7a3969b3427c42948abbd988097dd9` is obsolete and kept only as history. Deploy/oracle keys remain outside the repository (environment variables only).
 
 ## Size
 

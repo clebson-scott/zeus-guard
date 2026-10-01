@@ -314,8 +314,9 @@ def attack_3_replay(w3, ca) -> None:
         ],
         "outputs": [],
     }])
+    tx1_nonce = w3.eth.get_transaction_count(attacker.address, "pending")
     tx1 = contract.functions.checkTxSigned(user, token, payee, amount, risk, nonce, sigs).build_transaction({
-        "from": attacker.address, "nonce": w3.eth.get_transaction_count(attacker.address, "pending"),
+        "from": attacker.address, "nonce": tx1_nonce,
         "chainId": w3.eth.chain_id, "gas": 400000,
     })
     signed = Account.sign_transaction(tx1, attacker.key)
@@ -326,8 +327,9 @@ def attack_3_replay(w3, ca) -> None:
           f"hash={h1.hex()}")
 
     # replay: MESMO bundle, MESMO nonce — o anti-replay tem que matar
+    # replay: nonce explicito (tx1_nonce+1) — RPCs publicos podem servir visao "pending" atrasada
     tx2 = contract.functions.checkTxSigned(user, token, payee, amount, risk, nonce, sigs).build_transaction({
-        "from": attacker.address, "nonce": w3.eth.get_transaction_count(attacker.address, "pending"),
+        "from": attacker.address, "nonce": tx1_nonce + 1,
         "chainId": w3.eth.chain_id, "gas": 400000,
     })
     signed2 = Account.sign_transaction(tx2, attacker.key)
