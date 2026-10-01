@@ -80,7 +80,7 @@ def check(name, cond, detail=""):
 # ============================================================================
 def oracle_message_hash(user: str, token: str, payee: str, amount: int, risk_x100: int, nonce: int, contract: str) -> bytes:
     """Espelho do hash v6, vinculando token e payee ao bundle financeiro."""
-    return Web3.keccak(encode(
+    return Web3.keccak(abi_encode(
         ["address", "address", "address", "uint256", "address", "uint256", "uint256", "uint256"],
         [user, token, payee, CHAIN_ID, contract, amount, risk_x100, nonce],
     ))
@@ -166,29 +166,23 @@ def sign_hash(message_hash: bytes, private_key) -> bytes:
 # ============================================================================
 def offline_selfcheck() -> bool:
     print("\n[0] Self-check offline do empacotamento (vetores do teste Rust v6)")
-    ok = True
-
-    def h(user, chain_id, contract, amount, risk, nonce):
-        return Web3.keccak(
-            abi_encode(
-                ["address", "uint256", "uint256", "uint256", "uint256", "address"],
-                [user, chain_id, amount, risk, nonce, contract],
-            )
-        )
-
-    v = h("0x00000000000000000000000000000000000000AA", 421614,
-          "0x00000000000000000000000000000000000000C0", 10**18, 1500, 1)
-    check("hash v6 == vetor canônico do Rust (df5ced9a…)",
-          v.hex() == "df5ced9a1d6496784e47f1ac967cef16159ba74992638f31379cb533bf62e0b3")
-
-    v_chain = h("0x00000000000000000000000000000000000000AA", 421615,
-                "0x00000000000000000000000000000000000000C0", 10**18, 1500, 1)
-    v_deploy = h("0x00000000000000000000000000000000000000AA", 421614,
-                 "0x00000000000000000000000000000000000000C1", 10**18, 1500, 1)
-    check("domain separation: outra chain => outro hash", v != v_chain)
-    check("domain separation: outro deploy => outro hash", v != v_deploy)
-    ok = FAIL == 0
-    return ok
+    user = "0x00000000000000000000000000000000000000AA"
+    token = "0x00000000000000000000000000000000000000D0"
+    payee = "0x00000000000000000000000000000000000000EE"
+    contract = "0x00000000000000000000000000000000000000C0"
+    v = oracle_message_hash(user, token, payee, 10**18, 1500, 1, contract)
+    check("hash v6 == vetor canônico do Rust (0569bd23…)",
+          v.hex() == "0569bd23eb4abed6c5ca842d14360222d04cc20fc523026d17931c9939791015")
+    # chain_id is part of the canonical function's fixed domain; compute variants directly.
+    def variant(chain=421614, tok=token, recipient=payee, deploy=contract):
+        return Web3.keccak(abi_encode(
+            ["address","address","address","uint256","address","uint256","uint256","uint256"],
+            [user, tok, recipient, chain, deploy, 10**18, 1500, 1]))
+    check("domain separation: outra chain => outro hash", v != variant(chain=421615))
+    check("domain separation: outro deploy => outro hash", v != variant(deploy="0x00000000000000000000000000000000000000C1"))
+    check("domain separation: outro token => outro hash", v != variant(tok="0x00000000000000000000000000000000000000D1"))
+    check("domain separation: outro payee => outro hash", v != variant(recipient="0x00000000000000000000000000000000000000EF"))
+    return FAIL == 0
 
 
 # ============================================================================
