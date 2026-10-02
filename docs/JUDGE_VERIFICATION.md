@@ -25,7 +25,19 @@ fidelity 0.997) is documented in the README.
 
 ## 2. Verify the live contract (2 min, no wallet)
 
-**v4 (current, Stylus Release Candidate) — open the explorer:**
+**v6 (CANONICAL, hardened) — Arbitrum Sepolia:**
+https://sepolia.arbiscan.io/address/0x9b7608536a9704e120f0fc2c6722e2abb0fef848
+
+- **v6 contract**: Rust/Stylus, 32.0 KiB WASM, activated 01/10/2026, cached in ArbOS.
+- **v6 deploy tx**: [`0x5949e1a6171150a083462229b87886c8f28a4b0e3fe8a115d98ca9ad127deb87`](https://sepolia.arbiscan.io/tx/0x5949e1a6171150a083462229b87886c8f28a4b0e3fe8a115d98ca9ad127deb87)
+- **v6 activation tx**: [`0xe03bf002902d8e2ca9e731a879582029c1ecd76d074c13809b3b568235d7789b`](https://sepolia.arbiscan.io/tx/0xe03bf002902d8e2ca9e731a879582029c1ecd76d074c13809b3b568235d7789b)
+- **v6 oracle multisig (2-of-3) init**: [`0x089e87d708a9d6145923ed18e901be457f6d7108c6228bd0679b7be6699a935b`](https://sepolia.arbiscan.io/tx/0x089e87d708a9d6145923ed18e901be457f6d7108c6228bd0679b7be6699a935b)
+- **Live red-team proof against this address: 10 PASS / 0 FAIL** (see `deploy/DEPLOYADO_V6_ARBITRUM_SEPOLIA.md`).
+
+**v6 — Robinhood Chain Testnet (the reserved-prize network, chain 46630):**
+https://explorer.testnet.chain.robinhood.com/address/0xe18332679dc0bcfd1dda9e2e022252cbadb65eb5 (same hardened code, on-chain smoke test PASS — see `deploy/DEPLOYADO_ROBINHOOD_TESTNET.md`).
+
+**v4 (audit-frozen Release Candidate — powers the live web demo) — open the explorer:**
 https://sepolia.arbiscan.io/address/0xa9ef4e9be0e8f45e737f361380743faab72fe76a
 
 - **v4 contract**: Rust/Stylus, 23.4 KiB (23,939 bytes), activated 26/09/2026 (stylus-sdk 0.10.9, Rust 1.98.1).

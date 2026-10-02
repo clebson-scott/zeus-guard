@@ -9,7 +9,7 @@
 
 ---
 
-## 🎯 TL;DR — Verified Status & Release Metrics (v4 Release Candidate)
+## 🎯 TL;DR — Verified Status & Release Metrics (v6 hardened — canonical; v4 = audit-frozen RC powering the live web demos)
 
 | Component | Status & Verified Metrics | Evidence / Artifact |
 |---|---|---|

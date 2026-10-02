@@ -9,7 +9,7 @@
 
 ---
 
-## 🎯 RESUMO — Estado Atual e Métricas Verificadas da Release (v4 Release Candidate)
+## 🎯 RESUMO — Estado Atual e Métricas Verificadas da Release (v6 hardened — canônico; v4 = RC congelada para auditoria que alimenta as demos web)
 
 | Componente | Status & Métricas Verificadas | Evidência / Artefato |
 |---|---|---|

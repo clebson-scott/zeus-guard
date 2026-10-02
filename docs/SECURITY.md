@@ -1,6 +1,6 @@
 # 🔐 SECURITY.md — ZEUS GUARD: Postura de Segurança, Modelo de Ameaças e Pacote de Auditoria
 
-## Estado Atual da Release (27/09/2026 — Release Candidate v4)
+## Estado Atual da Release (27/09/2026 — Release Candidate v4; atualização 01/10/2026: o deploy canônico é o v6 hardened em 0x9b7608536a9704e120f0fc2c6722e2abb0fef848, com oráculo multisig 2-de-3 no caminho do dinheiro; este documento descreve o pacote de auditoria congelado na v4)
 
 **Testnet Ativa (Arbitrum Sepolia, Chain ID 421614). Auditado e Corrigido Internamente.**
 Este documento compõe o pacote pronto para auditoria externa (*audit-ready*). Todo o código-fonte, modelo de ameaças, superfícies de ataque, invariantes formais e testes foram validados e congelados nesta versão.
