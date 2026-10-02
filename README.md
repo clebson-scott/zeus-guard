@@ -26,7 +26,7 @@
 | **Identity Layer & Ground Truth Correction (v4.5)** | 473/527 v2 "attacks" were verified protocol spends (Curve, Uniswap, 1inch...) — GT corrected by exclusion: **54 true attacks, recall 100% [93.4%, 100%] preserved**, FP **14.4% → 12.6%** with identity ON; label cache = 567 spenders (Blockscout, no API key) | `python3 engine/realdata_benchmark_gt_corrected.py` |
 | **Temporal Split Validation** | Recall **100% in both halves** (25/25, 29/29); FP 18.0% → 10.7% across halves = causal token-freq warm-up artifact, documented | `python3 engine/realdata_benchmark_temporal.py` |
 | **CI Automation** | Automated pipeline covering Stylus Rust (15/15), Python engine, and Node extension QA | `.github/workflows/ci.yml` |
-| **Audit Package** | Complete audit package ready for external review | [`JUDGE_SUBMISSION.md`](JUDGE_SUBMISSION.md) · [`docs/AUDIT_CHECKLIST.md`](docs/AUDIT_CHECKLIST.md) · [`SECURITY.md`](SECURITY.md) · [`REAL_DATA.md`](REAL_DATA.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/MATH.md`](docs/MATH.md) |
+| **Audit Package** | Complete audit package ready for external review | [`RELEASE_INDEX.md`](docs/RELEASE_INDEX.md) · [`JUDGE_SUBMISSION.md`](JUDGE_SUBMISSION.md) · [`docs/AUDIT_CHECKLIST.md`](docs/AUDIT_CHECKLIST.md) · [`SECURITY.md`](SECURITY.md) · [`REAL_DATA.md`](REAL_DATA.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/MATH.md`](docs/MATH.md) |
 
 ---
 

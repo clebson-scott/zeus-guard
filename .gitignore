@@ -5,3 +5,16 @@ __pycache__/
 *.pyc
 .env
 oracle_key.txt
+
+# Local tooling and credential formats
+*.log
+*.tmp
+*.swp
+*.swo
+*.pem
+*.key
+*.p12
+*.pfx
+.pytest_cache/
+.mypy_cache/
+.DS_Store

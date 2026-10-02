@@ -21,7 +21,7 @@
 | **Smoke Tests On-Chain (v4)** | **13/13 PASSANDO** na Arbitrum Sepolia | `python3 proof/smoke_v4.py` |
 | **Prova de Ataque & Defesa Vivo** | **4/4 PASSANDO** ao vivo contra o contrato | `python3 proof/live_attack_defense.py` |
 | **CI Automatizado** | Pipeline cobrindo Stylus Rust (15/15), motor Python e testes da extensão Node | `.github/workflows/ci.yml` |
-| **Pacote de Auditoria** | Pacote completo pronto para revisão externa | [`JUDGE_SUBMISSION.md`](JUDGE_SUBMISSION.md) · [`docs/AUDIT_CHECKLIST.md`](docs/AUDIT_CHECKLIST.md) · [`SECURITY.md`](SECURITY.md) · [`REAL_DATA.md`](REAL_DATA.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/MATH.md`](docs/MATH.md) |
+| **Pacote de Auditoria** | Pacote completo pronto para revisão externa | [`RELEASE_INDEX.md`](docs/RELEASE_INDEX.md) · [`JUDGE_SUBMISSION.md`](JUDGE_SUBMISSION.md) · [`docs/AUDIT_CHECKLIST.md`](docs/AUDIT_CHECKLIST.md) · [`SECURITY.md`](SECURITY.md) · [`REAL_DATA.md`](REAL_DATA.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/MATH.md`](docs/MATH.md) |
 
 ---
 
