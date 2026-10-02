@@ -7,7 +7,7 @@ dapp ──> window.ethereum.request(eth_sendTransaction / eth_signTypedData_v4 
               │
               ▼
         ZEUS GUARD hook          ← 1. Instalação antecipada (trap Object.defineProperty + EIP-6963)
-              │                     2. Consulta registro v4 on-chain (approvalStatusPub)
+              │                     2. Consulta registro v6 hardened on-chain (approvalStatusPub)
               │                     3. Motor analítico QCSN (aprovações, transfers e permits)
               ▼                     4. Spender revogado ou alto risco = NEGADO antes de abrir a carteira (code 4001)
         carteira (assinatura)    ← Só recebe o que foi autorizado pelo guardião
@@ -22,7 +22,7 @@ dapp ──> window.ethereum.request(eth_sendTransaction / eth_signTypedData_v4 
 
 2. **Intercepção de Assinaturas e Permits (EIP-712 / EIP-2612 / Permit2)**:
    - Suporte a `eth_sendTransaction`, `eth_signTransaction`, `eth_signTypedData`, `eth_signTypedData_v1`, `eth_signTypedData_v3`, `eth_signTypedData_v4`, `personal_sign` e `eth_sign`.
-   - Intercepta assinaturas off-chain de `Permit` / `Permit2` analisando a mensagem EIP-712: verifica se o `spender` / `operator` está revogado no contrato on-chain ZEUS V4 antes de passar a assinatura para a carteira.
+   - Intercepta assinaturas off-chain de `Permit` / `Permit2` analisando a mensagem EIP-712: verifica se o `spender` / `operator` está revogado no contrato on-chain ZEUS V6 hardened antes de passar a assinatura para a carteira.
 
 3. **Bloqueio EIP-1193 com Código Standard 4001**:
    - Transações e assinaturas rejeitadas pelo guardião ou canceladas pelo usuário em alertas não chamam o método original da carteira (`orig(args)` NUNCA é executado).

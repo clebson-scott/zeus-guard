@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 RPC = os.getenv("ZEUS_RPC", "https://sepolia-rollup.arbitrum.io/rpc")
 DEPLOY_DOC = ROOT / "deploy/DEPLOYADO_V6_ARBITRUM_SEPOLIA.md"
-DEFAULT_V6 = "0x4a7cdfa8ca7a3969b3427c42948abbd988097dd9"
+DEFAULT_V6 = "0x9b7608536a9704e120f0fc2c6722e2abb0fef848"
 CONTRACT = os.getenv("ZEUS_GUARD_CONTRACT_ADDRESS", DEFAULT_V6)
 RESULTS = []
 

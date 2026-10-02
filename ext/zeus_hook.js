@@ -6,7 +6,7 @@
   "use strict";
 
   // ======== configuracao ========
-  const ZEUS_V6 = "0x4a7cdfa8ca7a3969b3427c42948abbd988097dd9";
+  const ZEUS_V6 = "0x9b7608536a9704e120f0fc2c6722e2abb0fef848";
   const RPC = "https://sepolia-rollup.arbitrum.io/rpc";
   const CHAIN_ID_EXPECTED = "0x66eee"; // 421614
 
@@ -404,7 +404,7 @@
     };
 
     eth.__zeus = true;
-    console.log("[zeus-guard] EIP-1193 embrulhado: toda transação e permit passa pelo guardião (v4, " + ZEUS_V6 + ")");
+    console.log("[zeus-guard] EIP-1193 embrulhado: toda transação e permit passa pelo guardião (v6 hardened, " + ZEUS_V6 + ")");
   }
 
   // Instalação antecipada e robusta do hook

@@ -88,6 +88,7 @@ async function runTests() {
     setupMockWindow();
     delete require.cache[require.resolve("./zeus_hook.js")];
     const zeusHook = require("./zeus_hook.js");
+    assert.strictEqual(zeusHook.ZEUS_V6, "0x9b7608536a9704e120f0fc2c6722e2abb0fef848", "Extensão deve apontar para o V6 hardened canônico");
 
     try {
       await fn(zeusHook);
