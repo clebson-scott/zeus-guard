@@ -77,3 +77,17 @@ node ext/test_extension.js
 - `zeus_hook.js` — Hook EIP-1193 completo: armadilha de injeção, motor QCSN, suporte a `eth_signTypedData_v4`, modos fail-open/fail-closed e código 4001.
 - `test_extension.js` — Test harness em Node.js com testes reproduzíveis sem dependências externas.
 - `README.md` — Documentação completa de auditoria, arquitetura e instruções de teste.
+
+## 🧭 Política explícita por agente/origem (novo)
+
+Além do score QCSN, a dapp pode declarar uma política determinística antes de usar o provider. O hook bloqueia a solicitação **antes da carteira** quando o alvo, seletor ou valor não está autorizado:
+
+```js
+window.__ZEUS_POLICY = {
+  allowedTargets: ["0x..."],
+  allowedSelectors: ["0xa9059cbb"],
+  maxTxValueWei: "1000000000000000"
+};
+```
+
+A política é uma camada adicional e não substitui o contrato V6 hardened, o registro de revogação nem o motor de risco. Ausência de política mantém compatibilidade com dApps existentes.

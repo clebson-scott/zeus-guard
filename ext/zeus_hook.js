@@ -109,8 +109,35 @@
     try { return BigInt(await rpc("eth_call", [{ to: token, data }, "latest"])); } catch { return 0n; }
   }
 
+  // ======== politica deterministica por agente/origem ========
+  // Opcional: a dapp pode definir window.__ZEUS_POLICY antes da chamada EIP-1193.
+  // A politica e local e explicita; nunca substitui o enforcement on-chain.
+  function evaluatePolicy(from, to, valueHex, dataHex) {
+    let policy = null;
+    try { policy = (typeof window !== "undefined" && window.__ZEUS_POLICY) || null; } catch {}
+    if (!policy) return null;
+    const target = String(to || "").toLowerCase();
+    const selector = String(dataHex || "0x").slice(0, 10).toLowerCase();
+    const value = valueHex ? BigInt(valueHex) : 0n;
+    const targets = Array.isArray(policy.allowedTargets) ? policy.allowedTargets.map(String).map(x => x.toLowerCase()) : null;
+    const selectors = Array.isArray(policy.allowedSelectors) ? policy.allowedSelectors.map(String).map(x => x.toLowerCase()) : null;
+    if (targets && !targets.includes(target)) {
+      return { verdict: "BLOQUEAR", archetype: "POLICY_TARGET_DENIED", reason: "target_not_allowlisted", target };
+    }
+    if (selectors && !selectors.includes(selector)) {
+      return { verdict: "BLOQUEAR", archetype: "POLICY_SELECTOR_DENIED", reason: "function_not_allowlisted", selector };
+    }
+    if (policy.maxTxValueWei !== undefined && value > BigInt(policy.maxTxValueWei)) {
+      return { verdict: "BLOQUEAR", archetype: "POLICY_VALUE_LIMIT", reason: "transaction_value_limit", value: value.toString() };
+    }
+    return null;
+  }
+
   // ======== analise de tx ========
   async function analyzeTx(from, to, valueHex, dataHex) {
+    const policyVerdict = evaluatePolicy(from, to, valueHex, dataHex);
+    if (policyVerdict) return policyVerdict;
+
     const x = [0, 0, 0, 0, 0, 0, 0.5, 0.5];
     const value = valueHex ? BigInt(valueHex) : 0n;
     const selector = (dataHex || "0x").slice(0, 10).toLowerCase();
@@ -456,6 +483,6 @@
 
   // Export para ambiente Node / Harness de testes se disponível
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { wrapEthereum, getFailMode, ARCHETYPES, qcsn, ZEUS_V6, SEL };
+    module.exports = { wrapEthereum, getFailMode, ARCHETYPES, qcsn, evaluatePolicy, ZEUS_V6, SEL };
   }
 })();

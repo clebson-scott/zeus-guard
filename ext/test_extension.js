@@ -89,6 +89,11 @@ async function runTests() {
     delete require.cache[require.resolve("./zeus_hook.js")];
     const zeusHook = require("./zeus_hook.js");
     assert.strictEqual(zeusHook.ZEUS_V6, "0x9b7608536a9704e120f0fc2c6722e2abb0fef848", "Extensão deve apontar para o V6 hardened canônico");
+    window.__ZEUS_POLICY = { allowedTargets: ["0x00000000000000000000000000000000000000aa"], allowedSelectors: ["0xa9059cbb"], maxTxValueWei: "100" };
+    assert.strictEqual(zeusHook.evaluatePolicy("0x1", "0x00000000000000000000000000000000000000bb", "0x0", "0xa9059cbb").archetype, "POLICY_TARGET_DENIED");
+    assert.strictEqual(zeusHook.evaluatePolicy("0x1", "0x00000000000000000000000000000000000000aa", "0x0", "0xdeadbeef").archetype, "POLICY_SELECTOR_DENIED");
+    assert.strictEqual(zeusHook.evaluatePolicy("0x1", "0x00000000000000000000000000000000000000aa", "0x65", "0xa9059cbb").archetype, "POLICY_VALUE_LIMIT");
+    window.__ZEUS_POLICY = null;
 
     try {
       await fn(zeusHook);
